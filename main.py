@@ -31,7 +31,7 @@ HELP_STRING = """
 """
 # Seconds to wait between checking RSS feeds and API
 COMMIT_TIMEOUT = 5
-ISSUE_TIMEOUT = 30
+ISSUE_TIMEOUT = 35
 
 @client.event
 async def on_ready():
@@ -58,6 +58,10 @@ async def issue_checker():
 
 @client.event
 async def on_message(message):
+
+    if message.channel.name != "botspam":
+        return
+
     if message.content.startswith("!help"):
         await client.send_message(message.channel, HELP_STRING)
 
