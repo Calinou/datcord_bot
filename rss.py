@@ -1,7 +1,6 @@
 import feedparser
 import datetime
 import requests
-import json
 
 COMMIT_URL = "https://github.com/godotengine/godot/commits/master.atom"
 ISSUE_URL = "https://api.github.com/repos/godotengine/godot/issues"
