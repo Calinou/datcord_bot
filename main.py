@@ -9,17 +9,18 @@ feed = RSSFeed()    # Initialize RSS-scraper, see rss.py for config.
 ### CONFIG ###
 # If you have set your token as an environment variable
 TOKEN = os.environ.get("DISCORD_BOT_TOKEN")
-# Uncomment this if you'd like to specify it here
+# Uncomment this instead if you'd like to specify it here
 # TOKEN = "YOUR_TOKEN"
 # Roles that users can assign themselves to, must be lower case.
 AVAILABLE_ROLES = [
-    "gfx",
-    "mods"
+    "role1",
+    "role2"
 ]
 # Default role for new members of server, must be lower case.
-DEFAULT_ROLE = "sfx"
+DEFAULT_ROLE = "defaultrole"
 # Channel ID where bot will post github notifications
-GITHUB_CHANNEL = "222168837490081792"
+COMMIT_CHANNEL = "225071177721184256"
+ISSUE_CHANNEL = "225071177721184256"
 # Message that bot returns on !help
 HELP_STRING = """
 :book: **Commands:**
@@ -27,28 +28,32 @@ HELP_STRING = """
 !unassign [role]: *unassign yourself from a role.*\n
 !roles: *list available roles.*
 """
-# Seconds to wait between checking RSS feeds
-CHECK_TIMEOUT = 5
+# Seconds to wait between checking RSS feeds and API
+COMMIT_TIMEOUT = 5
+ISSUE_TIMEOUT = 30
 
 @client.event
 async def on_ready():
     print("Logged in as: {0}--{1}".format(client.user.name, client.user.id))
     print("------")
 
-async def github_checker():
+async def commit_checker():
     await client.wait_until_ready()
-    channel = discord.Object(id=GITHUB_CHANNEL)
+    channel = discord.Object(id=COMMIT_CHANNEL)
     while not client.is_closed:
-        msg = feed.check_commit()
-        if msg:
-            # Reads last message in channel to see if it's already been posted,
-            # prevents double posting when bot restarts.
-            async for log in client.logs_from(channel, limit=1):
-                if log.content == msg:
-                    break
-            else:
-                await client.send_message(channel, msg)
-        await asyncio.sleep(CHECK_TIMEOUT)
+        c_msg = feed.check_commit()
+        if c_msg:
+            await client.send_message(channel, c_msg)
+        await asyncio.sleep(COMMIT_TIMEOUT)
+
+async def issue_checker():
+    await client.wait_until_ready()
+    channel = discord.Object(id=ISSUE_CHANNEL)
+    while not client.is_closed:
+        i_msgs = feed.check_issue()
+        for msg in i_msgs:
+            await client.send_message(channel, msg)
+        await asyncio.sleep(ISSUE_TIMEOUT)
 
 @client.event
 async def on_message(message):
@@ -68,7 +73,18 @@ async def on_message(message):
             for r in roles:
                 if r.name.lower() == newrole.lower():
                     if r.name.lower() in AVAILABLE_ROLES:
-                        await client.add_roles(message.author, r)
+                        if not r in message.author.roles:
+                            await client.add_roles(message.author, r)
+                            await client.send_message(
+                                message.channel, ":white_check_mark: User {0} added to {1}.".format(
+                                    message.author.name, r.name
+                                )
+                            )
+                        else:
+                            await client.send_message(
+                                message.channel,
+                                "You already have that role."
+                            )
                     else:
                         await client.send_message(
                             message.channel,
@@ -78,7 +94,9 @@ async def on_message(message):
             else:
                 await client.send_message(
                     message.channel,
-                    ":no_entry: **{0}** <- *Role not found.*".format(newrole.upper())
+                    ":no_entry: **{0}** <- *Role not found.*".format(
+                        newrole.upper()
+                    )
                 )
 
     elif message.content.startswith("!unassign"):
@@ -96,11 +114,14 @@ async def on_message(message):
                 if r.name.lower() == oldrole.lower():
                     # print(r.name, "<-FOUND")
                     await client.remove_roles(message.author, r)
+                    await client.send_message(message.channel, "white_check_mark: Role was removed.")
                     break
             else:
                 await client.send_message(
                     message.channel,
-                    ":no_entry: **{0}** <- You don't have that role.".format(oldrole.upper())
+                    ":no_entry: **{0}** <- You don't have that role.".format(
+                        oldrole.upper()
+                    )
                 )
     elif message.content.startswith("!roles"):
         s = ":scroll: **Available roles:**\n"
@@ -123,5 +144,6 @@ async def on_member_join(m):
             await client.add_roles(m, r)
 
 
-client.loop.create_task(github_checker())
+client.loop.create_task(commit_checker())
+client.loop.create_task(issue_checker())
 client.run(TOKEN)

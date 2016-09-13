@@ -1,27 +1,60 @@
 import feedparser
 import datetime
+import requests
+import json
 
-COMMIT_URL = "https://github.com/NiclasEriksen/godot_rpg/commits/master.atom"
-ISSUE_URL = None    # Not implemented
-PULL_URL = None     # Not implemented
+COMMIT_URL = "https://github.com/godotengine/godot/commits/master.atom"
+ISSUE_URL = "https://api.github.com/repos/godotengine/godot/issues"
+C_TIMESTAMP_FILE = "commit_stamp"
+I_TIMESTAMP_FILE = "issue_stamp"
 
 
 class RSSFeed:
 
     def __init__(self):
         self.commit_url = COMMIT_URL
+        self.issue_url = ISSUE_URL
         self.last_commit_time = None
+        self.last_issue_time = None
+
+    def save_stamp(self, t, stamp):
+        fn = None
+        if t == "commit":
+            fn = C_TIMESTAMP_FILE
+        elif t == "issue":
+            fn = I_TIMESTAMP_FILE
+        if fn:
+            f = open(fn, "w")
+            f.write(stamp)
+            f.close()
+
+    def get_stamp(self, t):
+        fn = None
+        if t == "commit":
+            fn = C_TIMESTAMP_FILE
+        elif t == "issue":
+            fn = I_TIMESTAMP_FILE
+        if fn:
+            try:
+                f = open(fn, "r")
+            except IOError:
+                return None
+            else:
+                s = f.read()
+                f.close()
+                return s
 
     def parse_commit(self):
         d = feedparser.parse(self.commit_url)
-        if not d.feed.updated == self.last_commit_time:
-            self.last_commit_time = d.feed.updated
+        if not d.feed.updated == self.get_stamp("commit"):
+            self.save_stamp("commit", d.feed.updated)
             return d["items"][0]
 
     def format_commit_message(self, entry):
-        msg = ":outbox_tray: **New commit by {1}**:\n```{0}```".format(
+        msg = ":outbox_tray: **New commit by {1}:**\n```{0}```\n<{2}>".format(
             entry["title"],
-            entry["author"]
+            entry["author"],
+            entry["link"]
         )
         return msg
 
@@ -33,16 +66,72 @@ class RSSFeed:
             return False
 
     def check_issue(self):
-        return False    # Not implemented
+        stamp = self.get_stamp("issue")
+        if stamp:
+            url = "{0}{1}{2}".format(
+                self.issue_url, "?since=", stamp
+            )
+        else:
+            url = self.issue_url
+        try:
+            r = requests.get(url=url)
+        except:
+            return []
+        parsed = r.json()
 
-    def check_pull(self):
-        return False    # Not implemented
+        try:
+            r.json()[0]
+        except KeyError:
+            return []    # Probably went over call limit
+
+        # 2016-09-12T20:26:12Z
+        messages = []
+        if stamp:
+            old_stamp = datetime.datetime.strptime(
+                stamp,
+                "%Y-%m-%dT%H:%M:%SZ"
+            )
+        latest_stamp = None
+        if stamp:
+            for issue in parsed:
+                new_stamp = datetime.datetime.strptime(
+                    issue["created_at"],
+                    "%Y-%m-%dT%H:%M:%SZ"
+                )
+                if new_stamp > old_stamp:
+                    latest_stamp = issue["created_at"]
+                    messages.append(self.format_issue_message(issue))
+        else:
+            messages.append(self.format_issue_message(parsed[0]))
+            latest_stamp = parsed[0]["created_at"]
+
+        if latest_stamp:
+            self.save_stamp("issue", latest_stamp)
+
+        return messages
+
+    def format_issue_message(self, e):
+        try:
+            e["pull_request"]
+        except KeyError:
+            prefix = ":exclamation: **New issue:**"
+        else:
+            prefix = ":question: **New pull request:**"
+        msg = "{pf} *#{n} by {u}*\n```{t}```\n<{url}>".format(
+            pf=prefix,
+            n=e["number"],
+            u=e["user"]["login"],
+            t=e["title"],
+            url=e["html_url"]
+        )
+        return msg
 
 
 if __name__ == "__main__":
     # For testing
+    from time import sleep
     f = RSSFeed()
     while True:
-        e = f.parse()
-        if e:
-            print(f.format_commit_message(e))
+        # print(f.check_issue())
+        print(f.check_commit())
+        sleep(1)
