@@ -13,14 +13,15 @@ TOKEN = os.environ.get("DISCORD_BOT_TOKEN")
 # TOKEN = "YOUR_TOKEN"
 # Roles that users can assign themselves to, must be lower case.
 AVAILABLE_ROLES = [
-    "role1",
-    "role2"
+    "programmer",
+    "designer",
+    "artist"
 ]
 # Default role for new members of server, must be lower case.
-DEFAULT_ROLE = "defaultrole"
+DEFAULT_ROLE = "blue"
 # Channel ID where bot will post github notifications
-COMMIT_CHANNEL = "225071177721184256"
-ISSUE_CHANNEL = "225071177721184256"
+COMMIT_CHANNEL = "225147946109370369"
+ISSUE_CHANNEL = "225146729509552128"
 # Message that bot returns on !help
 HELP_STRING = """
 :book: **Commands:**
@@ -114,7 +115,7 @@ async def on_message(message):
                 if r.name.lower() == oldrole.lower():
                     # print(r.name, "<-FOUND")
                     await client.remove_roles(message.author, r)
-                    await client.send_message(message.channel, "white_check_mark: Role was removed.")
+                    await client.send_message(message.channel, ":white_check_mark: Role was removed.")
                     break
             else:
                 await client.send_message(
