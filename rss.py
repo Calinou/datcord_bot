@@ -94,8 +94,8 @@ class RSSFeed:
                 "%Y-%m-%dT%H:%M:%SZ"
             )
         latest_stamp = None
-        candidate_stamp = old_stamp
         if stamp:
+            candidate_stamp = old_stamp
             for issue in parsed:
                 new_stamp = datetime.datetime.strptime(
                     issue["created_at"],
