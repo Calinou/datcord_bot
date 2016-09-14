@@ -3,7 +3,7 @@ import datetime
 import requests
 
 COMMIT_URL = "https://github.com/godotengine/godot/commits/master.atom"
-ISSUE_URL = "https://api.github.com/repos/godotengine/godot/issues"
+ISSUE_URL = "https://api.github.com/repos/godotengine/godot/issues?sort=created"
 C_TIMESTAMP_FILE = "commit_stamp"
 I_TIMESTAMP_FILE = "issue_stamp"
 
@@ -26,6 +26,8 @@ class RSSFeed:
             f = open(fn, "w")
             f.write(stamp)
             f.close()
+        else:
+            print("No a valid type, not writing stamp to disk.")
 
     def get_stamp(self, t):
         fn = None
@@ -68,7 +70,7 @@ class RSSFeed:
         stamp = self.get_stamp("issue")
         if stamp:
             url = "{0}{1}{2}".format(
-                self.issue_url, "?since=", stamp
+                self.issue_url, "&since=", stamp
             )
         else:
             url = self.issue_url
@@ -81,6 +83,7 @@ class RSSFeed:
         try:
             r.json()[0]
         except KeyError:
+            print("Nothing recieved from API, call limit?")
             return []    # Probably went over call limit
 
         # 2016-09-12T20:26:12Z
@@ -91,22 +94,28 @@ class RSSFeed:
                 "%Y-%m-%dT%H:%M:%SZ"
             )
         latest_stamp = None
+        candidate_stamp = old_stamp
         if stamp:
             for issue in parsed:
                 new_stamp = datetime.datetime.strptime(
                     issue["created_at"],
                     "%Y-%m-%dT%H:%M:%SZ"
                 )
+                # print(issue["created_at"], stamp, " | ", old_stamp, new_stamp)
                 if new_stamp > old_stamp:
-                    latest_stamp = issue["created_at"]
+                    if new_stamp > candidate_stamp:
+                        candidate_stamp = new_stamp
+                        latest_stamp = issue["created_at"]
                     messages.append(self.format_issue_message(issue))
         else:
-            messages.append(self.format_issue_message(parsed[0]))
+            print("No stamp, getting it from the latest issue.")
+            # messages.append(self.format_issue_message(parsed[0]))
             latest_stamp = parsed[0]["created_at"]
 
         if latest_stamp:
             self.save_stamp("issue", latest_stamp)
 
+        messages.reverse()
         return messages
 
     def format_issue_message(self, e):
@@ -131,6 +140,6 @@ if __name__ == "__main__":
     from time import sleep
     f = RSSFeed()
     while True:
-        # print(f.check_issue())
-        print(f.check_commit())
-        sleep(1)
+        print(f.check_issue())
+        # print(f.check_commit())
+        sleep(5)
