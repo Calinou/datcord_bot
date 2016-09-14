@@ -15,7 +15,7 @@ TOKEN = os.environ.get("DISCORD_BOT_TOKEN")
 AVAILABLE_ROLES = [
     "programmer",
     "designer",
-    "artist"
+    "artist",
 ]
 # Default role for new members of server, must be lower case.
 DEFAULT_ROLE = "blue"
@@ -82,15 +82,15 @@ async def on_message(message):
         await client.delete_message(message)
 
     elif message.content.startswith("!assign"):
-        s = message.content.split()[1:] # remove !assign
-        if not len(s) == 1:
+        s = message.content[8:] # remove !assign
+        if not len(s) or not message.content[7] == " ":
             tmp = await client.send_message(
                 message.channel,
                 "Usage: !assign [role]"
             )
             await delete_edit_timer(tmp, FEEDBACK_DEL_TIMER, error=True, call_msg=message)
         else:
-            newrole = s[0]
+            newrole = s
             roles = message.server.roles
             for r in roles:
                 if r.name.lower() == newrole.lower():
@@ -128,15 +128,15 @@ async def on_message(message):
                 await delete_edit_timer(tmp, FEEDBACK_DEL_TIMER, error=True, call_msg=message)
 
     elif message.content.startswith("!unassign"):
-        s = message.content.split()[1:] # remove !assign
-        if not len(s) == 1:
+        s = message.content[10:] # remove !unassign
+        if not len(s) or not message.content[9] == " ":
             tmp = await client.send_message(
                 message.channel,
                 "Usage: !unassign [role]"
             )
             await delete_edit_timer(tmp, FEEDBACK_DEL_TIMER, call_msg=message)
         else:
-            oldrole = s[0]
+            oldrole = s
             roles = message.server.roles
             for r in message.author.roles:
                 # print(r.name.lower())
