@@ -61,7 +61,12 @@ async def commit_checker():
     while not client.is_closed:
         c_msg = feed.check_commit()
         if c_msg:
-            await client.send_message(channel, c_msg)
+            async for log in client.logs_from(channel, limit=20):
+                if log.content == c_msg:
+                    print("Commit already posted, abort!")
+                    break
+            else:
+                await client.send_message(channel, c_msg)
         await asyncio.sleep(COMMIT_TIMEOUT)
 
 async def issue_checker():
