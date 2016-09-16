@@ -16,6 +16,7 @@ AVAILABLE_ROLES = [
     "programmer",
     "designer",
     "artist",
+    "sound designer"
 ]
 # Default role for new members of server, must be lower case.
 DEFAULT_ROLE = "blue"
@@ -24,6 +25,10 @@ COMMIT_CHANNEL = "225147946109370369"
 ISSUE_CHANNEL = "225146729509552128"
 #COMMIT_CHANNEL = "225071177721184256"
 #ISSUE_CHANNEL = COMMIT_CHANNEL
+C_STAMP_ROLE_ID = "226016336940236810"  # Change this
+C_STAMP_ROLE_OBJ = None
+I_STAMP_ROLE_ID = "226016645339021312"  # Change this
+I_STAMP_ROLE_OBJ = None
 # Message that bot returns on !help
 HELP_STRING = """
 :book: **Commands:**
@@ -58,24 +63,51 @@ async def on_ready():
 async def commit_checker():
     await client.wait_until_ready()
     channel = discord.Object(id=COMMIT_CHANNEL)
+    global C_STAMP_ROLE_OBJ
     while not client.is_closed:
-        c_msg = feed.check_commit()
-        if c_msg:
-            async for log in client.logs_from(channel, limit=20):
-                if log.content == c_msg:
-                    print("Commit already posted, abort!")
-                    break
-            else:
-                await client.send_message(channel, c_msg)
-        await asyncio.sleep(COMMIT_TIMEOUT)
+        if not C_STAMP_ROLE_OBJ:
+            for s in client.servers:
+                for r in s.roles:
+                    if r.id == C_STAMP_ROLE_ID:
+                        C_STAMP_ROLE_OBJ = r
+                        break
+        else:
+            c_msg, stamp = feed.check_commit(C_STAMP_ROLE_OBJ.name)
+            # c_msg = False
+            if not C_STAMP_ROLE_OBJ.name == stamp:
+                await client.edit_role(C_STAMP_ROLE_OBJ.server, C_STAMP_ROLE_OBJ, name=stamp)
+            if c_msg:
+                async for log in client.logs_from(channel, limit=20):
+                    if log.content == c_msg:
+                        print("Commit already posted, abort!")
+                        break
+                else:
+                    await client.send_message(channel, c_msg)
+            await asyncio.sleep(COMMIT_TIMEOUT)
 
 async def issue_checker():
     await client.wait_until_ready()
     channel = discord.Object(id=ISSUE_CHANNEL)
+    global I_STAMP_ROLE_OBJ
     while not client.is_closed:
-        i_msgs = feed.check_issue()
-        for msg in i_msgs:
-            await client.send_message(channel, msg)
+        if not I_STAMP_ROLE_OBJ:
+            for s in client.servers:
+                for r in s.roles:
+                    if r.id == I_STAMP_ROLE_ID:
+                        I_STAMP_ROLE_OBJ = r
+                        break
+        else:
+            i_msgs, stamp = feed.check_issue(I_STAMP_ROLE_OBJ.name)
+            if not I_STAMP_ROLE_OBJ.name == stamp:
+                await client.edit_role(I_STAMP_ROLE_OBJ.server, I_STAMP_ROLE_OBJ, name=stamp)
+            if i_msgs:
+                async for log in client.logs_from(channel, limit=20):
+                    for msg in i_msgs:
+                        if log.content == msg:
+                            print("Issue already posted, removing!")
+                            i_msgs.remove(msg)
+                for msg in i_msgs:
+                    await client.send_message(channel, msg)
         await asyncio.sleep(ISSUE_TIMEOUT)
 
 @client.event
@@ -174,7 +206,6 @@ async def on_message(message):
             s
         )
         await client.delete_message(message)
-
 
 
 @client.event

@@ -13,43 +13,14 @@ class RSSFeed:
     def __init__(self):
         self.commit_url = COMMIT_URL
         self.issue_url = ISSUE_URL
-        self.last_commit_time = None
-        self.last_issue_time = None
 
-    def save_stamp(self, t, stamp):
-        fn = None
-        if t == "commit":
-            fn = C_TIMESTAMP_FILE
-        elif t == "issue":
-            fn = I_TIMESTAMP_FILE
-        if fn:
-            f = open(fn, "w")
-            f.write(stamp)
-            f.close()
-        else:
-            print("No a valid type, not writing stamp to disk.")
-
-    def get_stamp(self, t):
-        fn = None
-        if t == "commit":
-            fn = C_TIMESTAMP_FILE
-        elif t == "issue":
-            fn = I_TIMESTAMP_FILE
-        if fn:
-            try:
-                f = open(fn, "r")
-            except IOError:
-                return None
-            else:
-                s = f.read()
-                f.close()
-                return s
-
-    def parse_commit(self):
+    def parse_commit(self, stamp):
         d = feedparser.parse(self.commit_url)
-        if not d.feed.updated == self.get_stamp("commit"):
-            self.save_stamp("commit", d.feed.updated)
-            return d["items"][0]
+        if not d.feed.updated == stamp:
+            # self.save_stamp("commit", d.feed.updated)
+            return d["items"][0], d.feed.updated
+        else:
+            return None, stamp
 
     def format_commit_message(self, entry):
         msg = ":outbox_tray: **New commit by {1}:**\n```{0}```\n<{2}>".format(
@@ -59,64 +30,67 @@ class RSSFeed:
         )
         return msg
 
-    def check_commit(self):
-        e = self.parse_commit()
+    def check_commit(self, stamp):
+        e, newstamp = self.parse_commit(stamp)
         if e:
-            return self.format_commit_message(e)
+            return self.format_commit_message(e), newstamp
         else:
-            return False
+            return False, newstamp
 
-    def check_issue(self):
-        stamp = self.get_stamp("issue")
-        if stamp:
-            url = "{0}{1}{2}".format(
-                self.issue_url, "&since=", stamp
+    def check_issue(self, stamp):
+        try:
+            old_stamp = datetime.datetime.strptime(
+                stamp,
+                "%Y-%m-%dT%H:%M:%SZ"
             )
-        else:
-            url = self.issue_url
+        except ValueError:
+            old_stamp = datetime.datetime.utcnow()
+            stamp = datetime.datetime.strftime(
+                old_stamp,
+                "%Y-%m-%dT%H:%M:%SZ"
+            )
+        url = "{0}{1}{2}".format(
+            self.issue_url, "&since=", stamp
+        )
         try:
             r = requests.get(url=url)
         except:
-            return []
+            return [], stamp
         parsed = r.json()
 
         try:
             r.json()[0]
         except KeyError:
             print("Nothing recieved from API, call limit?")
-            return []    # Probably went over call limit
+            return [], stamp    # Probably went over call limit
+        except IndexError:
+            # No new issues.
+            return [], stamp
 
         # 2016-09-12T20:26:12Z
         messages = []
-        if stamp:
-            old_stamp = datetime.datetime.strptime(
-                stamp,
+        latest_stamp = None
+        candidate_stamp = old_stamp
+        for issue in parsed:
+            new_stamp = datetime.datetime.strptime(
+                issue["created_at"],
                 "%Y-%m-%dT%H:%M:%SZ"
             )
-        latest_stamp = None
-        if stamp:
-            candidate_stamp = old_stamp
-            for issue in parsed:
-                new_stamp = datetime.datetime.strptime(
-                    issue["created_at"],
-                    "%Y-%m-%dT%H:%M:%SZ"
-                )
-                # print(issue["created_at"], stamp, " | ", old_stamp, new_stamp)
-                if new_stamp > old_stamp:
-                    if new_stamp > candidate_stamp:
-                        candidate_stamp = new_stamp
-                        latest_stamp = issue["created_at"]
-                    messages.append(self.format_issue_message(issue))
-        else:
-            print("No stamp, getting it from the latest issue.")
-            # messages.append(self.format_issue_message(parsed[0]))
-            latest_stamp = parsed[0]["created_at"]
+            # print(issue["created_at"], stamp, " | ", old_stamp, new_stamp)
+            if new_stamp > old_stamp:
+                if new_stamp > candidate_stamp:
+                    candidate_stamp = new_stamp
+                    latest_stamp = issue["created_at"]
+                messages.append(self.format_issue_message(issue))
 
         if latest_stamp:
-            self.save_stamp("issue", latest_stamp)
+            stamp = datetime.datetime.strftime(
+                datetime.datetime.utcnow(),
+                "%Y-%m-%dT%H:%M:%SZ"
+            )
 
         messages.reverse()
-        return messages
+        return messages, stamp
 
     def format_issue_message(self, e):
         try:
