@@ -41,7 +41,7 @@ ISSUE_TIMEOUT = 35
 FEEDBACK_DEL_TIMER = 5
 
 cache = iron_cache.IronCache()
-cache.put(cache="git_stamps", key="commit", key="4hA4pk2p2cvj0JwrY2du")
+cache.put(cache="git_stamps", key="commit", value="4hA4pk2p2cvj0JwrY2du")
 
 
 async def delete_edit_timer(msg, time, error=False, call_msg=None):
