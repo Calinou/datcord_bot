@@ -1,1 +1,1 @@
-web: gunicorn datcord.wsgi --log-file -
+worker: python main.py
