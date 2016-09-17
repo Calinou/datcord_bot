@@ -26,7 +26,6 @@ DEFAULT_ROLE = "blue"
 #ISSUE_CHANNEL = "225146729509552128"
 COMMIT_CHANNEL = "225071177721184256"
 ISSUE_CHANNEL = COMMIT_CHANNEL
-IRON_CACHE_KEY = None
 # Message that bot returns on !help
 HELP_STRING = """
 :book: **Commands:**
@@ -41,7 +40,6 @@ ISSUE_TIMEOUT = 35
 FEEDBACK_DEL_TIMER = 5
 
 cache = iron_cache.IronCache()
-cache.put(cache="git_stamps", key="commit", value="4hA4pk2p2cvj0JwrY2du")
 
 
 async def delete_edit_timer(msg, time, error=False, call_msg=None):
@@ -65,10 +63,15 @@ async def commit_checker():
     await client.wait_until_ready()
     channel = discord.Object(id=COMMIT_CHANNEL)
     while not client.is_closed:
-        c_msg, stamp = feed.check_commit(C_STAMP_ROLE_OBJ.name)
+        try:
+            cstamp = cache.get(cache="git_stamps", key="commit")
+        except:
+            cstamp = "missing"
+            print("No stamp found for commits.")
+        c_msg, stamp = feed.check_commit(cstamp)
         # c_msg = False
-        if not C_STAMP_ROLE_OBJ.name == stamp:
-            await client.edit_role(C_STAMP_ROLE_OBJ.server, C_STAMP_ROLE_OBJ, name=stamp)
+        if not cstamp == stamp:
+            cache.put(cache="git_stamps", key="commit", value=stamp)
         if c_msg:
             async for log in client.logs_from(channel, limit=20):
                 if log.content == c_msg:
@@ -81,26 +84,23 @@ async def commit_checker():
 async def issue_checker():
     await client.wait_until_ready()
     channel = discord.Object(id=ISSUE_CHANNEL)
-    global I_STAMP_ROLE_OBJ
     while not client.is_closed:
-        if not I_STAMP_ROLE_OBJ:
-            for s in client.servers:
-                for r in s.roles:
-                    if r.id == I_STAMP_ROLE_ID:
-                        I_STAMP_ROLE_OBJ = r
-                        break
-        else:
-            i_msgs, stamp = feed.check_issue(I_STAMP_ROLE_OBJ.name)
-            if not I_STAMP_ROLE_OBJ.name == stamp:
-                await client.edit_role(I_STAMP_ROLE_OBJ.server, I_STAMP_ROLE_OBJ, name=stamp)
-            if i_msgs:
-                async for log in client.logs_from(channel, limit=20):
-                    for msg in i_msgs:
-                        if log.content == msg:
-                            print("Issue already posted, removing!")
-                            i_msgs.remove(msg)
+        try:
+            cstamp = cache.get(cache="git_stamps", key="issue")
+        except:
+            cstamp = "missing"
+            print("No stamp found for issues.")
+        i_msgs, stamp = feed.check_issue(cstamp)
+        if not cstamp == stamp:
+            cache.put(cache="git_stamps", key="issue", value=stamp)
+        if i_msgs:
+            async for log in client.logs_from(channel, limit=20):
                 for msg in i_msgs:
-                    await client.send_message(channel, msg)
+                    if log.content == msg:
+                        print("Issue already posted, removing!")
+                        i_msgs.remove(msg)
+            for msg in i_msgs:
+                await client.send_message(channel, msg)
         await asyncio.sleep(ISSUE_TIMEOUT)
 
 @client.event
