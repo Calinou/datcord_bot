@@ -64,7 +64,7 @@ async def commit_checker():
     channel = discord.Object(id=COMMIT_CHANNEL)
     while not client.is_closed:
         try:
-            cstamp = cache.get(cache="git_stamps", key="commit")
+            cstamp = cache.get(cache="git_stamps", key="commit").value
         except:
             cstamp = "missing"
             print("No stamp found for commits.")
@@ -86,7 +86,7 @@ async def issue_checker():
     channel = discord.Object(id=ISSUE_CHANNEL)
     while not client.is_closed:
         try:
-            cstamp = cache.get(cache="git_stamps", key="issue")
+            cstamp = cache.get(cache="git_stamps", key="issue").value
         except:
             cstamp = "missing"
             print("No stamp found for issues.")
