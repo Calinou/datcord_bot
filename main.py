@@ -1,6 +1,7 @@
 import discord
 import asyncio
 import os
+import iron_cache
 from rss import RSSFeed
 
 client = discord.Client()
@@ -25,10 +26,7 @@ DEFAULT_ROLE = "blue"
 #ISSUE_CHANNEL = "225146729509552128"
 COMMIT_CHANNEL = "225071177721184256"
 ISSUE_CHANNEL = COMMIT_CHANNEL
-C_STAMP_ROLE_ID = "226016336940236810"  # Change this
-C_STAMP_ROLE_OBJ = None
-I_STAMP_ROLE_ID = "226016645339021312"  # Change this
-I_STAMP_ROLE_OBJ = None
+IRON_CACHE_KEY = None
 # Message that bot returns on !help
 HELP_STRING = """
 :book: **Commands:**
@@ -41,6 +39,9 @@ COMMIT_TIMEOUT = 5
 ISSUE_TIMEOUT = 35
 # How long to wait to delete messages
 FEEDBACK_DEL_TIMER = 5
+
+cache = iron_cache.IronCache()
+cache.put(cache="git_stamps", key="commit", key="4hA4pk2p2cvj0JwrY2du")
 
 
 async def delete_edit_timer(msg, time, error=False, call_msg=None):
@@ -63,27 +64,19 @@ async def on_ready():
 async def commit_checker():
     await client.wait_until_ready()
     channel = discord.Object(id=COMMIT_CHANNEL)
-    global C_STAMP_ROLE_OBJ
     while not client.is_closed:
-        if not C_STAMP_ROLE_OBJ:
-            for s in client.servers:
-                for r in s.roles:
-                    if r.id == C_STAMP_ROLE_ID:
-                        C_STAMP_ROLE_OBJ = r
-                        break
-        else:
-            c_msg, stamp = feed.check_commit(C_STAMP_ROLE_OBJ.name)
-            # c_msg = False
-            if not C_STAMP_ROLE_OBJ.name == stamp:
-                await client.edit_role(C_STAMP_ROLE_OBJ.server, C_STAMP_ROLE_OBJ, name=stamp)
-            if c_msg:
-                async for log in client.logs_from(channel, limit=20):
-                    if log.content == c_msg:
-                        print("Commit already posted, abort!")
-                        break
-                else:
-                    await client.send_message(channel, c_msg)
-            await asyncio.sleep(COMMIT_TIMEOUT)
+        c_msg, stamp = feed.check_commit(C_STAMP_ROLE_OBJ.name)
+        # c_msg = False
+        if not C_STAMP_ROLE_OBJ.name == stamp:
+            await client.edit_role(C_STAMP_ROLE_OBJ.server, C_STAMP_ROLE_OBJ, name=stamp)
+        if c_msg:
+            async for log in client.logs_from(channel, limit=20):
+                if log.content == c_msg:
+                    print("Commit already posted, abort!")
+                    break
+            else:
+                await client.send_message(channel, c_msg)
+        await asyncio.sleep(COMMIT_TIMEOUT)
 
 async def issue_checker():
     await client.wait_until_ready()
