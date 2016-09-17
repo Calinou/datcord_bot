@@ -4,8 +4,6 @@ import requests
 
 COMMIT_URL = "https://github.com/godotengine/godot/commits/master.atom"
 ISSUE_URL = "https://api.github.com/repos/godotengine/godot/issues?sort=created"
-C_TIMESTAMP_FILE = "commit_stamp"
-I_TIMESTAMP_FILE = "issue_stamp"
 
 
 class RSSFeed:
