@@ -72,7 +72,7 @@ async def commit_checker():
         c_msg, stamp = feed.check_commit(cstamp)
         # c_msg = False
         if not cstamp == stamp:
-            cache.put(cache="git_stamps", key="commit", value=stamp)
+            cache.put(cache="godot_git_stamps", key="commit", value=stamp)
         if c_msg:
             async for log in client.logs_from(channel, limit=20):
                 if log.content == c_msg:
@@ -87,7 +87,7 @@ async def issue_checker():
     channel = discord.Object(id=ISSUE_CHANNEL)
     while not client.is_closed:
         try:
-            cstamp = cache.get(cache="git_stamps", key="issue").value
+            cstamp = cache.get(cache="godot_git_stamps", key="issue").value
         except:
             cstamp = "missing"
             print("No stamp found for issues.")
