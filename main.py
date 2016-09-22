@@ -7,7 +7,7 @@ from rss import RSSFeed
 client = discord.Client()
 feed = RSSFeed()    # Initialize RSS-scraper, see rss.py for config.
 
-### CONFIG ###
+# CONFIG #
 # If you have set your token as an environment variable
 TOKEN = os.environ.get("DISCORD_BOT_TOKEN")
 # Uncomment this instead if you'd like to specify it here
@@ -24,8 +24,8 @@ DEFAULT_ROLE = "blue"
 # Channel ID where bot will post github notifications
 COMMIT_CHANNEL = "225147946109370369"
 ISSUE_CHANNEL = "225146729509552128"
-#COMMIT_CHANNEL = "225071177721184256"
-#ISSUE_CHANNEL = COMMIT_CHANNEL
+# COMMIT_CHANNEL = "225071177721184256"
+# ISSUE_CHANNEL = COMMIT_CHANNEL
 # Message that bot returns on !help
 HELP_STRING = """
 :book: **Commands:**
@@ -54,6 +54,7 @@ async def delete_edit_timer(msg, time, error=False, call_msg=None):
     if call_msg:
         await client.delete_message(call_msg)
 
+
 @client.event
 async def on_ready():
     print("Logged in as: {0}--{1}".format(client.user.name, client.user.id))
@@ -64,7 +65,7 @@ async def commit_checker():
     channel = discord.Object(id=COMMIT_CHANNEL)
     while not client.is_closed:
         try:
-            cstamp = cache.get(cache="git_stamps", key="commit").value
+            cstamp = cache.get(cache="godot_git_stamps", key="commit").value
         except:
             cstamp = "missing"
             print("No stamp found for commits.")
@@ -92,7 +93,7 @@ async def issue_checker():
             print("No stamp found for issues.")
         i_msgs, stamp = feed.check_issue(cstamp)
         if not cstamp == stamp:
-            cache.put(cache="git_stamps", key="issue", value=stamp)
+            cache.put(cache="godot_git_stamps", key="issue", value=stamp)
         if i_msgs:
             async for log in client.logs_from(channel, limit=20):
                 for msg in i_msgs:
@@ -102,6 +103,7 @@ async def issue_checker():
             for msg in i_msgs:
                 await client.send_message(channel, msg)
         await asyncio.sleep(ISSUE_TIMEOUT)
+
 
 @client.event
 async def on_message(message):
@@ -114,41 +116,50 @@ async def on_message(message):
         await client.delete_message(message)
 
     elif message.content.startswith("!assign"):
-        s = message.content[8:] # remove !assign
+        s = message.content[8:]     # remove !assign
         if not len(s) or not message.content[7] == " ":
             tmp = await client.send_message(
                 message.channel,
                 "Usage: !assign [role]"
             )
-            await delete_edit_timer(tmp, FEEDBACK_DEL_TIMER, error=True, call_msg=message)
+            await delete_edit_timer(
+                tmp, FEEDBACK_DEL_TIMER, error=True, call_msg=message
+            )
         else:
             newrole = s
             roles = message.server.roles
             for r in roles:
                 if r.name.lower() == newrole.lower():
                     if r.name.lower() in AVAILABLE_ROLES:
-                        if not r in message.author.roles:
+                        if r not in message.author.roles:
                             await client.add_roles(message.author, r)
                             tmp = await client.send_message(
-                                message.channel, ":white_check_mark: User {0} added to {1}.".format(
+                                message.channel,
+                                ":white_check_mark: User {0} added to {1}.".format(
                                     message.author.name, r.name
                                 )
                             )
-                            await delete_edit_timer(tmp, FEEDBACK_DEL_TIMER, call_msg=message)
+                            await delete_edit_timer(
+                                tmp, FEEDBACK_DEL_TIMER, call_msg=message
+                            )
                         else:
                             tmp = await client.send_message(
                                 message.channel,
                                 "You already have that role."
                             )
                             await delete_edit_timer(
-                                tmp, FEEDBACK_DEL_TIMER, error=True, call_msg=message
+                                tmp, FEEDBACK_DEL_TIMER,
+                                error=True, call_msg=message
                             )
                     else:
                         tmp = await client.send_message(
                             message.channel,
                             ":no_entry: *You're not allowed to assign yourself to that role.*"
                         )
-                        await delete_edit_timer(tmp, FEEDBACK_DEL_TIMER, error=True, call_msg=message)
+                        await delete_edit_timer(
+                            tmp, FEEDBACK_DEL_TIMER, error=True,
+                            call_msg=message
+                        )
                     break
             else:
                 tmp = await client.send_message(
@@ -157,10 +168,12 @@ async def on_message(message):
                         newrole.upper()
                     )
                 )
-                await delete_edit_timer(tmp, FEEDBACK_DEL_TIMER, error=True, call_msg=message)
+                await delete_edit_timer(
+                    tmp, FEEDBACK_DEL_TIMER, error=True, call_msg=message
+                )
 
     elif message.content.startswith("!unassign"):
-        s = message.content[10:] # remove !unassign
+        s = message.content[10:]     # remove !unassign
         if not len(s) or not message.content[9] == " ":
             tmp = await client.send_message(
                 message.channel,
@@ -175,8 +188,12 @@ async def on_message(message):
                 if r.name.lower() == oldrole.lower():
                     # print(r.name, "<-FOUND")
                     await client.remove_roles(message.author, r)
-                    tmp = await client.send_message(message.channel, ":white_check_mark: Role was removed.")
-                    await delete_edit_timer(tmp, FEEDBACK_DEL_TIMER, call_msg=message)
+                    tmp = await client.send_message(
+                        message.channel, ":white_check_mark: Role was removed."
+                    )
+                    await delete_edit_timer(
+                        tmp, FEEDBACK_DEL_TIMER, call_msg=message
+                    )
                     break
             else:
                 tmp = await client.send_message(
@@ -185,7 +202,9 @@ async def on_message(message):
                         oldrole.upper()
                     )
                 )
-                await delete_edit_timer(tmp, FEEDBACK_DEL_TIMER, error=True, call_msg=message)
+                await delete_edit_timer(
+                    tmp, FEEDBACK_DEL_TIMER, error=True, call_msg=message
+                )
     elif message.content.startswith("!roles"):
         s = ":scroll: **Available roles:**\n"
         s += "```\n"
