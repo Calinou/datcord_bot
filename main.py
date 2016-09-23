@@ -35,7 +35,7 @@ HELP_STRING = """
 """
 # Seconds to wait between checking RSS feeds and API
 COMMIT_TIMEOUT = 5
-ISSUE_TIMEOUT = 35
+ISSUE_TIMEOUT = 60
 # How long to wait to delete messages
 FEEDBACK_DEL_TIMER = 5
 
