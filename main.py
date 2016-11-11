@@ -254,4 +254,5 @@ async def on_member_join(m):
 
 client.loop.create_task(commit_checker())
 client.loop.create_task(issue_checker())
+client.loop.create_task(forum_checker())
 client.run(TOKEN)
