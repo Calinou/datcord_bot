@@ -1,5 +1,6 @@
 import feedparser
 import datetime
+from time import mktime
 import requests
 
 COMMIT_URL = "https://github.com/godotengine/godot/commits/master.atom"
