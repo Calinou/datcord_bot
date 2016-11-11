@@ -24,6 +24,7 @@ DEFAULT_ROLE = "blue"
 # Channel ID where bot will post github notifications
 COMMIT_CHANNEL = "225147946109370369"
 ISSUE_CHANNEL = "225146729509552128"
+FORUM_CHANNEL = "246571722965385216"
 # COMMIT_CHANNEL = "225071177721184256"
 # ISSUE_CHANNEL = COMMIT_CHANNEL
 # Message that bot returns on !help
@@ -35,6 +36,7 @@ HELP_STRING = """
 """
 # Seconds to wait between checking RSS feeds and API
 COMMIT_TIMEOUT = 5
+FORUM_TIMEOUT = 10
 ISSUE_TIMEOUT = 60
 # How long to wait to delete messages
 FEEDBACK_DEL_TIMER = 5
@@ -59,6 +61,29 @@ async def delete_edit_timer(msg, time, error=False, call_msg=None):
 async def on_ready():
     print("Logged in as: {0}--{1}".format(client.user.name, client.user.id))
     print("------")
+
+
+async def forum_checker():
+    await client.wait_until_ready()
+    channel = discord.Object(id=FORUM_CHANNEL)
+    while not client.is_closed:
+        try:
+            fstamp = cache.get(cache="godot_git_stamps", key="forum").value
+        except:
+            fstamp = "missing"
+            print("No stamp found for forum.")
+        f_msg, stamp = feed.check_forum(fstamp)
+        if not fstamp == stamp:
+            cache.put(cache="git_stamps", key="forum", value=stamp)
+        if f_msg:
+            async for log in client.logs_from(channel, limit=20):
+                if log.content == f_msg:
+                    print("Forum thread already posted, abort!")
+                    break
+            else:
+                await client.send_message(channel, f_msg)
+        await asyncio.sleep(FORUM_TIMEOUT)
+
 
 async def commit_checker():
     await client.wait_until_ready()

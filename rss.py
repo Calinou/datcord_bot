@@ -4,6 +4,7 @@ import requests
 
 COMMIT_URL = "https://github.com/godotengine/godot/commits/master.atom"
 ISSUE_URL = "https://api.github.com/repos/godotengine/godot/issues?sort=created"
+FORUM_URL = "https://godotdevelopers.org/forum/discussions/feed.rss"
 
 
 class RSSFeed:
@@ -11,6 +12,7 @@ class RSSFeed:
     def __init__(self):
         self.commit_url = COMMIT_URL
         self.issue_url = ISSUE_URL
+        self.forum_url = FORUM_URL
 
     def parse_commit(self, stamp):
         d = feedparser.parse(self.commit_url)
@@ -19,6 +21,40 @@ class RSSFeed:
             return d["items"][0], d.feed.updated
         else:
             return None, stamp
+
+    def check_forum(self, stamp):
+        msg = None
+        d = feedparser.parse(self.forum_url)
+        latest = d["items"][:5]
+        try:
+            old_stamp = datetime.datetime.fromtimestamp(float(stamp))
+        except ValueError:
+            print("Stamp invalid, making new from current time.")
+            old_stamp = datetime.datetime.now()
+            stamp = float(mktime(old_stamp.utctimetuple()))
+        for thread in reversed(latest):
+            th_stamp = datetime.datetime.fromtimestamp(
+                mktime(thread["published_parsed"])
+            )
+            if th_stamp > old_stamp:
+                msg = self.format_forum_message(thread)
+                print("New forum thread found, posting.")
+                return msg, mktime(thread["published_parsed"])
+        else:
+            return False, float(mktime(old_stamp.utctimetuple()))
+
+    def format_forum_message(self, thread):
+        t = thread["title"]
+        c = thread["category"]
+        a = thread["author"]
+        l = thread["link"]
+        msg = "New forum thread by **{a}** in {c}\n```{t}```\n<{l}>".format(
+            a=a,
+            c=c,
+            t=t,
+            l=l,
+        )
+        return msg
 
     def format_commit_message(self, entry):
         msg = ":outbox_tray: **New commit by {1}:**\n```{0}```\n<{2}>".format(
