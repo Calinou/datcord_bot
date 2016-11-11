@@ -74,7 +74,7 @@ async def forum_checker():
             print("No stamp found for forum.")
         f_msg, stamp = feed.check_forum(fstamp)
         if not fstamp == stamp:
-            cache.put(cache="git_stamps", key="forum", value=stamp)
+            cache.put(cache="godot_git_stamps", key="forum", value=stamp)
         if f_msg:
             async for log in client.logs_from(channel, limit=20):
                 if log.content == f_msg:
