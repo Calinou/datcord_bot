@@ -159,6 +159,7 @@ async def on_message(message):
 
     elif message.content.startswith("!xp"):
         s = message.content[4:]
+        tmp = None
         if not len(s):
             try:
                 xp = cache.get(cache="godot_userxp", key=id).value
@@ -180,11 +181,10 @@ async def on_message(message):
             print("#" * 30)
             # message.server.get_member_named(name)
 
-
-
-        await delete_edit_timer(
-            tmp, FEEDBACK_DEL_TIMER, error=True, call_msg=message
-        )
+        if tmp:
+            await delete_edit_timer(
+                tmp, FEEDBACK_DEL_TIMER, error=True, call_msg=message
+            )
 
     elif message.content.startswith("!assign"):
         s = message.content[8:]     # remove !assign
