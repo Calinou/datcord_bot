@@ -158,7 +158,7 @@ async def on_message(message):
         await client.delete_message(message)
 
     elif message.content.startswith("!xp"):
-        s = message.content[6:-1]
+        s = message.content.rstrip()[6:-1]
         tmp = None
         if not len(s):
             try:
@@ -190,7 +190,12 @@ async def on_message(message):
                     tmp = await client.send_message(
                         message.channel, "Member not found..."
                     )
+                elif not u:
+                    tmp = await client.send_message(
+                        message.channel, "Member not found..."
+                    )
                 else:
+                    if u:
                     try:
                         xp = cache.get(cache="godot_userxp", key=s).value
                     except:
