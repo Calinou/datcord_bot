@@ -190,24 +190,24 @@ async def on_message(message):
                     tmp = await client.send_message(
                         message.channel, "Member not found..."
                     )
-                elif not u:
-                    tmp = await client.send_message(
-                        message.channel, "Member not found..."
-                    )
                 else:
-                    if u:
-                    try:
-                        xp = cache.get(cache="godot_userxp", key=s).value
-                    except:
+                    if not u:
                         tmp = await client.send_message(
-                            message.channel, "Member has no XP yet..."
+                            message.channel, "Member not found..."
                         )
                     else:
-                        tmp = await client.send_message(
-                            message.channel, "**{0}**'s current xp: **[{1}]**".format(
-                                u.name, xp
+                        try:
+                            xp = cache.get(cache="godot_userxp", key=s).value
+                        except:
+                            tmp = await client.send_message(
+                                message.channel, "Member has no XP yet..."
                             )
-                        )
+                        else:
+                            tmp = await client.send_message(
+                                message.channel, "**{0}**'s current xp: **[{1}]**".format(
+                                    u.name, xp
+                                )
+                            )
             print("#" * 30)
             print(s)
             print("#" * 30)
