@@ -158,15 +158,30 @@ async def on_message(message):
         await client.delete_message(message)
 
     elif message.content.startswith("!xp"):
-        try:
-            xp = cache.get(cache="godot_userxp", key=id).value
-        except:
-            xp = 0
-        tmp = await client.send_message(
-            message.channel, "**{0}**'s current xp: **[{1}]**".format(
-                message.author.name, xp
+        s = message.content[4:]
+        if not len(s):
+            try:
+                xp = cache.get(cache="godot_userxp", key=id).value
+            except:
+                xp = 0
+            tmp = await client.send_message(
+                message.channel, "**{0}**'s current xp: **[{1}]**".format(
+                    message.author.name, xp
+                )
             )
-        )
+        elif not message.content[3] == " ":
+            tmp = await client.send_message(
+                message.channel,
+                "Usage: !xp or !xp [username]"
+            )
+        else:
+            print("#" * 30)
+            print(s)
+            print("#" * 30)
+            # message.server.get_member_named(name)
+
+
+
         await delete_edit_timer(
             tmp, FEEDBACK_DEL_TIMER, error=True, call_msg=message
         )
