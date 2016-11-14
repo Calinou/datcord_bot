@@ -158,7 +158,7 @@ async def on_message(message):
         await client.delete_message(message)
 
     elif message.content.startswith("!xp"):
-        s = message.content[4:]
+        s = message.content[6:-1]
         tmp = None
         if not len(s):
             try:
@@ -173,18 +173,48 @@ async def on_message(message):
         elif not message.content[3] == " ":
             tmp = await client.send_message(
                 message.channel,
-                "Usage: !xp or !xp [username]"
+                "Usage: !xp or !xp @username"
             )
         else:
+            try:
+                int(s)
+            except TypeError:
+                tmp = await client.send_message(
+                    message.channel,
+                    "Usage: !xp or !xp @username"
+                )
+            else:
+                try:
+                    u = message.server.get_member(int(s))
+                except:
+                    tmp = await client.send_message(
+                        message.channel, "Member not found..."
+                    )
+                else:
+                    try:
+                        xp = cache.get(cache="godot_userxp", key=u.id).value
+                    except:
+                        tmp = await client.send_message(
+                            message.channel, "Member has no XP yet..."
+                        )
+                    else:
+                        tmp = await client.send_message(
+                            message.channel, "**{0}**'s current xp: **[{1}]**".format(
+                                u.name, xp
+                            )
+                        )
             print("#" * 30)
             print(s)
             print("#" * 30)
             # message.server.get_member_named(name)
 
         if tmp:
+            # 195659861600501761
             await delete_edit_timer(
                 tmp, FEEDBACK_DEL_TIMER, error=True, call_msg=message
             )
+        else:
+            await client.delete_message(message)
 
     elif message.content.startswith("!assign"):
         s = message.content[8:]     # remove !assign
