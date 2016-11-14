@@ -192,6 +192,7 @@ async def on_message(message):
                     )
                 else:
                     if not u:
+                        print("No user from server.")
                         tmp = await client.send_message(
                             message.channel, "Member not found..."
                         )
