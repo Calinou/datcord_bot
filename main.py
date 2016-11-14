@@ -57,7 +57,10 @@ async def delete_edit_timer(msg, time, error=False, call_msg=None):
         await asyncio.sleep(1)
     await client.delete_message(msg)
     if call_msg:
-        await client.delete_message(call_msg)
+        try:
+            await client.delete_message(call_msg)
+        except:
+            print("Call message does not exist.")
 
 
 @client.event
