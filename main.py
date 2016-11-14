@@ -32,7 +32,8 @@ HELP_STRING = """
 :book: **Commands:**
 !assign [role]: *assign yourself to one of the available roles.*\n
 !unassign [role]: *unassign yourself from a role.*\n
-!roles: *list available roles.*
+!roles: *list available roles.*\n
+!xp: *show your current xp (beta)*
 """
 # Seconds to wait between checking RSS feeds and API
 COMMIT_TIMEOUT = 5
