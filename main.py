@@ -192,7 +192,7 @@ async def on_message(message):
                     )
                 else:
                     try:
-                        xp = cache.get(cache="godot_userxp", key=u.id).value
+                        xp = cache.get(cache="godot_userxp", key=s).value
                     except:
                         tmp = await client.send_message(
                             message.channel, "Member has no XP yet..."
