@@ -148,7 +148,7 @@ async def on_message(message):
             print("No cache point for user {0} with id {1}".format(
                 message.author.name, message.author.id
             ))
-            cache.put(cache="godot_userxp", key=id, value=0)
+            cache.put(cache="godot_userxp", key=id, value=1)
 
     if message.channel.name != "botspam":
         return
