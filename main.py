@@ -38,7 +38,7 @@ HELP_STRING = """
 # Seconds to wait between checking RSS feeds and API
 COMMIT_TIMEOUT = 5
 FORUM_TIMEOUT = 10
-ISSUE_TIMEOUT = 60
+ISSUE_TIMEOUT = 61
 # How long to wait to delete messages
 FEEDBACK_DEL_TIMER = 5
 # How much XP to give on each messages
