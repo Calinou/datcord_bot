@@ -185,7 +185,7 @@ async def on_message(message):
                 )
             else:
                 try:
-                    u = message.server.get_member(int(s))
+                    u = message.server.get_member(s)
                 except:
                     tmp = await client.send_message(
                         message.channel, "Member not found..."
@@ -193,7 +193,7 @@ async def on_message(message):
                     print(client.user.id)
                 else:
                     if not u:
-                        print(client.user.id, type(client.user.id))
+                        # print(client.user.id, type(client.user.id))
                         print("No user from server.")
                         tmp = await client.send_message(
                             message.channel, "Member not found..."
