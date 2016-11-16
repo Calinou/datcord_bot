@@ -32,11 +32,11 @@ HELP_STRING = """
 :book: **Commands:**
 !assign [role]: *assign yourself to one of the available roles.*\n
 !unassign [role]: *unassign yourself from a role.*\n
-!roles: *list available roles.*\n
-!xp: *show your current xp (beta)*
-"""
+!roles: *list available roles.*"""
+# \n
+# !xp: *show your current xp (beta)*
 # Seconds to wait between checking RSS feeds and API
-COMMIT_TIMEOUT = 5
+COMMIT_TIMEOUT = 8
 FORUM_TIMEOUT = 10
 ISSUE_TIMEOUT = 61
 # How long to wait to delete messages
@@ -139,16 +139,16 @@ async def issue_checker():
 @client.event
 async def on_message(message):
     id = message.author.id
-    if message.author.id == client.user.id:
-        print("Not granting XP to bot.")
-    else:
-        try:
-            cache.increment(cache="godot_userxp", key=id, amount=BASE_XP)
-        except:
-            print("No cache point for user {0} with id {1}".format(
-                message.author.name, message.author.id
-            ))
-            cache.put(cache="godot_userxp", key=id, value=BASE_XP)
+    # if message.author.id == client.user.id:
+    #     print("Not granting XP to bot.")
+    # else:
+    #     try:
+    #         cache.increment(cache="godot_userxp", key=id, amount=BASE_XP)
+    #     except:
+    #         print("No cache point for user {0} with id {1}".format(
+    #             message.author.name, message.author.id
+    #         ))
+    #         cache.put(cache="godot_userxp", key=id, value=BASE_XP)
 
     if message.channel.name != "botspam":
         return
@@ -157,72 +157,72 @@ async def on_message(message):
         await client.send_message(message.channel, HELP_STRING)
         await client.delete_message(message)
 
-    elif message.content.startswith("!xp"):
-        s = message.content.rstrip()[6:-1]
-        tmp = None
-        if not len(s):
-            try:
-                xp = cache.get(cache="godot_userxp", key=id).value
-            except:
-                xp = 0
-            tmp = await client.send_message(
-                message.channel, "**{0}**'s current xp: **[{1}]**".format(
-                    message.author.name, xp
-                )
-            )
-        elif not message.content[3] == " ":
-            tmp = await client.send_message(
-                message.channel,
-                "Usage: !xp or !xp @username"
-            )
-        else:
-            try:
-                int(s)
-            except TypeError:
-                tmp = await client.send_message(
-                    message.channel,
-                    "Usage: !xp or !xp @username"
-                )
-            else:
-                try:
-                    u = message.server.get_member(s)
-                except:
-                    tmp = await client.send_message(
-                        message.channel, "Member not found..."
-                    )
-                    print(client.user.id)
-                else:
-                    if not u:
-                        # print(client.user.id, type(client.user.id))
-                        print("No user from server.")
-                        tmp = await client.send_message(
-                            message.channel, "Member not found..."
-                        )
-                    else:
-                        try:
-                            xp = cache.get(cache="godot_userxp", key=s).value
-                        except:
-                            tmp = await client.send_message(
-                                message.channel, "Member has no XP yet..."
-                            )
-                        else:
-                            tmp = await client.send_message(
-                                message.channel, "**{0}**'s current xp: **[{1}]**".format(
-                                    u.name, xp
-                                )
-                            )
-            print("#" * 30)
-            print(s)
-            print("#" * 30)
-            # message.server.get_member_named(name)
-
-        if tmp:
-            # 195659861600501761
-            await delete_edit_timer(
-                tmp, FEEDBACK_DEL_TIMER, error=True, call_msg=message
-            )
-        else:
-            await client.delete_message(message)
+    # elif message.content.startswith("!xp"):
+    #     s = message.content.rstrip()[6:-1]
+    #     tmp = None
+    #     if not len(s):
+    #         try:
+    #             xp = cache.get(cache="godot_userxp", key=id).value
+    #         except:
+    #             xp = 0
+    #         tmp = await client.send_message(
+    #             message.channel, "**{0}**'s current xp: **[{1}]**".format(
+    #                 message.author.name, xp
+    #             )
+    #         )
+    #     elif not message.content[3] == " ":
+    #         tmp = await client.send_message(
+    #             message.channel,
+    #             "Usage: !xp or !xp @username"
+    #         )
+    #     else:
+    #         try:
+    #             int(s)
+    #         except TypeError:
+    #             tmp = await client.send_message(
+    #                 message.channel,
+    #                 "Usage: !xp or !xp @username"
+    #             )
+    #         else:
+    #             try:
+    #                 u = message.server.get_member(s)
+    #             except:
+    #                 tmp = await client.send_message(
+    #                     message.channel, "Member not found..."
+    #                 )
+    #                 print(client.user.id)
+    #             else:
+    #                 if not u:
+    #                     # print(client.user.id, type(client.user.id))
+    #                     print("No user from server.")
+    #                     tmp = await client.send_message(
+    #                         message.channel, "Member not found..."
+    #                     )
+    #                 else:
+    #                     try:
+    #                         xp = cache.get(cache="godot_userxp", key=s).value
+    #                     except:
+    #                         tmp = await client.send_message(
+    #                             message.channel, "Member has no XP yet..."
+    #                         )
+    #                     else:
+    #                         tmp = await client.send_message(
+    #                             message.channel, "**{0}**'s current xp: **[{1}]**".format(
+    #                                 u.name, xp
+    #                             )
+    #                         )
+    #         print("#" * 30)
+    #         print(s)
+    #         print("#" * 30)
+    #         # message.server.get_member_named(name)
+    #
+    #     if tmp:
+    #         # 195659861600501761
+    #         await delete_edit_timer(
+    #             tmp, FEEDBACK_DEL_TIMER, error=True, call_msg=message
+    #         )
+    #     else:
+    #         await client.delete_message(message)
 
     elif message.content.startswith("!assign"):
         s = message.content[8:]     # remove !assign
