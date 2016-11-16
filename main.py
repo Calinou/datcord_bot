@@ -103,7 +103,11 @@ async def commit_checker():
         c_msg, stamp = feed.check_commit(cstamp)
         # c_msg = False
         if not cstamp == stamp:
-            cache.put(cache="godot_git_stamps", key="commit", value=stamp)
+            try:
+                cache.put(cache="godot_git_stamps", key="commit", value=stamp)
+            except:
+                print("Error setting stamp on ironcache.")
+                return False
         if c_msg:
             async for log in client.logs_from(channel, limit=20):
                 if log.content == c_msg:
@@ -124,7 +128,11 @@ async def issue_checker():
             print("No stamp found for issues.")
         i_msgs, stamp = feed.check_issue(cstamp)
         if not cstamp == stamp:
-            cache.put(cache="godot_git_stamps", key="issue", value=stamp)
+            try:
+                cache.put(cache="godot_git_stamps", key="issue", value=stamp)
+            except:
+                print("Error settings stamp on ironcache.")
+                return False
         if i_msgs:
             async for log in client.logs_from(channel, limit=20):
                 for msg in i_msgs:
