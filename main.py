@@ -348,7 +348,7 @@ async def on_member_join(m):
             await client.add_roles(m, r)
 
 
-client.run(TOKEN)
 client.loop.create_task(commit_checker())
 client.loop.create_task(issue_checker())
 client.loop.create_task(forum_checker())
+client.run(TOKEN)
