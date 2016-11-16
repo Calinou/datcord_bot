@@ -17,10 +17,14 @@ class RSSFeed:
 
     def parse_commit(self, stamp):
         d = feedparser.parse(self.commit_url)
-        if not d.feed.updated == stamp:
-            # self.save_stamp("commit", d.feed.updated)
-            return d["items"][0], d.feed.updated
-        else:
+        try:
+            if not d.feed.updated == stamp:
+                # self.save_stamp("commit", d.feed.updated)
+                return d["items"][0], d.feed.updated
+            else:
+                return None, stamp
+        except AttributeError:
+            print("Attribute error on feed.")
             return None, stamp
 
     def check_forum(self, stamp):
