@@ -2,3 +2,4 @@ discord.py>=0.11.0
 feedparser>=5.2.1
 requests>=2.11.1
 iron_cache>=0.3.2
+SQLAlchemy>=1.1.4
