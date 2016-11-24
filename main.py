@@ -243,6 +243,7 @@ async def on_message(message):
         message.content.startswith("!assign") or
         message.content.startswith("!set")
     ):
+        # TODO Unassign all roles.
         error = False
         if message.content.startswith("!assign"):
             s = message.content[8:]     # remove !assign
