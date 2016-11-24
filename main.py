@@ -342,10 +342,14 @@ async def on_message(message):
 
 
 @client.event
-async def on_member_join(m):
-    for r in m.server.roles:
+async def on_member_join(member):
+    for r in member.server.roles:
         if r.name.lower() == DEFAULT_ROLE.lower():
-            await client.add_roles(m, r)
+            print("Adding default role to user.")
+            await client.add_roles(member, r)
+            break
+    else:
+        print("DEFAULT ROLE NOT FOUND ON SERVER!")
 
 
 client.loop.create_task(commit_checker())
