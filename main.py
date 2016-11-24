@@ -165,7 +165,10 @@ async def on_message(message):
     if message.channel.name != "botspam":
         return
 
-    if message.content.startswith("!help"):
+    if (
+        message.content.startswith("!help") or
+        message.content.startswith("!commands")
+    ):
         await client.send_message(message.channel, HELP_STRING)
         await client.delete_message(message)
 
@@ -236,9 +239,20 @@ async def on_message(message):
     #     else:
     #         await client.delete_message(message)
 
-    elif message.content.startswith("!assign"):
-        s = message.content[8:]     # remove !assign
-        if not len(s) or not message.content[7] == " ":
+    elif (
+        message.content.startswith("!assign") or
+        message.content.startswith("!set")
+    ):
+        error = False
+        if message.content.startswith("!assign"):
+            s = message.content[8:]     # remove !assign
+            if not len(s) or not message.content[7] == " ":
+                error = True
+        elif message.content.startswith("!set"):
+            s = message.content[5:]
+            if not len(s) or not message.content[4] == " ":
+                error = True
+        if error:
             tmp = await client.send_message(
                 message.channel,
                 "Usage: !assign [role]"
@@ -293,9 +307,20 @@ async def on_message(message):
                     tmp, FEEDBACK_DEL_TIMER, error=True, call_msg=message
                 )
 
-    elif message.content.startswith("!unassign"):
-        s = message.content[10:]     # remove !unassign
-        if not len(s) or not message.content[9] == " ":
+    elif (
+        message.content.startswith("!unassign") or
+        message.content.startswith("!remove")
+    ):
+        error = False
+        if message.content.startswith("!unassign"):
+            s = message.content[10:]     # remove !unassign
+            if not len(s) or not message.content[9] == " ":
+                error = True
+        elif message.content.startswith("!remove"):
+            s = message.content[8:]     # remove !unassign
+            if not len(s) or not message.content[7] == " ":
+                error = True
+        if error:
             tmp = await client.send_message(
                 message.channel,
                 "Usage: !unassign [role]"
