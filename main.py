@@ -20,7 +20,7 @@ AVAILABLE_ROLES = [
     "sound designer"
 ]
 # Default role for new members of server, must be lower case.
-DEFAULT_ROLE = "blue"
+DEFAULT_ROLE = "godotians"
 # Channel ID where bot will post github notifications
 COMMIT_CHANNEL = "225147946109370369"
 ISSUE_CHANNEL = "225146729509552128"
