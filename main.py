@@ -112,7 +112,7 @@ async def forum_checker():
             session.add(dbstamp)
             print("Adding new stamp for forum.")
         else:
-            print("Current stamp for forum: {}".format(dbfstamp))
+            print("Current stamp for forum: {}".format(dbfstamp.stamp))
 
         session.commit()
         await asyncio.sleep(FORUM_TIMEOUT)
