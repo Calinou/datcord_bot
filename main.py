@@ -16,7 +16,7 @@ engine = create_engine("sqlite:///app.db")
 # Session maker object, to instantiate sessions from
 Session = sessionmaker(bind=engine)
 # Ensure all tables are created.
-print("Creating tables")
+print("Ensuring database scheme is up to date.")
 Base.metadata.create_all(engine)
 
 # CONFIG #
@@ -122,6 +122,8 @@ async def commit_checker():
     await client.wait_until_ready()
     channel = discord.Object(id=COMMIT_CHANNEL)
     while not client.is_closed:
+        session = Session()
+        dbcstamp = session.query(Stamp).filter_by(descriptor="commit").first()
         try:
             cstamp = cache.get(cache="godot_git_stamps", key="commit").value
         except:
@@ -142,12 +144,15 @@ async def commit_checker():
                     break
             else:
                 await client.send_message(channel, c_msg)
+        session.commit()
         await asyncio.sleep(COMMIT_TIMEOUT)
 
 async def issue_checker():
     await client.wait_until_ready()
     channel = discord.Object(id=ISSUE_CHANNEL)
     while not client.is_closed:
+        session = Session()
+        dbistamp = session.query(Stamp).filter_by(descriptor="issue").first()
         try:
             cstamp = cache.get(cache="godot_git_stamps", key="issue").value
         except:
@@ -168,22 +173,28 @@ async def issue_checker():
                         i_msgs.remove(msg)
             for msg in i_msgs:
                 await client.send_message(channel, msg)
+        session.commit()
         await asyncio.sleep(ISSUE_TIMEOUT)
 
 
 @client.event
 async def on_message(message):
     id = message.author.id
-    # if message.author.id == client.user.id:
-    #     print("Not granting XP to bot.")
-    # else:
-    #     try:
-    #         cache.increment(cache="godot_userxp", key=id, amount=BASE_XP)
-    #     except:
-    #         print("No cache point for user {0} with id {1}".format(
-    #             message.author.name, message.author.id
-    #         ))
-    #         cache.put(cache="godot_userxp", key=id, value=BASE_XP)
+    if message.author.id == client.user.id:
+        print("Not granting XP to bot.")
+    else:
+        xp = 1 + len(message.content) // 80
+        session = Session()
+        if session.query(User).filter_by(userid=id).first():
+            session.query(User).filter_by(userid=id).update(
+                {"xp": User.xp + xp}
+            )
+        else:
+            print("Creating new user row for {0}".format(id))
+            u = User(userid=id, xp=xp)
+            session.add(u)
+
+        session.commit()
 
     if message.channel.name != "botspam":
         return
