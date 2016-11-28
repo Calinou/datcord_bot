@@ -220,7 +220,8 @@ async def on_message(message):
                 name = "@" + u.userid
             msg += "{0}: **{1}**".format(name, u.xp)
         session.commit()
-        await client.send_message(message.channel, msg)
+        # await client.send_message(message.channel, msg)
+        print(msg)
         await client.delete_message(message)
 
     # elif message.content.startswith("!xp"):
