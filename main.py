@@ -2,10 +2,22 @@ import discord
 import asyncio
 import os
 import iron_cache
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
 from rss import RSSFeed
+from models import Base, User, Stamp
 
-client = discord.Client()
+client = discord.Client()   # Initialize discord client
 feed = RSSFeed()    # Initialize RSS-scraper, see rss.py for config.
+
+# When running script, initialize db engine and create sqlite database
+# with tables if not existing.
+engine = create_engine("sqlite:///app.db")
+# Session maker object, to instantiate sessions from
+Session = sessionmaker(bind=engine)
+# Ensure all tables are created.
+print("Creating tables")
+Base.metadata.create_all(engine)
 
 # CONFIG #
 # If you have set your token as an environment variable
@@ -47,6 +59,16 @@ BASE_XP = 1
 cache = iron_cache.IronCache()
 
 
+async def get_stamp(desc):
+    session = Session()
+    session.commit()
+
+
+adync def set_stamp(desc, stamp):
+    session = Session()
+    session.commit()
+
+
 async def delete_edit_timer(msg, time, error=False, call_msg=None):
     ws = ":white_small_square:"
     bs = ":black_small_square:"
@@ -73,6 +95,7 @@ async def forum_checker():
     await client.wait_until_ready()
     channel = discord.Object(id=FORUM_CHANNEL)
     while not client.is_closed:
+        session = Session()
         try:
             fstamp = cache.get(cache="godot_git_stamps", key="forum").value
         except:
@@ -92,6 +115,8 @@ async def forum_checker():
                     break
             else:
                 await client.send_message(channel, f_msg)
+
+        session.commit()
         await asyncio.sleep(FORUM_TIMEOUT)
 
 
