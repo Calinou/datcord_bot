@@ -182,7 +182,7 @@ async def on_message(message):
     id = message.author.id
     if message.author.id == client.user.id:
         print("Not granting XP to bot.")
-    else:
+    elif not message.content.startswith("!"):
         xp = 1 + len(message.content) // 80
         session = Session()
         if session.query(User).filter_by(userid=id).first():
@@ -196,6 +196,8 @@ async def on_message(message):
             session.add(u)
 
         session.commit()
+    else:
+        print("Ignoring message as a command, no xp.")
 
     if message.channel.name != "botspam":
         return
@@ -211,14 +213,14 @@ async def on_message(message):
         session = Session()
         ranks = session.query(User).order_by(User.xp.desc()).all()
         ranks = ranks[:10]
-        msg = "**XP leaderboard:**\n"
+        msg = "**XP leaderboard:**"
         for u in ranks:
             m = message.server.get_member(u.userid)
             if m:
                 name = m.name
             else:
                 name = "@" + u.userid
-            msg += "{0}: **{1}**\n".format(name, u.xp)
+            msg += "\n{0}: **{1}**".format(name, u.xp)
         session.commit()
         # await client.send_message(message.channel, msg)
         print(msg)
