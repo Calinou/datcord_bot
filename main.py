@@ -207,6 +207,22 @@ async def on_message(message):
         await client.send_message(message.channel, HELP_STRING)
         await client.delete_message(message)
 
+    elif message.content.startswith("!rank"):
+        session = Session()
+        ranks = session.query(User).order_by(User.xp.desc()).all()
+        ranks = ranks[:10]
+        msg = "**XP leaderboard:**\n"
+        for u in ranks:
+            m = message.server.get_member(u.userid)
+            if m:
+                name = m.nick
+            else:
+                name = "@" + u.userid
+            msg += "{0}: **{1}**".format(name, u.xp)
+        session.commit()
+        await client.send_message(message.channel, msg)
+        await client.delete_message(message)
+
     # elif message.content.startswith("!xp"):
     #     s = message.content.rstrip()[6:-1]
     #     tmp = None

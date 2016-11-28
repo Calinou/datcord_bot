@@ -4,7 +4,7 @@ from models import Base, User, Stamp
 
 
 # When running script
-engine = create_engine("sqlite:///app.db")
+engine = create_engine("sqlite:///apptest.db")
 # Session maker object, to instantiate sessions from
 Session = sessionmaker(bind=engine)
 
@@ -20,8 +20,15 @@ if __name__ == "__main__":
 Normally, it’s important to write change scripts in a way that’s independent of your application - the same SQL should be generated every time, despite any changes to your app’s source code. You don’t want your change scripts’ behavior changing when your source code does.
     """
     xp = 1 + len(msg) // 80
-    print(len(msg))
     session = Session()     # Need to create new session every time (?)
+    # user1 = User(userid="12345", xp=2)     # Create a new user object
+    # user2 = User(userid="23456", xp=20)     # Create a new user object
+    # user3 = User(userid="34567", xp=50)     # Create a new user object
+    # session.add_all([user1, user2, user3])
+    rank = session.query(User).order_by(User.xp.desc()).all()
+    for r in rank[:5]:
+        print(r.userid, r.xp)
+
     if not session.query(User).filter_by(userid="1234").first():
         user1 = User(userid="1234", xp=xp)     # Create a new user object
         session.add(user1)  # Add user object to session
