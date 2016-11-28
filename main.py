@@ -86,6 +86,7 @@ async def forum_checker():
     channel = discord.Object(id=FORUM_CHANNEL)
     while not client.is_closed:
         session = Session()
+        dbfstamp = session.query(Stamp).filter_by(descriptor="forum").first()
         try:
             fstamp = cache.get(cache="godot_git_stamps", key="forum").value
         except:
@@ -105,6 +106,13 @@ async def forum_checker():
                     break
             else:
                 await client.send_message(channel, f_msg)
+
+        if not dbfstamp:
+            dbstamp = Stamp(descriptor="forum", stamp=stamp)
+            session.add(dbstamp)
+            print("Adding new stamp for forum.")
+        else:
+            print("Current stamp for forum: {}".format(dbfstamp))
 
         session.commit()
         await asyncio.sleep(FORUM_TIMEOUT)
