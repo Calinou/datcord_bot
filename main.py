@@ -215,10 +215,10 @@ async def on_message(message):
         for u in ranks:
             m = message.server.get_member(u.userid)
             if m:
-                name = m.nick
+                name = m.name
             else:
                 name = "@" + u.userid
-            msg += "{0}: **{1}**".format(name, u.xp)
+            msg += "{0}: **{1}**\n".format(name, u.xp)
         session.commit()
         # await client.send_message(message.channel, msg)
         print(msg)
