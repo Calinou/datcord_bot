@@ -59,16 +59,6 @@ BASE_XP = 1
 cache = iron_cache.IronCache()
 
 
-async def get_stamp(desc):
-    session = Session()
-    session.commit()
-
-
-adync def set_stamp(desc, stamp):
-    session = Session()
-    session.commit()
-
-
 async def delete_edit_timer(msg, time, error=False, call_msg=None):
     ws = ":white_small_square:"
     bs = ":black_small_square:"
