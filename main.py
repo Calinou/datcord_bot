@@ -189,6 +189,7 @@ async def on_message(message):
             session.query(User).filter_by(userid=id).update(
                 {"xp": User.xp + xp}
             )
+            print("Awarded {0} xp to {1}".format(xp, message.author.name))
         else:
             print("Creating new user row for {0}".format(id))
             u = User(userid=id, xp=xp)
