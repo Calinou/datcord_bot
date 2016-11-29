@@ -1,7 +1,6 @@
 import discord
 import asyncio
 import os
-import iron_cache
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from rss import RSSFeed
@@ -37,14 +36,13 @@ DEFAULT_ROLE = "godotians"
 COMMIT_CHANNEL = "225147946109370369"
 ISSUE_CHANNEL = "225146729509552128"
 FORUM_CHANNEL = "246571722965385216"
-# COMMIT_CHANNEL = "225071177721184256"
-# ISSUE_CHANNEL = COMMIT_CHANNEL
 # Message that bot returns on !help
 HELP_STRING = """
 :book: **Commands:**
 !assign [role]: *assign yourself to one of the available roles.*\n
 !unassign [role]: *unassign yourself from a role.*\n
-!roles: *list available roles.*"""
+!roles: *list available roles.*\n
+!rank: *show the 10 members with the most xp*"""
 # \n
 # !xp: *show your current xp (beta)*
 # Seconds to wait between checking RSS feeds and API
@@ -53,10 +51,6 @@ FORUM_TIMEOUT = 10
 ISSUE_TIMEOUT = 61
 # How long to wait to delete messages
 FEEDBACK_DEL_TIMER = 5
-# How much XP to give on each messages
-BASE_XP = 1
-
-cache = iron_cache.IronCache()
 
 
 async def delete_edit_timer(msg, time, error=False, call_msg=None):
@@ -86,19 +80,16 @@ async def forum_checker():
     channel = discord.Object(id=FORUM_CHANNEL)
     while not client.is_closed:
         session = Session()
-        dbfstamp = session.query(Stamp).filter_by(descriptor="forum").first()
-        try:
-            fstamp = cache.get(cache="godot_git_stamps", key="forum").value
-        except:
-            fstamp = "missing"
-            print("No stamp found for forum.")
-        f_msg, stamp = feed.check_forum(fstamp)
-        if not fstamp == stamp:
-            try:
-                cache.put(cache="godot_git_stamps", key="forum", value=stamp)
-            except:
-                print("Error setting stamp on ironcache.")
-                return False
+        fstamp = session.query(Stamp).filter_by(descriptor="forum").first()
+        f_msg, stamp = feed.check_forum(fstamp.stamp if fstamp else "missing")
+        if fstamp:
+            if not fstamp.stamp == stamp:
+                fstamp.stamp = stamp
+        else:
+            # Creating new row for forum stamp
+            dbstamp = Stamp(descriptor="forum", stamp=stamp)
+            session.add(dbstamp)
+            print("Adding new stamp in database for forum.")
         if f_msg:
             async for log in client.logs_from(channel, limit=20):
                 if log.content == f_msg:
@@ -106,13 +97,6 @@ async def forum_checker():
                     break
             else:
                 await client.send_message(channel, f_msg)
-
-        if not dbfstamp:
-            dbstamp = Stamp(descriptor="forum", stamp=stamp)
-            session.add(dbstamp)
-            print("Adding new stamp for forum.")
-        else:
-            print("Current stamp for forum: {}".format(dbfstamp.stamp))
 
         session.commit()
         await asyncio.sleep(FORUM_TIMEOUT)
@@ -123,20 +107,16 @@ async def commit_checker():
     channel = discord.Object(id=COMMIT_CHANNEL)
     while not client.is_closed:
         session = Session()
-        dbcstamp = session.query(Stamp).filter_by(descriptor="commit").first()
-        try:
-            cstamp = cache.get(cache="godot_git_stamps", key="commit").value
-        except:
-            cstamp = "missing"
-            print("No stamp found for commits.")
-        c_msg, stamp = feed.check_commit(cstamp)
-        # c_msg = False
-        if not cstamp == stamp:
-            try:
-                cache.put(cache="godot_git_stamps", key="commit", value=stamp)
-            except:
-                print("Error setting stamp on ironcache.")
-                return False
+        cstamp = session.query(Stamp).filter_by(descriptor="commit").first()
+        c_msg, stamp = feed.check_commit(cstamp.stamp if cstamp else "missing")
+        if cstamp:
+            if not cstamp.stamp == stamp:
+                # Updating stamp in db
+                cstamp.stamp = stamp
+        else:
+            dbstamp = Stamp(descriptor="commit", stamp=stamp)
+            session.add(dbstamp)
+            print("Adding new stamp to database for commits")
         if c_msg:
             async for log in client.logs_from(channel, limit=20):
                 if log.content == c_msg:
@@ -152,26 +132,23 @@ async def issue_checker():
     channel = discord.Object(id=ISSUE_CHANNEL)
     while not client.is_closed:
         session = Session()
-        dbistamp = session.query(Stamp).filter_by(descriptor="issue").first()
-        try:
-            cstamp = cache.get(cache="godot_git_stamps", key="issue").value
-        except:
-            cstamp = "missing"
-            print("No stamp found for issues.")
-        i_msgs, stamp = feed.check_issue(cstamp)
-        if not cstamp == stamp:
-            try:
-                cache.put(cache="godot_git_stamps", key="issue", value=stamp)
-            except:
-                print("Error settings stamp on ironcache.")
-                return False
-        if i_msgs:
+        istamp = session.query(Stamp).filter_by(descriptor="issue").first()
+        i_msg, stamp = feed.check_issue(istamp.stamp if istamp else "missing")
+        if istamp:
+            if not istamp.stamp == stamp:
+                # Updating stamp in db
+                istamp.stamp = stamp
+        else:
+            dbstamp = Stamp(descriptor="issue", stamp=stamp)
+            session.add(dbstamp)
+            print("Adding new stamp to database for issues")
+        if i_msg:
             async for log in client.logs_from(channel, limit=20):
-                for msg in i_msgs:
+                for msg in i_msg:
                     if log.content == msg:
                         print("Issue already posted, removing!")
-                        i_msgs.remove(msg)
-            for msg in i_msgs:
+                        i_msg.remove(msg)
+            for msg in i_msg:
                 await client.send_message(channel, msg)
         session.commit()
         await asyncio.sleep(ISSUE_TIMEOUT)
@@ -200,7 +177,7 @@ async def on_message(message):
         print("Ignoring message as a command, no xp.")
 
     if message.channel.name != "botspam":
-        return
+        return  # Ignore command if it's not written in botspam channel
 
     if (
         message.content.startswith("!help") or
@@ -222,76 +199,8 @@ async def on_message(message):
                 name = "@" + u.userid
             msg += "\n{0}: **{1}**".format(name, u.xp)
         session.commit()
-        # await client.send_message(message.channel, msg)
-        print(msg)
+        await client.send_message(message.channel, msg)
         await client.delete_message(message)
-
-    # elif message.content.startswith("!xp"):
-    #     s = message.content.rstrip()[6:-1]
-    #     tmp = None
-    #     if not len(s):
-    #         try:
-    #             xp = cache.get(cache="godot_userxp", key=id).value
-    #         except:
-    #             xp = 0
-    #         tmp = await client.send_message(
-    #             message.channel, "**{0}**'s current xp: **[{1}]**".format(
-    #                 message.author.name, xp
-    #             )
-    #         )
-    #     elif not message.content[3] == " ":
-    #         tmp = await client.send_message(
-    #             message.channel,
-    #             "Usage: !xp or !xp @username"
-    #         )
-    #     else:
-    #         try:
-    #             int(s)
-    #         except TypeError:
-    #             tmp = await client.send_message(
-    #                 message.channel,
-    #                 "Usage: !xp or !xp @username"
-    #             )
-    #         else:
-    #             try:
-    #                 u = message.server.get_member(s)
-    #             except:
-    #                 tmp = await client.send_message(
-    #                     message.channel, "Member not found..."
-    #                 )
-    #                 print(client.user.id)
-    #             else:
-    #                 if not u:
-    #                     # print(client.user.id, type(client.user.id))
-    #                     print("No user from server.")
-    #                     tmp = await client.send_message(
-    #                         message.channel, "Member not found..."
-    #                     )
-    #                 else:
-    #                     try:
-    #                         xp = cache.get(cache="godot_userxp", key=s).value
-    #                     except:
-    #                         tmp = await client.send_message(
-    #                             message.channel, "Member has no XP yet..."
-    #                         )
-    #                     else:
-    #                         tmp = await client.send_message(
-    #                             message.channel, "**{0}**'s current xp: **[{1}]**".format(
-    #                                 u.name, xp
-    #                             )
-    #                         )
-    #         print("#" * 30)
-    #         print(s)
-    #         print("#" * 30)
-    #         # message.server.get_member_named(name)
-    #
-    #     if tmp:
-    #         # 195659861600501761
-    #         await delete_edit_timer(
-    #             tmp, FEEDBACK_DEL_TIMER, error=True, call_msg=message
-    #         )
-    #     else:
-    #         await client.delete_message(message)
 
     elif (
         message.content.startswith("!assign") or
