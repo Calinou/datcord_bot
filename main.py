@@ -204,7 +204,8 @@ async def on_message(message):
 
     elif (
         message.content.startswith("!assign") or
-        message.content.startswith("!set")
+        message.content.startswith("!set") or
+        message.content.startswith("!role")
     ):
         # TODO Unassign all roles.
         error = False
@@ -215,6 +216,10 @@ async def on_message(message):
         elif message.content.startswith("!set"):
             s = message.content[5:]
             if not len(s) or not message.content[4] == " ":
+                error = True
+        elif message.content.startswith("!role"):
+            s = message.content[6:]
+            if not len(s) or not message.content[5] == " ":
                 error = True
         if error:
             tmp = await client.send_message(
@@ -281,7 +286,7 @@ async def on_message(message):
             if not len(s) or not message.content[9] == " ":
                 error = True
         elif message.content.startswith("!remove"):
-            s = message.content[8:]     # remove !unassign
+            s = message.content[8:]     # remove !remove
             if not len(s) or not message.content[7] == " ":
                 error = True
         if error:
