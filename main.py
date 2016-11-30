@@ -202,6 +202,20 @@ async def on_message(message):
         await client.send_message(message.channel, msg)
         await client.delete_message(message)
 
+    elif message.content.startswith("!roles"):
+        s = ":scroll: **Available roles:**\n"
+        s += "```\n"
+        for i, r in enumerate(AVAILABLE_ROLES):
+            s += "{0}".format(r.upper())
+            if not i == len(AVAILABLE_ROLES) - 1:
+                s += ", "
+        s += "```"
+        await client.send_message(
+            message.channel,
+            s
+        )
+        await client.delete_message(message)
+
     elif (
         message.content.startswith("!assign") or
         message.content.startswith("!set") or
@@ -320,19 +334,6 @@ async def on_message(message):
                 await delete_edit_timer(
                     tmp, FEEDBACK_DEL_TIMER, error=True, call_msg=message
                 )
-    elif message.content.startswith("!roles"):
-        s = ":scroll: **Available roles:**\n"
-        s += "```\n"
-        for i, r in enumerate(AVAILABLE_ROLES):
-            s += "{0}".format(r.upper())
-            if not i == len(AVAILABLE_ROLES) - 1:
-                s += ", "
-        s += "```"
-        await client.send_message(
-            message.channel,
-            s
-        )
-        await client.delete_message(message)
 
 
 @client.event
