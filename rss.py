@@ -108,10 +108,8 @@ class RSSFeed:
     def format_qa_message(self, thread):
         t = thread["title"]
         c = thread["category"]
-        a = thread["author"]
         l = thread["link"]
-        msg = ":question: **New question by {a} in {c}:**\n```{t}```\n<{l}>".format(
-            a=a,
+        msg = ":question: **New question in {c}:**\n```{t}```\n<{l}>".format(
             c=c,
             t=t,
             l=l,

@@ -36,7 +36,7 @@ DEFAULT_ROLE = "godotians"
 COMMIT_CHANNEL = "225147946109370369"
 ISSUE_CHANNEL = "225146729509552128"
 FORUM_CHANNEL = "246571722965385216"
-QA_CHANNEL = "221985131055808522"
+QA_CHANNEL = "253854182639927296"
 NEWCOMER_CHANNEL = "253576562136449024"
 # Message that bot returns on !help
 HELP_STRING = """
@@ -98,7 +98,7 @@ async def qa_checker():
                     print("Q&A thread already posted, abort!")
                     break
             else:
-                await client.send_message(channel, g_msg)
+                await client.send_message(channel, q_msg)
         session.commit()
         await asyncio.sleep(QA_TIMEOUT)
 
@@ -378,8 +378,8 @@ async def on_member_join(member):
     await client.send_message(channel, msg)
 
 
-#client.loop.create_task(commit_checker())
-#client.loop.create_task(issue_checker())
-#client.loop.create_task(forum_checker())
+client.loop.create_task(commit_checker())
+client.loop.create_task(issue_checker())
+client.loop.create_task(forum_checker())
 client.loop.create_task(qa_checker())
 client.run(TOKEN)
