@@ -379,7 +379,7 @@ async def on_member_join(member):
         print("DEFAULT ROLE NOT FOUND ON SERVER!")
 
     channel = discord.Object(id=NEWCOMER_CHANNEL)
-    msg = ":new: " + user.mention + " joined the server"
+    msg = ":new: " + member.mention + " joined the server"
     await client.send_message(channel, msg)
 
 
