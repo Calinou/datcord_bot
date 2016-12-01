@@ -184,6 +184,11 @@ async def issue_checker():
 @client.event
 async def on_message(message):
     id = message.author.id
+
+    if message.author.id == "195659861600501761":
+        await client.add_reaction(message, ":pig:")
+
+
     if message.author.id == client.user.id:
         print("Not granting XP to bot.")
     elif not message.content.startswith("!"):
