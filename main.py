@@ -226,10 +226,7 @@ async def on_message(message):
         for u in ranks:
             m = message.server.get_member(u.userid)
             if m:
-                if m.nick:
-                    name = m.nick
-                else:
-                    name = m.name
+                name = m.nick if m.nick else m.name
             #else:
             #    name = "@" + u.userid
                 msg += "\n{0}: **{1}**".format(name, u.xp)
