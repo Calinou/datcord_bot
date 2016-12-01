@@ -198,7 +198,7 @@ async def on_message(message):
                 name = m.name
             #else:
             #    name = "@" + u.userid
-               msg += "\n{0}: **{1}**".format(name, u.xp)
+                msg += "\n{0}: **{1}**".format(name, u.xp)
         session.commit()
         await client.send_message(message.channel, msg)
         await client.delete_message(message)
