@@ -5,8 +5,9 @@ import requests
 import socket
 
 COMMIT_URL = "https://github.com/godotengine/godot/commits/master.atom"
-ISSUE_URL = "https://api.github.com/repos/godotengine/godot/issues?sort=created"
-FORUM_URL = "https://godotdevelopers.org/forum/discussions/feed.rss"
+ISSUE_URL  = "https://api.github.com/repos/godotengine/godot/issues?sort=created"
+FORUM_URL  = "https://godotdevelopers.org/forum/discussions/feed.rss"
+QA_URL     = "https://godotengine.org/qa/feed/questions.rss"
 TIMEOUT = 10
 socket.setdefaulttimeout(TIMEOUT)
 
@@ -15,8 +16,9 @@ class RSSFeed:
 
     def __init__(self):
         self.commit_url = COMMIT_URL
-        self.issue_url = ISSUE_URL
-        self.forum_url = FORUM_URL
+        self.issue_url  = ISSUE_URL
+        self.forum_url  = FORUM_URL
+        self.qa_url     = QA_URL
 
     def parse_commit(self, stamp):
         try:
@@ -34,6 +36,34 @@ class RSSFeed:
         except AttributeError:
             print("Attribute error on feed.")
             return None, stamp
+
+    def check_qa(self, stamp):
+        msg = None
+        try:
+            r = requests.get(self.qa_url, timeout=TIMEOUT)
+        except:
+            print("Error on requesting Q&A url.")
+            return None, stamp
+
+        d = feedparser.parse(r.content)
+        latest = d["items"][:5]
+        try:
+            old_stamp = datetime.datetime.fromtimestamp(float(stamp))
+        except ValueError:
+            print("Stamp invalid, making new from current time.")
+            old_stamp = datetime.datetime.now()
+            stamp = float(mktime(old_stamp.utctimetuple()))
+        for thread in reversed(latest):
+            th_stamp = datetime.datetime.fromtimestamp(
+                mktime(thread["published_parsed"])
+            )
+            if th_stamp > old_stamp:
+                msg = self.format_qa_message(thread)
+                print("New Q&A thread found, posting.")
+                return msg, mktime(thread["published_parsed"])
+        else:
+            return False, float(mktime(old_stamp.utctimetuple()))
+
 
     def check_forum(self, stamp):
         msg = None
@@ -68,6 +98,19 @@ class RSSFeed:
         a = thread["author"]
         l = thread["link"]
         msg = ":newspaper: **New forum thread by {a} in {c}:**\n```{t}```\n<{l}>".format(
+            a=a,
+            c=c,
+            t=t,
+            l=l,
+        )
+        return msg
+
+    def format_qa_message(self, thread):
+        t = thread["title"]
+        c = thread["category"]
+        a = thread["author"]
+        l = thread["link"]
+        msg = ":question: **New question by {a} in {c}:**\n```{t}```\n<{l}>".format(
             a=a,
             c=c,
             t=t,

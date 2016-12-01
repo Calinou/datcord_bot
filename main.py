@@ -36,6 +36,7 @@ DEFAULT_ROLE = "godotians"
 COMMIT_CHANNEL = "225147946109370369"
 ISSUE_CHANNEL = "225146729509552128"
 FORUM_CHANNEL = "246571722965385216"
+QA_CHANNEL = "221985131055808522"
 NEWCOMER_CHANNEL = "253576562136449024"
 # Message that bot returns on !help
 HELP_STRING = """
@@ -49,6 +50,7 @@ HELP_STRING = """
 # Seconds to wait between checking RSS feeds and API
 COMMIT_TIMEOUT = 8
 FORUM_TIMEOUT = 10
+QA_TIMEOUT = 10
 ISSUE_TIMEOUT = 61
 # How long to wait to delete messages
 FEEDBACK_DEL_TIMER = 5
@@ -75,6 +77,30 @@ async def on_ready():
     print("Logged in as: {0}--{1}".format(client.user.name, client.user.id))
     print("------")
 
+
+async def qa_checker():
+    await client.wait_until_ready()
+    channel = discord.Object(id=QA_CHANNEL)
+    while not client.is_closed:
+        session = Session()
+        qstamp = session.query(Stamp).filter_by(descriptor="qa").first()
+        q_msg, stamp = feed.check_qa(qstamp.stamp if qstamp else "missing")
+        if qstamp:
+            if not qstamp.stamp == stamp:
+                qstamp.stamp = stamp
+        else:
+            dbstamp = Stamp(descriptor="qa", stamp=stamp)
+            session.add(dbstamp)
+            print("Adding new stamp in database for Q&A")
+        if q_msg:
+            async for log in client.logs_from(channel, limit=20):
+                if log.content == q_msg:
+                    print("Q&A thread already posted, abort!")
+                    break
+            else:
+                await client.send_message(channel, g_msg)
+        session.commit()
+        await asyncio.sleep(QA_TIMEOUT)
 
 async def forum_checker():
     await client.wait_until_ready()
@@ -352,7 +378,8 @@ async def on_member_join(member):
     await client.send_message(channel, msg)
 
 
-client.loop.create_task(commit_checker())
-client.loop.create_task(issue_checker())
-client.loop.create_task(forum_checker())
+#client.loop.create_task(commit_checker())
+#client.loop.create_task(issue_checker())
+#client.loop.create_task(forum_checker())
+client.loop.create_task(qa_checker())
 client.run(TOKEN)
