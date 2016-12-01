@@ -185,8 +185,8 @@ async def issue_checker():
 async def on_message(message):
     id = message.author.id
 
-    if message.author.id == "195659861600501761":
-        await client.add_reaction(message, "🐖")
+    #if message.author.id == "195659861600501761":
+    #    await client.add_reaction(message, "🐖")
 
 
     if message.author.id == client.user.id:
