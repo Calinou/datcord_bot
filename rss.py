@@ -2,10 +2,13 @@ import feedparser
 import datetime
 from time import mktime
 import requests
+import socket
 
 COMMIT_URL = "https://github.com/godotengine/godot/commits/master.atom"
 ISSUE_URL = "https://api.github.com/repos/godotengine/godot/issues?sort=created"
 FORUM_URL = "https://godotdevelopers.org/forum/discussions/feed.rss"
+TIMEOUT = 10
+socket.setdefaulttimeout(TIMEOUT)
 
 
 class RSSFeed:
@@ -16,7 +19,12 @@ class RSSFeed:
         self.forum_url = FORUM_URL
 
     def parse_commit(self, stamp):
-        d = feedparser.parse(self.commit_url)
+        try:
+            r = requests.get(COMMIT_URL, timeout=TIMEOUT)
+        except:
+            print("Error on requesting commit url.")
+            return None, stamp
+        d = feedparser.parse(r.content)
         try:
             if not d.feed.updated == stamp:
                 # self.save_stamp("commit", d.feed.updated)
@@ -29,7 +37,13 @@ class RSSFeed:
 
     def check_forum(self, stamp):
         msg = None
-        d = feedparser.parse(self.forum_url)
+        try:
+            r = requests.get(self.forum_url, timeout=TIMEOUT)
+        except:
+            print("Error on requesting forum url.")
+            return None, stamp
+
+        d = feedparser.parse(r.content)
         latest = d["items"][:5]
         try:
             old_stamp = datetime.datetime.fromtimestamp(float(stamp))
@@ -150,9 +164,5 @@ class RSSFeed:
 
 if __name__ == "__main__":
     # For testing
-    from time import sleep
     f = RSSFeed()
-    while True:
-        print(f.check_issue())
-        # print(f.check_commit())
-        sleep(5)
+    print(f.check_forum("missing"))
