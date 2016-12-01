@@ -36,6 +36,7 @@ DEFAULT_ROLE = "godotians"
 COMMIT_CHANNEL = "225147946109370369"
 ISSUE_CHANNEL = "225146729509552128"
 FORUM_CHANNEL = "246571722965385216"
+NEWCOMER_CHANNEL = "253576562136449024"
 # Message that bot returns on !help
 HELP_STRING = """
 :book: **Commands:**
@@ -195,9 +196,9 @@ async def on_message(message):
             m = message.server.get_member(u.userid)
             if m:
                 name = m.name
-            else:
-                name = "@" + u.userid
-            msg += "\n{0}: **{1}**".format(name, u.xp)
+            #else:
+            #    name = "@" + u.userid
+               msg += "\n{0}: **{1}**".format(name, u.xp)
         session.commit()
         await client.send_message(message.channel, msg)
         await client.delete_message(message)
@@ -345,6 +346,10 @@ async def on_member_join(member):
             break
     else:
         print("DEFAULT ROLE NOT FOUND ON SERVER!")
+    
+    channel = discord.Object(id=NEWCOMER_CHANNEL)
+    msg = ":new: " + user.mention + " joined the server"
+    await client.send_message(channel, msg)
 
 
 client.loop.create_task(commit_checker())
