@@ -226,7 +226,10 @@ async def on_message(message):
         for u in ranks:
             m = message.server.get_member(u.userid)
             if m:
-                name = m.name
+                if m.nick:
+                    name = m.nick
+                else:
+                    name = m.name
             #else:
             #    name = "@" + u.userid
                 msg += "\n{0}: **{1}**".format(name, u.xp)
@@ -377,7 +380,7 @@ async def on_member_join(member):
             break
     else:
         print("DEFAULT ROLE NOT FOUND ON SERVER!")
-    
+
     channel = discord.Object(id=NEWCOMER_CHANNEL)
     msg = ":new: " + user.mention + " joined the server"
     await client.send_message(channel, msg)
