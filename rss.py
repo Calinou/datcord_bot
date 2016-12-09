@@ -97,7 +97,7 @@ class RSSFeed:
         c = thread["category"]
         a = thread["author"]
         l = thread["link"]
-        msg = ":newspaper: **New forum thread by {a} in {c}:**\n```{t}```\n<{l}>".format(
+        msg = "**FORUM**\n:newspaper: New forum thread by {a} in {c}:\n```{t}```\n<{l}>".format(
             a=a,
             c=c,
             t=t,
@@ -109,7 +109,7 @@ class RSSFeed:
         t = thread["title"]
         c = thread["category"]
         l = thread["link"]
-        msg = ":question: **New question in {c}:**\n```{t}```\n<{l}>".format(
+        msg = "**Q&A**\n:question: New question in {c}:\n```{t}```\n<{l}>".format(
             c=c,
             t=t,
             l=l,
