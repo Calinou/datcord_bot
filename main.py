@@ -189,8 +189,6 @@ async def on_message(message):
     #if message.author.id == "195659861600501761":
     #    await client.add_reaction(message, "🐖")
 
-    i
-
 
     if message.author.id == client.user.id:
         print("Not granting XP to bot.")
