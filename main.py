@@ -189,9 +189,7 @@ async def on_message(message):
     #if message.author.id == "195659861600501761":
     #    await client.add_reaction(message, "🐖")
 
-    if message.content == "RMS":
-        with open("rms.jpg", "rb") as f:
-            await client.send_file(message.channel, f)
+    i
 
 
     if message.author.id == client.user.id:
@@ -212,6 +210,10 @@ async def on_message(message):
         session.commit()
     else:
         print("Ignoring message as a command, no xp.")
+
+    if message.content.startswith("!RMS"):
+        with open("rms.jpg", "rb") as f:
+            await client.send_file(message.channel, f)
 
     if message.channel.name != "botspam":
         return  # Ignore command if it's not written in botspam channel
