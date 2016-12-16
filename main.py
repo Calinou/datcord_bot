@@ -189,6 +189,10 @@ async def on_message(message):
     #if message.author.id == "195659861600501761":
     #    await client.add_reaction(message, "🐖")
 
+    if message.content == "RMS":
+        with open("rms.jpg", "rb") as f:
+            await client.send_file(message.channel, f)
+
 
     if message.author.id == client.user.id:
         print("Not granting XP to bot.")
