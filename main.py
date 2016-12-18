@@ -209,7 +209,11 @@ async def on_message(message):
     else:
         print("Ignoring message as a command, no xp.")
 
-    if message.content.startswith("!RMS"):
+
+    if message.content.startswith("!RMS2"):
+        with open("rms2.jpg", "rb") as f:
+            await client.send_file(message.channel, f)
+    elif message.content.startswith("!RMS"):
         with open("rms.jpg", "rb") as f:
             await client.send_file(message.channel, f)
 
