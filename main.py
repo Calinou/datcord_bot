@@ -1,6 +1,8 @@
 import discord
 import asyncio
 import os
+import glob
+import random
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from rss import RSSFeed
@@ -55,6 +57,16 @@ QA_TIMEOUT = 10
 ISSUE_TIMEOUT = 61
 # How long to wait to delete messages
 FEEDBACK_DEL_TIMER = 5
+RMS_PATH = "rms"
+RMS_MEMES = []
+
+
+def populate_memes():
+    global RMS_MEMES
+    memes = [glob.glob(
+        os.path.join(RMS_PATH, e)
+    ) for e in ['*.jpg', '*.JPG', '*.jpeg', '*.JPEG', '*.gif', '*.GIF', '*.png', '*.PNG']]
+    RMS_MEMES = [j for i in memes for j in i]
 
 
 async def delete_edit_timer(msg, time, error=False, call_msg=None):
@@ -210,12 +222,26 @@ async def on_message(message):
         print("Ignoring message as a command, no xp.")
 
 
-    if message.content.startswith("!RMS2"):
-        with open("rms2.jpg", "rb") as f:
-            await client.send_file(message.channel, f)
-    elif message.content.startswith("!RMS"):
-        with open("rms.jpg", "rb") as f:
-            await client.send_file(message.channel, f)
+    if message.content.lower().startswith("!rms"):
+        choice_error = False
+        fpath = None
+        c = message.content[5:]
+        if not len(c.strip()) or not message.content[4] == " ":
+            choice_error = True
+        try:
+            c = int(c.strip())
+            if c > 0 and c <= len(RMS_MEMES):
+                fpath = RMS_MEMES[c - 1]
+            else:
+                choice_error = True
+        except ValueError:
+            choice_error = True
+        if choice_error:
+            fpath = random.choice(RMS_MEMES)
+
+        if fpath:
+            with open(fpath, "rb") as f:
+                await client.send_file(message.channel, f)
 
     if message.channel.name != "botspam":
         return  # Ignore command if it's not written in botspam channel
@@ -394,6 +420,7 @@ async def on_member_join(member):
     await client.send_message(channel, msg)
 
 
+populate_memes()
 client.loop.create_task(commit_checker())
 client.loop.create_task(issue_checker())
 client.loop.create_task(forum_checker())
