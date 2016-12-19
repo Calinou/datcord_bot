@@ -66,7 +66,7 @@ def populate_memes():
     memes = [glob.glob(
         os.path.join(RMS_PATH, e)
     ) for e in ['*.jpg', '*.JPG', '*.jpeg', '*.JPEG', '*.gif', '*.GIF', '*.png', '*.PNG']]
-    RMS_MEMES = [j for i in memes for j in i]
+    RMS_MEMES = sorted([j for i in memes for j in i])
 
 
 async def delete_edit_timer(msg, time, error=False, call_msg=None):
