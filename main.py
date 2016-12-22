@@ -57,6 +57,10 @@ QA_TIMEOUT = 10
 ISSUE_TIMEOUT = 61
 # How long to wait to delete messages
 FEEDBACK_DEL_TIMER = 5
+# XP rank globals
+RANK_MIN = 10
+RANK_MAX = 25
+RANK_SHRINK_DELAY = 30
 RMS_PATH = "rms"
 RMS_MEMES = []
 
@@ -83,6 +87,17 @@ async def delete_edit_timer(msg, time, error=False, call_msg=None):
             await client.delete_message(call_msg)
         except:
             print("Call message does not exist.")
+
+
+async def shrink_rank_list(msg):
+    await asyncio.sleep(RANK_SHRINK_DELAY)
+    sp = msg.content.split("\n")
+    if len(sp) > RANK_MIN:
+        sp = [l + "\n" for l in sp[:RANK_MIN]]
+    edited_msg = ""
+    for s in sp:
+        edited_msg += s
+    await client.edit_message(msg, edited_msg)
 
 
 @client.event
@@ -256,7 +271,7 @@ async def on_message(message):
     elif message.content.startswith("!rank"):
         session = Session()
         ranks = session.query(User).order_by(User.xp.desc()).all()
-        ranks = ranks[:10]
+        ranks = ranks[:RANK_MAX]
         msg = "**XP leaderboard:**"
         for u in ranks:
             m = message.server.get_member(u.userid)
@@ -266,8 +281,9 @@ async def on_message(message):
             #    name = "@" + u.userid
                 msg += "\n{0}: **{1}**".format(name, u.xp)
         session.commit()
-        await client.send_message(message.channel, msg)
+        tmp = await client.send_message(message.channel, msg)
         await client.delete_message(message)
+        await shrink_rank_list(tmp)
 
     elif message.content.startswith("!roles"):
         s = ":scroll: **Available roles:**\n"
