@@ -73,6 +73,17 @@ def populate_memes():
     RMS_MEMES = sorted([j for i in memes for j in i])
 
 
+async def shrink_rank_list(msg):
+    await asyncio.sleep(RANK_SHRINK_DELAY)
+    sp = msg.content.split("\n")
+    if len(sp) > RANK_MIN:
+        sp = [l + "\n" for l in sp[:RANK_MIN]]
+    edited_msg = ""
+    for s in sp:
+        edited_msg += s
+    await client.edit_message(msg, edited_msg)
+
+
 async def delete_edit_timer(msg, time, error=False, call_msg=None):
     ws = ":white_small_square:"
     bs = ":black_small_square:"
@@ -87,17 +98,6 @@ async def delete_edit_timer(msg, time, error=False, call_msg=None):
             await client.delete_message(call_msg)
         except:
             print("Call message does not exist.")
-
-
-async def shrink_rank_list(msg):
-    await asyncio.sleep(RANK_SHRINK_DELAY)
-    sp = msg.content.split("\n")
-    if len(sp) > RANK_MIN:
-        sp = [l + "\n" for l in sp[:RANK_MIN]]
-    edited_msg = ""
-    for s in sp:
-        edited_msg += s
-    await client.edit_message(msg, edited_msg)
 
 
 @client.event
