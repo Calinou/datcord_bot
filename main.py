@@ -256,11 +256,12 @@ async def on_message(message):
         except ValueError:
             choice_error = True
         if choice_error:
-            fpath = random.choice(RMS_MEMES)
-
+            rand_c = random.randint(0, len(RMS_MEMES) - 1)
+            c = rand_c + 1
+            fpath = RMS_MEMES[rand_c]
         if fpath:
             with open(fpath, "rb") as f:
-                await client.send_file(message.channel, f)
+                await client.send_file(message.channel, f, content="**#{0}:**".format(c))
 
     if message.channel.name != "botspam":
         return  # Ignore command if it's not written in botspam channel
