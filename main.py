@@ -32,8 +32,12 @@ AVAILABLE_ROLES = [
     "artist",
     "sound designer"
 ]
+
 # Default role for new members of server, must be lower case.
-DEFAULT_ROLE = "godotians"
+# DEFAULT_ROLE = "godotians"
+
+
+
 # Channel ID where bot will post github notifications
 COMMIT_CHANNEL = "225147946109370369"
 ISSUE_CHANNEL = "225147946109370369"
@@ -421,13 +425,13 @@ async def on_message(message):
 
 @client.event
 async def on_member_join(member):
-    for r in member.server.roles:
-        if r.name.lower() == DEFAULT_ROLE.lower():
-            print("Adding default role to user.")
-            await client.add_roles(member, r)
-            break
-    else:
-        print("DEFAULT ROLE NOT FOUND ON SERVER!")
+    #for r in member.server.roles:
+    #    if r.name.lower() == DEFAULT_ROLE.lower():
+    #        print("Adding default role to user.")
+    #        await client.add_roles(member, r)
+    #        break
+    #else:
+    #    print("DEFAULT ROLE NOT FOUND ON SERVER!")
 
     channel = discord.Object(id=NEWCOMER_CHANNEL)
     msg = ":new: {0} joined the server. Current member count: **{1}**".format(
