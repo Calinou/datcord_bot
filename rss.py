@@ -8,12 +8,17 @@ COMMIT_URL = "https://github.com/godotengine/godot/commits/master.atom"
 ISSUE_URL  = "https://api.github.com/repos/godotengine/godot/issues?sort=created"
 FORUM_URL  = "https://godotdevelopers.org/forum/discussions/feed.rss"
 QA_URL     = "https://godotengine.org/qa/feed/questions.rss"
+
+# How long to attempt to connect to the urls above. A long timeout will cause
+# the bot to wait way too long.
 TIMEOUT = 10
 socket.setdefaulttimeout(TIMEOUT)
 
 
 class RSSFeed:
-
+    """
+    This is a worms nest.
+    """
     def __init__(self):
         self.commit_url = COMMIT_URL
         self.issue_url  = ISSUE_URL
@@ -26,6 +31,7 @@ class RSSFeed:
         except:
             print("Error on requesting commit url.")
             return None, stamp
+
         d = feedparser.parse(r.content)
         try:
             if not d.feed.updated == stamp:
@@ -39,6 +45,7 @@ class RSSFeed:
 
     def check_qa(self, stamp):
         msg = None
+
         try:
             r = requests.get(self.qa_url, timeout=TIMEOUT)
         except:
@@ -47,12 +54,14 @@ class RSSFeed:
 
         d = feedparser.parse(r.content)
         latest = d["items"][:5]
+
         try:
             old_stamp = datetime.datetime.fromtimestamp(float(stamp))
         except ValueError:
             print("Stamp invalid, making new from current time.")
             old_stamp = datetime.datetime.now()
             stamp = float(mktime(old_stamp.utctimetuple()))
+
         for thread in reversed(latest):
             th_stamp = datetime.datetime.fromtimestamp(
                 mktime(thread["published_parsed"])
@@ -64,9 +73,9 @@ class RSSFeed:
         else:
             return False, float(mktime(old_stamp.utctimetuple()))
 
-
     def check_forum(self, stamp):
         msg = None
+
         try:
             r = requests.get(self.forum_url, timeout=TIMEOUT)
         except:
@@ -81,6 +90,7 @@ class RSSFeed:
             print("Stamp invalid, making new from current time.")
             old_stamp = datetime.datetime.now()
             stamp = float(mktime(old_stamp.utctimetuple()))
+
         for thread in reversed(latest):
             th_stamp = datetime.datetime.fromtimestamp(
                 mktime(thread["published_parsed"])
@@ -91,38 +101,6 @@ class RSSFeed:
                 return msg, mktime(thread["published_parsed"])
         else:
             return False, float(mktime(old_stamp.utctimetuple()))
-
-    def format_forum_message(self, thread):
-        t = thread["title"]
-        c = thread["category"]
-        a = thread["author"]
-        l = thread["link"]
-        msg = "**FORUM**\n:newspaper: New forum thread by {a} in {c}:\n```{t}```\n<{l}>".format(
-            a=a,
-            c=c,
-            t=t,
-            l=l,
-        )
-        return msg
-
-    def format_qa_message(self, thread):
-        t = thread["title"]
-        c = thread["category"]
-        l = thread["link"]
-        msg = "**Q&A**\n:question: New question in {c}:\n```{t}```\n<{l}>".format(
-            c=c,
-            t=t,
-            l=l,
-        )
-        return msg
-
-    def format_commit_message(self, entry):
-        msg = ":outbox_tray: **New commit by {1}:**\n```{0}```\n<{2}>".format(
-            entry["title"],
-            entry["author"],
-            entry["link"]
-        )
-        return msg
 
     def check_commit(self, stamp):
         e, newstamp = self.parse_commit(stamp)
@@ -148,7 +126,7 @@ class RSSFeed:
         )
         try:
             r = requests.get(url=url)
-        except:
+        except: # There's way too many errors to bother checking for specifics.
             return [], stamp
         parsed = r.json()
 
@@ -170,7 +148,6 @@ class RSSFeed:
                 issue["created_at"],
                 "%Y-%m-%dT%H:%M:%SZ"
             )
-            # print(issue["created_at"], stamp, " | ", old_stamp, new_stamp)
             if new_stamp > old_stamp:
                 if new_stamp > candidate_stamp:
                     candidate_stamp = new_stamp
@@ -199,6 +176,38 @@ class RSSFeed:
             u=e["user"]["login"],
             t=e["title"],
             url=e["html_url"]
+        )
+        return msg
+
+    def format_commit_message(self, entry):
+        msg = ":outbox_tray: **New commit by {1}:**\n```{0}```\n<{2}>".format(
+            entry["title"],
+            entry["author"],
+            entry["link"]
+        )
+        return msg
+
+    def format_forum_message(self, thread):
+        t = thread["title"]
+        c = thread["category"]
+        a = thread["author"]
+        l = thread["link"]
+        msg = "**FORUM**\n:newspaper: New forum thread by {a} in {c}:\n```{t}```\n<{l}>".format(
+            a=a,
+            c=c,
+            t=t,
+            l=l,
+        )
+        return msg
+
+    def format_qa_message(self, thread):
+        t = thread["title"]
+        c = thread["category"]
+        l = thread["link"]
+        msg = "**Q&A**\n:question: New question in {c}:\n```{t}```\n<{l}>".format(
+            c=c,
+            t=t,
+            l=l,
         )
         return msg
 
