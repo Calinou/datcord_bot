@@ -90,8 +90,8 @@ async def shrink_rank_list(msg):
     """
     await asyncio.sleep(RANK_SHRINK_DELAY)
     sp = msg.content.split("\n")
-    if len(sp) > RANK_MIN:  #
-        sp = [l + "\n" for l in sp[:RANK_MIN]]
+    if len(sp) > RANK_MIN + 1:  #
+        sp = [l + "\n" for l in sp[:RANK_MIN + 1]]
         edited_msg = ""
         for s in sp:
             edited_msg += s
