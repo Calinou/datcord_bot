@@ -339,7 +339,7 @@ async def on_message(message):
         if not message.mentions:
             u = session.query(User).filter_by(userid=id).first()
             if u:
-                msg = "{0}'s XP: **{0}**".format(
+                msg = "{0}'s XP: **{1}**".format(
                     message.author.nick if message.author.nick else message.author.name, u.xp
                 )
             else:
