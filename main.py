@@ -339,7 +339,9 @@ async def on_message(message):
         if not message.mentions:
             u = session.query(User).filter_by(userid=id).first()
             if u:
-                msg = "Your XP: **{0}**".format(u.xp)
+                msg = "{0}'s XP: **{0}**".format(
+                    message.author.nick if message.author.nick else message.author.name, u.xp
+                )
             else:
                 msg = "**Not found.**"
         else:
@@ -356,7 +358,10 @@ async def on_message(message):
                     u.xp
                 )
         if msg:
-            await client.send_message(message.channel, msg)
+            tmp = await client.send_message(message.channel, msg)
+            await delete_edit_timer(
+                tmp, FEEDBACK_DEL_TIMER
+            )
         await client.delete_message(message)
 
     elif message.content.startswith("!rank"):
