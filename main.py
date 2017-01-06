@@ -169,6 +169,7 @@ async def qa_checker():
         session.commit()
         await asyncio.sleep(QA_TIMEOUT)
 
+
 async def forum_checker():
     await client.wait_until_ready()
     channel = discord.Object(id=FORUM_CHANNEL)
@@ -227,6 +228,7 @@ async def commit_checker():
 
         session.commit()
         await asyncio.sleep(COMMIT_TIMEOUT)
+
 
 async def issue_checker():
     await client.wait_until_ready()
@@ -327,6 +329,34 @@ async def on_message(message):
         message.content.startswith("!commands")
     ):
         await client.send_message(message.channel, HELP_STRING)
+        await client.delete_message(message)
+
+    elif message.content.startswith("!xp"):
+        # Get the xp for the user sending the message, or for any mentions
+        # after the command.
+        session = Session()
+        msg = ""
+        if not message.mentions:
+            u = session.query(User).filter_by(userid=id).first()
+            if u:
+                msg = "**Your XP: {0}".format(u.xp)
+            else:
+                msg = "**Not found.**"
+        else:
+            ranks = []
+            for m in message.mentions:
+                u = session.query(User).filter_by(userid=m.id).first()
+                if u:
+                    ranks.append(u)
+            ranks = sorted(ranks, key=lambda x: x.xp, reverse=True)
+            for u in ranks:
+                mem = message.server.get_member(u.userid)
+                msg += "{0}: **{1}**\n".format(
+                    mem.nick if mem.nick else mem.name,
+                    u.xp
+                )
+        if msg:
+            await client.send_message(message.channel, msg)
         await client.delete_message(message)
 
     elif message.content.startswith("!rank"):
