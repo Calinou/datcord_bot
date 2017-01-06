@@ -339,7 +339,7 @@ async def on_message(message):
         if not message.mentions:
             u = session.query(User).filter_by(userid=id).first()
             if u:
-                msg = "**Your XP: {0}".format(u.xp)
+                msg = "Your XP: **{0}**".format(u.xp)
             else:
                 msg = "**Not found.**"
         else:
