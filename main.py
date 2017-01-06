@@ -362,7 +362,10 @@ async def on_message(message):
             await delete_edit_timer(
                 tmp, FEEDBACK_DEL_TIMER
             )
-        await client.delete_message(message)
+        try:
+            await client.delete_message(message)
+        except:
+            pass
 
     elif message.content.startswith("!rank"):
         # Get's the top ranking users by their xp and posts a list of them.
