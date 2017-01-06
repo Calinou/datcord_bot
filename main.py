@@ -46,6 +46,7 @@ HELP_STRING = """
 !assign [role]: *assign yourself to one of the available roles.*\n
 !unassign [role]: *unassign yourself from a role.*\n
 !roles: *list available roles.*\n
+!xp: *shows your current xp*\n
 !rank: *show the 10 members with the most xp*"""
 
 # Seconds to wait between checking feeds and stuff
