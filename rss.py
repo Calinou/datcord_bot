@@ -4,11 +4,6 @@ from time import mktime
 import requests
 import socket
 
-COMMIT_URL = "https://github.com/godotengine/godot/commits/master.atom"
-ISSUE_URL  = "https://api.github.com/repos/godotengine/godot/issues?sort=created"
-FORUM_URL  = "https://godotdevelopers.org/forum/discussions/feed.rss"
-QA_URL     = "https://godotengine.org/qa/feed/questions.rss"
-
 # How long to attempt to connect to the urls above. A long timeout will cause
 # the bot to wait way too long.
 TIMEOUT = 10
@@ -20,14 +15,11 @@ class RSSFeed:
     This is a worms nest.
     """
     def __init__(self):
-        self.commit_url = COMMIT_URL
-        self.issue_url  = ISSUE_URL
-        self.forum_url  = FORUM_URL
-        self.qa_url     = QA_URL
+        pass
 
-    def parse_commit(self, stamp):
+    def parse_commit(self, url, stamp):
         try:
-            r = requests.get(COMMIT_URL, timeout=TIMEOUT)
+            r = requests.get(url, timeout=TIMEOUT)
         except:
             print("Error on requesting commit url.")
             return None, stamp
@@ -43,11 +35,11 @@ class RSSFeed:
             print("Attribute error on feed.")
             return None, stamp
 
-    def check_qa(self, stamp):
+    def check_qa(self, url, stamp):
         msg = None
 
         try:
-            r = requests.get(self.qa_url, timeout=TIMEOUT)
+            r = requests.get(url, timeout=TIMEOUT)
         except:
             print("Error on requesting Q&A url.")
             return None, stamp
@@ -73,11 +65,11 @@ class RSSFeed:
         else:
             return False, float(mktime(old_stamp.utctimetuple()))
 
-    def check_forum(self, stamp):
+    def check_forum(self, url, stamp):
         msg = None
 
         try:
-            r = requests.get(self.forum_url, timeout=TIMEOUT)
+            r = requests.get(url, timeout=TIMEOUT)
         except:
             print("Error on requesting forum url.")
             return None, stamp
@@ -102,14 +94,14 @@ class RSSFeed:
         else:
             return False, float(mktime(old_stamp.utctimetuple()))
 
-    def check_commit(self, stamp):
-        e, newstamp = self.parse_commit(stamp)
+    def check_commit(self, url, stamp):
+        e, newstamp = self.parse_commit(url, stamp)
         if e:
             return self.format_commit_message(e), newstamp
         else:
             return False, newstamp
 
-    def check_issue(self, stamp):
+    def check_issue(self, url, stamp):
         try:
             old_stamp = datetime.datetime.strptime(
                 stamp,
@@ -122,7 +114,7 @@ class RSSFeed:
                 "%Y-%m-%dT%H:%M:%SZ"
             )
         url = "{0}{1}{2}".format(
-            self.issue_url, "&since=", stamp
+            url, "&since=", stamp
         )
         try:
             r = requests.get(url=url)
@@ -163,56 +155,50 @@ class RSSFeed:
         messages.reverse()
         return messages, stamp
 
-    def format_issue_message(self, e):
+    def format_issue_message(self, entry):
         try:
-            e["pull_request"]
+            entry["pull_request"]
         except KeyError:
-            prefix = ":exclamation: **New issue:**"
+            prefix = ":exclamation: **New issue**"
         else:
-            prefix = ":question: **New pull request:**"
-        msg = "{pf} *#{n} by {u}*\n```{t}```\n<{url}>".format(
+            prefix = ":question: **New pull request**"
+        msg = "{pf} in {r}: *#{n} by {u}*\n```{t}```\n<{url}>".format(
             pf=prefix,
-            n=e["number"],
-            u=e["user"]["login"],
-            t=e["title"],
-            url=e["html_url"]
+            r=entry["repository_url"].split("/")[-1],
+            n=entry["number"],
+            u=entry["user"]["login"],
+            t=entry["title"],
+            url=entry["html_url"]
         )
         return msg
 
     def format_commit_message(self, entry):
-        msg = ":outbox_tray: **New commit by {1}:**\n```{0}```\n<{2}>".format(
-            entry["title"],
-            entry["author"],
-            entry["link"]
+        msg = ":outbox_tray: **New commit by {a} to {r}:**\n```{t}```\n<{l}>".format(
+            a=entry["author"],
+            r=entry["link"].split("/")[-3],
+            t=entry["title"],
+            l=entry["link"]
         )
         return msg
 
     def format_forum_message(self, thread):
-        t = thread["title"]
-        c = thread["category"]
-        a = thread["author"]
-        l = thread["link"]
         msg = "**FORUM**\n:newspaper: New forum thread by {a} in {c}:\n```{t}```\n<{l}>".format(
-            a=a,
-            c=c,
-            t=t,
-            l=l,
+            a=thread["author"],
+            c=thread["category"],
+            t=thread["title"],
+            l=thread["link"],
         )
         return msg
 
     def format_qa_message(self, thread):
-        t = thread["title"]
-        c = thread["category"]
-        l = thread["link"]
         msg = "**Q&A**\n:question: New question in {c}:\n```{t}```\n<{l}>".format(
-            c=c,
-            t=t,
-            l=l,
+            c=thread["category"],
+            t=thread["title"],
+            l=thread["link"],
         )
         return msg
 
 
 if __name__ == "__main__":
     # For testing
-    f = RSSFeed()
-    print(f.check_forum("missing"))
+    the_feed = RSSFeed()

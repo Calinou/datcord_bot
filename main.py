@@ -40,6 +40,14 @@ FORUM_CHANNEL = "246571722965385216"
 QA_CHANNEL = "246571722965385216"
 NEWCOMER_CHANNEL = "253576562136449024"
 
+# URLs
+COMMIT_URL = "https://github.com/godotengine/godot/commits/master.atom"
+ISSUE_URL  = "https://api.github.com/repos/godotengine/godot/issues?sort=created"
+DOC_COMMIT_URL = "https://github.com/godotengine/godot-docs/commits/master.atom"
+DOC_ISSUE_URL = "https://api.github.com/repos/godotengine/godot-docs/issues?sort=created"
+FORUM_URL  = "https://godotdevelopers.org/forum/discussions/feed.rss"
+QA_URL     = "https://godotengine.org/qa/feed/questions.rss"
+
 # Message that bot returns on !help
 HELP_STRING = """
 :book: **Commands:**
@@ -51,9 +59,11 @@ HELP_STRING = """
 
 # Seconds to wait between checking feeds and stuff
 COMMIT_TIMEOUT = 8
+ISSUE_TIMEOUT = 66
+DOC_COMMIT_TIMEOUT = 60
+DOC_ISSUE_TIMEOUT = 660
 FORUM_TIMEOUT = 10
 QA_TIMEOUT = 10
-ISSUE_TIMEOUT = 61
 
 # How long to wait to delete messages
 FEEDBACK_DEL_TIMER = 5
@@ -149,7 +159,7 @@ async def qa_checker():
     while not client.is_closed:
         session = Session()
         qstamp = session.query(Stamp).filter_by(descriptor="qa").first()
-        q_msg, stamp = feed.check_qa(qstamp.stamp if qstamp else "missing")
+        q_msg, stamp = feed.check_qa(QA_URL, qstamp.stamp if qstamp else "missing")
 
         if qstamp:
             if not qstamp.stamp == stamp:
@@ -178,7 +188,10 @@ async def forum_checker():
     while not client.is_closed:
         session = Session()
         fstamp = session.query(Stamp).filter_by(descriptor="forum").first()
-        f_msg, stamp = feed.check_forum(fstamp.stamp if fstamp else "missing")
+        f_msg, stamp = feed.check_forum(
+            FORUM_URL,
+            fstamp.stamp if fstamp else "missing"
+        )
 
         if fstamp:
             if not fstamp.stamp == stamp:
@@ -208,7 +221,10 @@ async def commit_checker():
     while not client.is_closed:
         session = Session()
         cstamp = session.query(Stamp).filter_by(descriptor="commit").first()
-        c_msg, stamp = feed.check_commit(cstamp.stamp if cstamp else "missing")
+        c_msg, stamp = feed.check_commit(
+            COMMIT_URL,
+            cstamp.stamp if cstamp else "missing"
+        )
 
         if cstamp:
             if not cstamp.stamp == stamp:
@@ -238,7 +254,10 @@ async def issue_checker():
     while not client.is_closed:
         session = Session()
         istamp = session.query(Stamp).filter_by(descriptor="issue").first()
-        i_msg, stamp = feed.check_issue(istamp.stamp if istamp else "missing")
+        i_msg, stamp = feed.check_issue(
+            ISSUE_URL,
+            istamp.stamp if istamp else "missing"
+        )
 
         if istamp:
             if not istamp.stamp == stamp:
@@ -260,6 +279,73 @@ async def issue_checker():
 
         session.commit()
         await asyncio.sleep(ISSUE_TIMEOUT)
+
+
+async def doc_commit_checker():
+    await client.wait_until_ready()
+    channel = discord.Object(id=COMMIT_CHANNEL)
+
+    while not client.is_closed:
+        session = Session()
+        cstamp = session.query(Stamp).filter_by(descriptor="doc_commit").first()
+        c_msg, stamp = feed.check_commit(
+            DOC_COMMIT_URL,
+            cstamp.stamp if cstamp else "missing"
+        )
+
+        if cstamp:
+            if not cstamp.stamp == stamp:
+                # Updating stamp in db
+                cstamp.stamp = stamp
+        else:
+            dbstamp = Stamp(descriptor="doc_commit", stamp=stamp)
+            session.add(dbstamp)
+            print("Adding new stamp to database for doc-commits")
+
+        if c_msg:
+            async for log in client.logs_from(channel, limit=20):
+                if log.content == c_msg:
+                    print("Commit already posted, abort!")
+                    break
+            else:
+                await client.send_message(channel, c_msg)
+
+        session.commit()
+        await asyncio.sleep(DOC_COMMIT_TIMEOUT)
+
+
+async def doc_issue_checker():
+    await client.wait_until_ready()
+    channel = discord.Object(id=ISSUE_CHANNEL)
+
+    while not client.is_closed:
+        session = Session()
+        istamp = session.query(Stamp).filter_by(descriptor="doc_issue").first()
+        i_msg, stamp = feed.check_issue(
+            DOC_ISSUE_URL,
+            istamp.stamp if istamp else "missing"
+        )
+
+        if istamp:
+            if not istamp.stamp == stamp:
+                # Updating stamp in db
+                istamp.stamp = stamp
+        else:
+            dbstamp = Stamp(descriptor="doc_issue", stamp=stamp)
+            session.add(dbstamp)
+            print("Adding new stamp to database for doc-issues")
+
+        if i_msg:
+            async for log in client.logs_from(channel, limit=20):
+                for msg in i_msg:
+                    if log.content == msg:
+                        print("Issue already posted, removing!")
+                        i_msg.remove(msg)
+            for msg in i_msg:
+                await client.send_message(channel, msg)
+
+        session.commit()
+        await asyncio.sleep(DOC_ISSUE_TIMEOUT)
 
 
 @client.event
@@ -550,6 +636,8 @@ async def on_member_join(member):
 populate_memes()
 client.loop.create_task(commit_checker())
 client.loop.create_task(issue_checker())
+client.loop.create_task(doc_commit_checker())
+client.loop.create_task(doc_issue_checker())
 client.loop.create_task(forum_checker())
 client.loop.create_task(qa_checker())
 client.run(TOKEN)   # And we have liftoff.
