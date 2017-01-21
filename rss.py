@@ -159,10 +159,10 @@ class RSSFeed:
         try:
             entry["pull_request"]
         except KeyError:
-            prefix = ":exclamation: **New issue**"
+            prefix = ":exclamation: New issue"
         else:
-            prefix = ":question: **New pull request**"
-        msg = "{pf} in {r}: *#{n} by {u}*\n```{t}```\n<{url}>".format(
+            prefix = ":question: New pull request"
+        msg = "**{pf} in {r}**: *#{n} by {u}*\n```{t}```\n<{url}>".format(
             pf=prefix,
             r=entry["repository_url"].split("/")[-1],
             n=entry["number"],
