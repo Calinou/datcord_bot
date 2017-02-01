@@ -187,7 +187,8 @@ class RSSFeed:
         gho["avatar_icon_url"] = entry["user"]["avatar_url"] + "&s=32"
         gho["url"] = entry["html_url"]
         gho["title"] = entry["title"]
-        desc = entry["body"].lstrip().replace("\r", "").rstrip().replace("    ", "")
+        desc = remove_comments(entry["body"])
+        desc = desc.replace("\r", "").rstrip().replace("    ", "")
         gho["desc"] = desc
         gho["repository"] = entry["repository_url"].split("/")[-1]
 
@@ -228,6 +229,21 @@ class RSSFeed:
         gho["repository"] = thread["category"]
 
         return gho
+
+
+def remove_comments(s):
+    opens = [o for o in range(len(s)) if s.find('<!--', o) == o]
+    closes = [c for c in range(len(s)) if s.find('-->', c) == c]
+    slices = []
+    if len(opens) != len(closes):
+        return s
+    for i, o in enumerate(opens):
+        print(o, closes[i])
+        slices.append(s[o:closes[i] + 3])
+    for ss in slices:
+        s = s.replace(ss, "")
+    return s.lstrip()
+
 
 if __name__ == "__main__":
     # For testing
