@@ -150,6 +150,22 @@ async def delete_edit_timer(msg, time, error=False, call_msg=None):
             print("Call message does not exist.")
 
 
+async def check_duplicate_url(channel, url):
+    if not url:
+        print("URL is blank, won't check for duplicate.")
+        return False
+    async for log in client.logs_from(channel, limit=20):
+        for e in log.embeds:
+            if "url" in e:
+                if url == e["url"]:
+                    return True
+        else:   # No duplicates
+            continue    # Continue to next log item
+        break   # If there was duplicates, it reaches this
+    else:
+        return False
+
+
 def embed_gh(gh_object):
     tiny = False
     desc_text = gh_object["desc"]
@@ -231,7 +247,7 @@ async def qa_checker():
     while not client.is_closed:
         session = Session()
         qstamp = session.query(Stamp).filter_by(descriptor="qa").first()
-        q_msg, stamp = feed.check_qa(QA_URL, qstamp.stamp if qstamp else "missing")
+        gh_obj, stamp = feed.check_qa(QA_URL, qstamp.stamp if qstamp else "missing")
 
         if qstamp:
             if not qstamp.stamp == stamp:
@@ -241,13 +257,12 @@ async def qa_checker():
             session.add(dbstamp)
             print("Adding new stamp in database for Q&A")
 
-        if q_msg:
-            async for log in client.logs_from(channel, limit=20):
-                if embed_gh(q_msg) in log.embeds:
-                    print("Q&A thread already posted, abort!")
-                    break
+        if gh_obj:
+            if await check_duplicate_url(channel, gh_obj["url"]):
+                print("Q&A thread already posted, abort!")
             else:
-                await client.send_message(channel, embed=embed_gh(q_msg))
+                print("Posting QA notification.")
+                await client.send_message(channel, embed=embed_gh(gh_obj))
 
         session.commit()
         await asyncio.sleep(QA_TIMEOUT)
@@ -260,7 +275,7 @@ async def forum_checker():
     while not client.is_closed:
         session = Session()
         fstamp = session.query(Stamp).filter_by(descriptor="forum").first()
-        f_msg, stamp = feed.check_forum(
+        gh_obj, stamp = feed.check_forum(
             FORUM_URL,
             fstamp.stamp if fstamp else "missing"
         )
@@ -274,13 +289,12 @@ async def forum_checker():
             session.add(dbstamp)
             print("Adding new stamp in database for forum.")
 
-        if f_msg:
-            async for log in client.logs_from(channel, limit=20):
-                if embed_gh(f_msg) in log.embeds:
-                    print("Forum thread already posted, abort!")
-                    break
+        if gh_obj:
+            if await check_duplicate_url(channel, gh_obj["url"]):
+                print("Forum thread already posted, abort!")
             else:
-                await client.send_message(channel, embed=embed_gh(f_msg))
+                print("Posting Forum notification.")
+                await client.send_message(channel, embed=embed_gh(gh_obj))
 
         session.commit()
         await asyncio.sleep(FORUM_TIMEOUT)
@@ -293,7 +307,7 @@ async def commit_checker():
     while not client.is_closed:
         session = Session()
         cstamp = session.query(Stamp).filter_by(descriptor="commit").first()
-        c_msg, stamp = feed.check_commit(
+        gh_obj, stamp = feed.check_commit(
             COMMIT_URL,
             cstamp.stamp if cstamp else "missing"
         )
@@ -307,13 +321,12 @@ async def commit_checker():
             session.add(dbstamp)
             print("Adding new stamp to database for commits")
 
-        if c_msg:
-            async for log in client.logs_from(channel, limit=20):
-                if embed_gh(c_msg) in log.embeds:
-                    print("Commit already posted, abort!")
-                    break
+        if gh_obj:
+            if await check_duplicate_url(channel, gh_obj["url"]):
+                print("Commit already posted, abort!")
             else:
-                await client.send_message(channel, embed=embed_gh(c_msg))
+                print("Posting Commit notification.")
+                await client.send_message(channel, embed=embed_gh(gh_obj))
 
         session.commit()
         await asyncio.sleep(COMMIT_TIMEOUT)
@@ -326,7 +339,7 @@ async def issue_checker():
     while not client.is_closed:
         session = Session()
         istamp = session.query(Stamp).filter_by(descriptor="issue").first()
-        i_msg, stamp = feed.check_issue(
+        gh_objects, stamp = feed.check_issue(
             ISSUE_URL,
             istamp.stamp if istamp else "missing"
         )
@@ -340,14 +353,13 @@ async def issue_checker():
             session.add(dbstamp)
             print("Adding new stamp to database for issues")
 
-        if i_msg:
-            async for log in client.logs_from(channel, limit=20):
-                for msg in i_msg:
-                    if embed_gb(msg) in log.embeds:
-                        print("Issue already posted, removing!")
-                        i_msg.remove(msg)
-            for msg in i_msg:
-                await client.send_message(channel, embed=embed_gh(msg))
+        if gh_objects:
+            for gh_obj in gh_objects:
+                if await check_duplicate_url(channel, gh_obj["url"]):
+                    print("Issue already posted, removing!")
+                else:
+                    print("Posting Issue notification.")
+                    await client.send_message(channel, embed=embed_gh(gh_obj))
 
         session.commit()
         await asyncio.sleep(ISSUE_TIMEOUT)
@@ -360,7 +372,7 @@ async def doc_commit_checker():
     while not client.is_closed:
         session = Session()
         cstamp = session.query(Stamp).filter_by(descriptor="doc_commit").first()
-        c_msg, stamp = feed.check_commit(
+        gh_obj, stamp = feed.check_commit(
             DOC_COMMIT_URL,
             cstamp.stamp if cstamp else "missing"
         )
@@ -374,13 +386,12 @@ async def doc_commit_checker():
             session.add(dbstamp)
             print("Adding new stamp to database for doc-commits")
 
-        if c_msg:
-            async for log in client.logs_from(channel, limit=20):
-                if embed_gh(c_msg) in log.embeds:
-                    print("Commit already posted, abort!")
-                    break
+        if gh_obj:
+            if await check_duplicate_url(channel, gh_obj["url"]):
+                print("Commit already posted, abort!")
             else:
-                await client.send_message(channel, embed=embed_gh(c_msg))
+                print("Posting Commit notification.")
+                await client.send_message(channel, embed=embed_gh(gh_obj))
 
         session.commit()
         await asyncio.sleep(DOC_COMMIT_TIMEOUT)
@@ -393,7 +404,7 @@ async def doc_issue_checker():
     while not client.is_closed:
         session = Session()
         istamp = session.query(Stamp).filter_by(descriptor="doc_issue").first()
-        i_msg, stamp = feed.check_issue(
+        gh_objects, stamp = feed.check_issue(
             DOC_ISSUE_URL,
             istamp.stamp if istamp else "missing"
         )
@@ -407,14 +418,13 @@ async def doc_issue_checker():
             session.add(dbstamp)
             print("Adding new stamp to database for doc-issues")
 
-        if i_msg:
-            async for log in client.logs_from(channel, limit=20):
-                for msg in i_msg:
-                    if embed_gh(msg) in log.embeds:
-                        print("Issue already posted, removing!")
-                        i_msg.remove(msg)
-            for msg in i_msg:
-                await client.send_message(channel, embed_gh(msg))
+        if gh_objects:
+            for gh_obj in gh_objects:
+                if await check_duplicate_url(channel, gh_obj["url"]):
+                    print("Issue already posted, removing!")
+                else:
+                    print("Posting Issue notification.")
+                    await client.send_message(channel, embed=embed_gh(gh_obj))
 
         session.commit()
         await asyncio.sleep(DOC_ISSUE_TIMEOUT)
