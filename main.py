@@ -181,6 +181,7 @@ def embed_gh(gh_object):
         color = EMBED_QA_COLOR
         icon_url = EMBED_QA_ICON
         desc_text = discord.Embed.Empty
+        tiny = True
     elif gh_object["type"] == GH_FORUM:
         post_type = "Forum thread by " + gh_object["author"]
         color = EMBED_FORUM_COLOR
