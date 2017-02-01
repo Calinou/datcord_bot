@@ -172,10 +172,6 @@ def embed_gh(gh_object):
         post_type = "Issue"
         color = EMBED_ISSUE_COLOR
         icon_url = EMBED_ISSUE_ICON
-    elif gh_object["type"] == GH_ISSUE:
-        post_type = "Issue"
-        color = EMBED_ISSUE_COLOR
-        icon_url = EMBED_ISSUE_ICON
     elif gh_object["type"] == GH_QA:
         post_type = "Question"
         color = EMBED_QA_COLOR
