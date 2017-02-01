@@ -3,11 +3,29 @@ import datetime
 from time import mktime
 import requests
 import socket
+from html2text import html2text
 
 # How long to attempt to connect to the urls above. A long timeout will cause
 # the bot to wait way too long.
 TIMEOUT = 10
 socket.setdefaulttimeout(TIMEOUT)
+
+GH_COMMIT           =   0
+GH_PR               =   1
+GH_ISSUE            =   2
+GH_QA               =   3
+GH_FORUM            =   4
+GH_OBJECT           =   dict(
+    type=0,
+    title="No title",
+    desc="No description",
+    url="https://github.com/godotengine/godot/",
+    author="No author",
+    author_url="https://github.com",
+    avatar_icon_url="",
+    issue_number=None,
+    repository=""
+)
 
 
 class RSSFeed:
@@ -156,48 +174,60 @@ class RSSFeed:
         return messages, stamp
 
     def format_issue_message(self, entry):
+        gho = GH_OBJECT.copy()
         try:
             entry["pull_request"]
         except KeyError:
-            prefix = ":exclamation: New issue"
+            gho["type"] = GH_ISSUE
         else:
-            prefix = ":question: New pull request"
-        msg = "**{pf} in {r}**: *#{n} by {u}*\n```{t}```\n<{url}>".format(
-            pf=prefix,
-            r=entry["repository_url"].split("/")[-1],
-            n=entry["number"],
-            u=entry["user"]["login"],
-            t=entry["title"],
-            url=entry["html_url"]
-        )
-        return msg
+            gho["type"] = GH_PR
+        gho["issue_number"] = "#" + str(entry["number"])
+        gho["author"] = entry["user"]["login"]
+        gho["author_url"] = entry["user"]["html_url"]
+        gho["avatar_icon_url"] = entry["user"]["avatar_url"] + "&s=32"
+        gho["url"] = entry["html_url"]
+        gho["title"] = entry["title"]
+        desc = entry["body"].lstrip().replace("\r", "").rstrip().replace("    ", "")
+        gho["desc"] = desc
+        gho["repository"] = entry["repository_url"].split("/")[-1]
+
+        return gho
 
     def format_commit_message(self, entry):
-        msg = ":outbox_tray: **New commit by {a} to {r}:**\n```{t}```\n<{l}>".format(
-            a=entry["author"],
-            r=entry["link"].split("/")[-3],
-            t=entry["title"],
-            l=entry["link"]
-        )
-        return msg
+        gho = GH_OBJECT.copy()
+        gho["type"] = GH_COMMIT
+        gho["title"] = entry["title"]
+        desc = html2text(entry["summary"]).lstrip()
+        desc = desc[desc.find("\n"):len(desc)].rstrip()
+        gho["desc"] = desc.lstrip().replace("    ", "")
+        gho["url"] = entry["link"]
+        gho["author"] = entry["author"]
+        if "href" in entry["author_detail"]:
+            gho["author_url"] = entry["author_detail"]["href"]
+        gho["avatar_icon_url"] = entry["media_thumbnail"][0]["url"]
+        gho["repository"] = entry["link"].split("/")[-3]
 
-    def format_forum_message(self, thread):
-        msg = "**FORUM**\n:newspaper: New forum thread by {a} in {c}:\n```{t}```\n<{l}>".format(
-            a=thread["author"],
-            c=thread["category"],
-            t=thread["title"],
-            l=thread["link"],
-        )
-        return msg
+        return gho
 
     def format_qa_message(self, thread):
-        msg = "**Q&A**\n:question: New question in {c}:\n```{t}```\n<{l}>".format(
-            c=thread["category"],
-            t=thread["title"],
-            l=thread["link"],
-        )
-        return msg
+        gho = GH_OBJECT.copy()
+        gho["type"] = GH_QA
+        gho["title"] = thread["title"]
+        gho["url"] = thread["link"]
+        gho["repository"] = thread["category"]
 
+        return gho
+
+    def format_forum_message(self, thread):
+        gho = GH_OBJECT.copy()
+        gho["type"] = GH_FORUM
+        gho["title"] = thread["title"]
+        gho["desc"] = html2text(thread["description"])
+        gho["url"] = thread["link"]
+        gho["author"] = thread["author"]
+        gho["repository"] = thread["category"]
+
+        return gho
 
 if __name__ == "__main__":
     # For testing

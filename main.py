@@ -5,7 +5,7 @@ import glob
 import random
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from rss import RSSFeed
+from rss import RSSFeed, GH_OBJECT, GH_COMMIT, GH_PR, GH_ISSUE, GH_QA, GH_FORUM
 from models import Base, User, Stamp
 
 client = discord.Client()   # Initialize discord client
@@ -47,6 +47,19 @@ DOC_COMMIT_URL = "https://github.com/godotengine/godot-docs/commits/master.atom"
 DOC_ISSUE_URL = "https://api.github.com/repos/godotengine/godot-docs/issues?sort=created"
 FORUM_URL  = "https://godotdevelopers.org/forum/discussions/feed.rss"
 QA_URL     = "https://godotengine.org/qa/feed/questions.rss"
+
+# Embed settings
+MAX_DESC_LINES      =   4
+EMBED_COMMIT_COLOR  =   0x1E54F8
+EMBED_PR_COLOR      =   0x84D430
+EMBED_ISSUE_COLOR   =   0xD44730
+EMBED_QA_COLOR      =   0xF1E739
+EMBED_FORUM_COLOR   =   0x3D81A6
+EMBED_COMMIT_ICON   =   "https://cdnjs.cloudflare.com/ajax/libs/ionicons/2.0.1/png/512/clock.png"
+EMBED_PR_ICON       =   "https://cdnjs.cloudflare.com/ajax/libs/ionicons/2.0.1/png/512/pull-request.png"
+EMBED_ISSUE_ICON    =   "https://cdnjs.cloudflare.com/ajax/libs/ionicons/2.0.1/png/512/alert-circled.png"
+EMBED_QA_ICON       =   "https://cdnjs.cloudflare.com/ajax/libs/ionicons/2.0.1/png/512/help-circled.png"
+EMBED_FORUM_ICON    =   "https://cdnjs.cloudflare.com/ajax/libs/ionicons/2.0.1/png/512/chatbubbles.png"
 
 # Message that bot returns on !help
 HELP_STRING = """
@@ -137,6 +150,70 @@ async def delete_edit_timer(msg, time, error=False, call_msg=None):
             print("Call message does not exist.")
 
 
+def embed_gh(gh_object):
+    tiny = False
+    desc_text = gh_object["desc"]
+    line_count = desc_text.count("\n") + 1
+    if line_count > MAX_DESC_LINES:
+        lbreaks = [n for n in range(len(desc_text)) if desc_text.find('\n', n) == n]
+        desc_text = desc_text[0:lbreaks[MAX_DESC_LINES - 1]] + "\n....."
+    issue_number = gh_object["issue_number"] + " " if gh_object["issue_number"] else ""
+    post_type = icon_url = ""
+    color = 0xFFFFFF
+    if gh_object["type"] == GH_COMMIT:
+        post_type = "Commit"
+        color = EMBED_COMMIT_COLOR
+        icon_url = EMBED_COMMIT_ICON
+    elif gh_object["type"] == GH_PR:
+        post_type = "Pull request"
+        color = EMBED_PR_COLOR
+        icon_url = EMBED_PR_ICON
+    elif gh_object["type"] == GH_ISSUE:
+        post_type = "Issue"
+        color = EMBED_ISSUE_COLOR
+        icon_url = EMBED_ISSUE_ICON
+    elif gh_object["type"] == GH_ISSUE:
+        post_type = "Issue"
+        color = EMBED_ISSUE_COLOR
+        icon_url = EMBED_ISSUE_ICON
+    elif gh_object["type"] == GH_QA:
+        post_type = "Question"
+        color = EMBED_QA_COLOR
+        icon_url = EMBED_QA_ICON
+        tiny = True
+    elif gh_object["type"] == GH_FORUM:
+        post_type = "Forum thread by " + gh_object["author"]
+        color = EMBED_FORUM_COLOR
+        icon_url = EMBED_FORUM_ICON
+        tiny = True
+    if tiny:
+        desc_text = discord.Embed.Empty
+
+    footer_text = "{type} {issue_number}| {r}".format(
+        type=post_type,
+        issue_number=issue_number,
+        r=gh_object["repository"]
+    )
+
+    e = discord.Embed(
+        title=gh_object["title"],
+        description=desc_text,
+        url=gh_object["url"],
+        color=color,
+    )
+    e.set_footer(
+        text=footer_text,
+        icon_url=icon_url
+    )
+    if not tiny:
+        e.set_author(
+            name=gh_object["author"],
+            url=gh_object["author_url"],
+            icon_url=gh_object["avatar_icon_url"]
+        )
+    return e
+
+
 @client.event
 async def on_ready():
     print("Logged in as: {0}--{1}".format(client.user.name, client.user.id))
@@ -171,11 +248,11 @@ async def qa_checker():
 
         if q_msg:
             async for log in client.logs_from(channel, limit=20):
-                if log.content == q_msg:
+                if embed_gh(q_msg) in log.embeds:
                     print("Q&A thread already posted, abort!")
                     break
             else:
-                await client.send_message(channel, q_msg)
+                await client.send_message(channel, embed=embed_gh(q_msg))
 
         session.commit()
         await asyncio.sleep(QA_TIMEOUT)
@@ -204,11 +281,11 @@ async def forum_checker():
 
         if f_msg:
             async for log in client.logs_from(channel, limit=20):
-                if log.content == f_msg:
+                if embed_gh(f_msg) in log.embeds:
                     print("Forum thread already posted, abort!")
                     break
             else:
-                await client.send_message(channel, f_msg)
+                await client.send_message(channel, embed=embed_gh(f_msg))
 
         session.commit()
         await asyncio.sleep(FORUM_TIMEOUT)
@@ -237,11 +314,11 @@ async def commit_checker():
 
         if c_msg:
             async for log in client.logs_from(channel, limit=20):
-                if log.content == c_msg:
+                if embed_gh(c_msg) in log.embeds:
                     print("Commit already posted, abort!")
                     break
             else:
-                await client.send_message(channel, c_msg)
+                await client.send_message(channel, embed=embed_gh(c_msg))
 
         session.commit()
         await asyncio.sleep(COMMIT_TIMEOUT)
@@ -271,11 +348,11 @@ async def issue_checker():
         if i_msg:
             async for log in client.logs_from(channel, limit=20):
                 for msg in i_msg:
-                    if log.content == msg:
+                    if embed_gb(msg) in log.embeds:
                         print("Issue already posted, removing!")
                         i_msg.remove(msg)
             for msg in i_msg:
-                await client.send_message(channel, msg)
+                await client.send_message(channel, embed=embed_gh(msg))
 
         session.commit()
         await asyncio.sleep(ISSUE_TIMEOUT)
@@ -304,11 +381,11 @@ async def doc_commit_checker():
 
         if c_msg:
             async for log in client.logs_from(channel, limit=20):
-                if log.content == c_msg:
+                if embed_gh(c_msg) in log.embeds:
                     print("Commit already posted, abort!")
                     break
             else:
-                await client.send_message(channel, c_msg)
+                await client.send_message(channel, embed=embed_gh(c_msg))
 
         session.commit()
         await asyncio.sleep(DOC_COMMIT_TIMEOUT)
@@ -338,11 +415,11 @@ async def doc_issue_checker():
         if i_msg:
             async for log in client.logs_from(channel, limit=20):
                 for msg in i_msg:
-                    if log.content == msg:
+                    if embed_gh(msg) in log.embeds:
                         print("Issue already posted, removing!")
                         i_msg.remove(msg)
             for msg in i_msg:
-                await client.send_message(channel, msg)
+                await client.send_message(channel, embed_gh(msg))
 
         session.commit()
         await asyncio.sleep(DOC_ISSUE_TIMEOUT)
