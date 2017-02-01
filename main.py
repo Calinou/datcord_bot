@@ -180,14 +180,11 @@ def embed_gh(gh_object):
         post_type = "Question"
         color = EMBED_QA_COLOR
         icon_url = EMBED_QA_ICON
-        tiny = True
+        desc_text = discord.Embed.Empty
     elif gh_object["type"] == GH_FORUM:
         post_type = "Forum thread by " + gh_object["author"]
         color = EMBED_FORUM_COLOR
         icon_url = EMBED_FORUM_ICON
-        tiny = True
-    if tiny:
-        desc_text = discord.Embed.Empty
 
     footer_text = "{type} {issue_number}| {r}".format(
         type=post_type,
