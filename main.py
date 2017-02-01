@@ -186,6 +186,7 @@ def embed_gh(gh_object):
         post_type = "Forum thread by " + gh_object["author"]
         color = EMBED_FORUM_COLOR
         icon_url = EMBED_FORUM_ICON
+        tiny = True
 
     footer_text = "{type} {issue_number}| {r}".format(
         type=post_type,
