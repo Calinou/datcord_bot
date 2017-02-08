@@ -713,8 +713,7 @@ async def on_member_join(member):
     )
     tmp = await client.send_message(channel, msg)
     if (mem.nick if mem.nick else mem.name) == "Goblok":
-        emoji = None
-        for e in message.server.emojis:
+        for e in member.server.emojis:
             if e.name == "angryfaic":
                 await client.add_reaction(tmp, e)
                 break
