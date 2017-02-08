@@ -711,7 +711,13 @@ async def on_member_join(member):
     msg = ":new: {0} joined the server. Current member count: **{1}**".format(
         member.mention, member.server.member_count
     )
-    await client.send_message(channel, msg)
+    tmp = await client.send_message(channel, msg)
+    if (mem.nick if mem.nick else mem.name) == "Goblok":
+        emoji = None
+        for e in message.server.emojis:
+            if e.name == "angryfaic":
+                await client.add_reaction(tmp, e)
+                break
 
 
 # Prepare for takeoff.
