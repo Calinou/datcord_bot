@@ -39,6 +39,7 @@ ISSUE_CHANNEL = "225147946109370369"
 FORUM_CHANNEL = "246571722965385216"
 QA_CHANNEL = "246571722965385216"
 NEWCOMER_CHANNEL = "253576562136449024"
+GENERAL_CHANNEL = "212250894228652034"
 
 # URLs
 COMMIT_URL = "https://github.com/godotengine/godot/commits/master.atom"
@@ -717,6 +718,9 @@ async def on_member_join(member):
             if e.name == "angryfaic":
                 await client.add_reaction(tmp, e)
                 break
+    msg = ":new: `add_child(`{0}`)`\nWelcome to the server! :tada:".format(member.mention)
+    channel = discord.Object(id=GENERAL_CHANNEL)
+    tmp = await client.send_message(channel, msg)
 
 
 # Prepare for takeoff.
