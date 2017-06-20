@@ -230,6 +230,43 @@ ROSS_QUOTES = [
     "Just think about these things in your mind - then bring them into your world."
 ]
 
+GD_PATH = "gdmeme"
+GD_MEMES = [
+    ["feature.png",         "Akien via Github"],
+    ["abracadabra.jpg",     "Omicron666 via Discord"],
+    ["adamot.png",          "Noshyaar via Discord"],
+    ["floor.png",           "Noshyaar via Discord"],
+    ["godots.png",          "Noshyaar via Discord"],
+    ["mrworldwide.png",     "Noshyaar via Discord"],
+    ["notclear.png",        "Noshyaar via Discord"],
+    ["rare.png",            "Noshyaar via Discord"],
+    ["scons.png",           "Noshyaar via Discord"],
+    ["zodiac.png",          "Noshyaar via Discord"],
+    ["wow.png",             "Noshyaar via Discord"],
+    ["whowouldwin.png",     "Noshyaar via Discord"],
+    ["unity_logo.png",      "Noshyaar via Discord"],
+    #["ＡＥＳＴＨＥＴＩＣ.png", "Noshyaar via Discord"],
+    #["help_me.png",         "Noshyaar via Discord"],
+    #["ooops.png",           "Noshyaar via Discord"],
+
+    ["19149175.jpg",        "Igor Gritsenko via Facebook"],
+    ["19250494.jpg",        "Adam Cooke via Facebook"],
+    ["16819060.jpg",        "Oussama Boukhelf‎ via Facebook"],
+    ["18010757.jpg",        "William Tumeo via Facebook"],
+    ["18342521.jpg",        "Juan Bustelo via Facebook"],
+    ["18814238.jpg",        "Nahomy Mejia via Facebook"],
+    ["18920649.jpg",        "Nahomy Mejia via Facebook"],
+    ["19113510.jpg",        "Nahomy Mejia via Facebook"],
+    ["19396679.jpg",        "Feko Boke via Facebook"],
+
+    ["lnnefu5mgary_0.png",  "zopyz via /r/Godot"],
+    ["lnnefu5mgary_1.png",  "zopyz via /r/Godot"],
+    ["lnnefu5mgary_2.png",  "zopyz via /r/Godot"],
+    ["lnnefu5mgary_3.png",  "zopyz via /r/Godot"],
+    ["lnnefu5mgary_4.png",  "zopyz via /r/Godot"],
+    ["QlGMyhnuZ9.png",      "glatteis via /r/Godot"],
+    ["gkzNOEx.png",         "jaydonteh via /r/Godot"]
+]
 
 def populate_memes():
     """
@@ -247,6 +284,8 @@ def populate_memes():
     # "sorted" defaults to alphabetical on strings.
     RMS_MEMES = sorted([j for i in memes for j in i])
 
+    for i in range(len(GD_MEMES)):
+        GD_MEMES[i][0] = os.path.join(GD_PATH, GD_MEMES[i][0])
 
 async def shrink_rank_list(msg):
     """
@@ -643,6 +682,18 @@ async def on_message(message):
         if fpath:
             with open(fpath, "rb") as f:
                 await client.send_file(message.channel, f, content="**#{0}:**".format(c))
+
+    if message.content.lower().startswith("!meme"):
+        fpath = None
+        credit = "N/A"
+
+        rand_c = random.randint(0, len(GD_MEMES) - 1)
+        fpath = GD_MEMES[rand_c][0]
+        credit = GD_MEMES[rand_c][1]
+
+        if fpath:
+            with open(fpath, "rb") as f:
+                await client.send_file(message.channel, f, content="**By {0}**".format(credit))
 
     if message.channel.name != "botspam":
         return  # Ignore command if it's not written in botspam channel
