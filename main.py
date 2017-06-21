@@ -233,7 +233,9 @@ ROSS_QUOTES = [
 GD_PATH = "gdmeme"
 GD_MEMES = [
     ["feature.png",         "Akien via Github"],
+    ["vacation.png",        "nunodonato via Github"],
     ["abracadabra.jpg",     "Omicron666 via Discord"],
+    ["WeAreGodotDev.png",   "Omicron666 via Discord"],
     ["adamot.png",          "Noshyaar via Discord"],
     ["floor.png",           "Noshyaar via Discord"],
     ["godots.png",          "Noshyaar via Discord"],
