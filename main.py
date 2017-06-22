@@ -233,6 +233,7 @@ ROSS_QUOTES = [
 GD_PATH = "gdmeme"
 GD_MEMES = [
     ["feature.png",         "Akien via Github"],
+    ["malware.png",         "Akien via Github"],
     ["vacation.png",        "nunodonato via Github"],
     ["abracadabra.jpg",     "Omicron666 via Discord"],
     ["WeAreGodotDev.png",   "Omicron666 via Discord"],
@@ -267,7 +268,9 @@ GD_MEMES = [
     ["lnnefu5mgary_3.png",  "zopyz via /r/Godot"],
     ["lnnefu5mgary_4.png",  "zopyz via /r/Godot"],
     ["QlGMyhnuZ9.png",      "glatteis via /r/Godot"],
-    ["gkzNOEx.png",         "jaydonteh via /r/Godot"]
+    ["gkzNOEx.png",         "jaydonteh via /r/Godot"],
+    
+    ["resolutions.png",     "anon (/agdg/), kkolyv (Discord)"]
 ]
 
 def populate_memes():
