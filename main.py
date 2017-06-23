@@ -248,6 +248,7 @@ GD_MEMES = [
     ["wow.png",             "Noshyaar via Discord"],
     ["whowouldwin.png",     "Noshyaar via Discord"],
     ["unity_logo.png",      "Noshyaar via Discord"],
+    ["steamsale.png",       "Noshyaar via Discord"],
     #["ＡＥＳＴＨＥＴＩＣ.png", "Noshyaar via Discord"],
     #["help_me.png",         "Noshyaar via Discord"],
     #["ooops.png",           "Noshyaar via Discord"],
