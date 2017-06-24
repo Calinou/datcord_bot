@@ -237,6 +237,7 @@ GD_MEMES = [
     ["vacation.png",        "nunodonato via Github"],
     ["abracadabra.jpg",     "Omicron666 via Discord"],
     ["WeAreGodotDev.png",   "Omicron666 via Discord"],
+    ["collisionshape.png",  "sheepandshepherd via Discord"],
     ["adamot.png",          "Noshyaar via Discord"],
     ["floor.png",           "Noshyaar via Discord"],
     ["godots.png",          "Noshyaar via Discord"],
