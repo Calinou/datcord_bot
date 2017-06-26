@@ -232,9 +232,15 @@ ROSS_QUOTES = [
 
 GD_PATH = "gdmeme"
 GD_MEMES = [
+    ["wolf3d_godot.png",    "Calinou"],
+    ["questions.png",       "Noshyaar"],
+    ["steamsale.png",       "Noshyaar"],
+
     ["feature.png",         "Akien via Github"],
     ["malware.png",         "Akien via Github"],
     ["vacation.png",        "nunodonato via Github"],
+    ["revert.png",          "reduz via Github"],
+
     ["abracadabra.jpg",     "Omicron666 via Discord"],
     ["WeAreGodotDev.png",   "Omicron666 via Discord"],
     ["collisionshape.png",  "sheepandshepherd via Discord"],
@@ -245,15 +251,11 @@ GD_MEMES = [
     ["notclear.png",        "Noshyaar via Discord"],
     ["rare.png",            "Noshyaar via Discord"],
     ["scons.png",           "Noshyaar via Discord"],
-    ["zodiac.png",          "Noshyaar via Discord"],
+    #["zodiac.png",          "Noshyaar via Discord"],
     ["wow.png",             "Noshyaar via Discord"],
     ["whowouldwin.png",     "Noshyaar via Discord"],
     ["unity_logo.png",      "Noshyaar via Discord"],
-    ["steamsale.png",       "Noshyaar via Discord"],
     ["smallfix.png",        "Noshyaar via Discord"],
-    #["ＡＥＳＴＨＥＴＩＣ.png", "Noshyaar via Discord"],
-    #["help_me.png",         "Noshyaar via Discord"],
-    #["ooops.png",           "Noshyaar via Discord"],
 
     ["19149175.jpg",        "Igor Gritsenko via Facebook"],
     ["19250494.jpg",        "Adam Cooke via Facebook"],
@@ -263,7 +265,6 @@ GD_MEMES = [
     ["18814238.jpg",        "Nahomy Mejia via Facebook"],
     ["18920649.jpg",        "Nahomy Mejia via Facebook"],
     ["19113510.jpg",        "Nahomy Mejia via Facebook"],
-    ["19396679.jpg",        "Feko Boke via Facebook"],
 
     ["lnnefu5mgary_0.png",  "zopyz via /r/Godot"],
     ["lnnefu5mgary_1.png",  "zopyz via /r/Godot"],
