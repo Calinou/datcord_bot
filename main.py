@@ -239,7 +239,6 @@ GD_MEMES = [
     ["feature.png",         "Akien via Github"],
     ["malware.png",         "Akien via Github"],
     ["vacation.png",        "nunodonato via Github"],
-    ["revert.png",          "reduz via Github"],
 
     ["abracadabra.jpg",     "Omicron666 via Discord"],
     ["WeAreGodotDev.png",   "Omicron666 via Discord"],
@@ -275,6 +274,7 @@ GD_MEMES = [
     ["gkzNOEx.png",         "jaydonteh via /r/Godot"],
     
     ["resolutions.png",     "anon (/agdg/), kkolyv (Discord)"]
+    ["revert.png",          "vnen (IRC), Akien, reduz (Github)"],
 ]
 
 def populate_memes():
