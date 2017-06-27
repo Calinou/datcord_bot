@@ -235,10 +235,16 @@ GD_MEMES = [
     ["wolf3d_godot.png",    "Calinou"],
     ["questions.png",       "Noshyaar"],
     ["steamsale.png",       "Noshyaar"],
+    ["precious.png",        "Noshyaar"],
+    ["cereal.png",          "Noshyaar"],
 
     ["feature.png",         "Akien via Github"],
     ["malware.png",         "Akien via Github"],
+    ["ubuntu.png",          "Akien via Github"],
     ["vacation.png",        "nunodonato via Github"],
+    ["fuckyoux11.png",      "reduz via Github"],
+    
+    ["utterbullshit.png",   "Akien via IRC"],
 
     ["abracadabra.jpg",     "Omicron666 via Discord"],
     ["WeAreGodotDev.png",   "Omicron666 via Discord"],
@@ -250,13 +256,11 @@ GD_MEMES = [
     ["notclear.png",        "Noshyaar via Discord"],
     ["rare.png",            "Noshyaar via Discord"],
     ["scons.png",           "Noshyaar via Discord"],
-    #["zodiac.png",          "Noshyaar via Discord"],
     ["wow.png",             "Noshyaar via Discord"],
     ["whowouldwin.png",     "Noshyaar via Discord"],
     ["unity_logo.png",      "Noshyaar via Discord"],
     ["smallfix.png",        "Noshyaar via Discord"],
 
-    ["19149175.jpg",        "Igor Gritsenko via Facebook"],
     ["19250494.jpg",        "Adam Cooke via Facebook"],
     ["16819060.jpg",        "Oussama Boukhelf‎ via Facebook"],
     ["18010757.jpg",        "William Tumeo via Facebook"],
@@ -264,6 +268,7 @@ GD_MEMES = [
     ["18814238.jpg",        "Nahomy Mejia via Facebook"],
     ["18920649.jpg",        "Nahomy Mejia via Facebook"],
     ["19113510.jpg",        "Nahomy Mejia via Facebook"],
+    ["19423977.jpg",        "Nahomy Mejia via Facebook"],
 
     ["lnnefu5mgary_0.png",  "zopyz via /r/Godot"],
     ["lnnefu5mgary_1.png",  "zopyz via /r/Godot"],
@@ -272,9 +277,9 @@ GD_MEMES = [
     ["lnnefu5mgary_4.png",  "zopyz via /r/Godot"],
     ["QlGMyhnuZ9.png",      "glatteis via /r/Godot"],
     ["gkzNOEx.png",         "jaydonteh via /r/Godot"],
-    
-    ["resolutions.png",     "anon (/agdg/), kkolyv (Discord)"]
-    ["revert.png",          "vnen (IRC), Akien, reduz (Github)"],
+
+    ["resolutions.png",     "anon (/agdg/), kkolyv (Discord)"],
+    ["revert.png",          "vnen (IRC), Akien, reduz (Github)"]
 ]
 
 def populate_memes():
@@ -631,7 +636,7 @@ async def on_message(message):
     elif message.content.startswith("!"):
         # Don't give XP for bot commands.
         print("Ignoring message as a command, no xp.")
-    else: 
+    else:
         xp = 1 + len(message.content) // 80
         session = Session()
         # Check if the user exists in the database and update the xp column.
@@ -661,7 +666,7 @@ async def on_message(message):
             icon_url=EMBED_ROSS_ICON
         )
         await client.send_message(message.channel, embed=e)
-        
+
 
     # Posts a picture of RMS.
     if message.content.lower().startswith("!rms"):
