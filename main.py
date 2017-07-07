@@ -709,7 +709,7 @@ async def on_message(message):
             choice_error = True
 
         submeme = []
-        if !choice_error:
+        if not choice_error:
             for i in GD_MEMES:
                 if i[1].lower().find(c.lower()) != -1:
                     submeme.append(i)
