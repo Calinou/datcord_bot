@@ -230,6 +230,7 @@ ROSS_QUOTES = [
     "Just think about these things in your mind - then bring them into your world."
 ]
 
+last_meme = ""
 GD_PATH = "gdmeme"
 GD_MEMES = [
     ["wolf3d_godot.png",    "Calinou"],
@@ -717,8 +718,19 @@ async def on_message(message):
         if choice_error or len(submeme) == 0:
             submeme = GD_MEMES
 
-        rand_c = random.randint(0, len(submeme) - 1)
-        fpath = submeme[rand_c][0]
+        rand_c = 0
+        fpath = ""
+
+        tries = 0
+        while tries < 4:
+        	rand_c = random.randint(0, len(submeme) - 1)
+        	fpath = submeme[rand_c][0]
+        	if fpath != last_meme:
+        		break
+        	tries += 1
+
+        last_meme = fpath
+
         credit = submeme[rand_c][1]
 
         if fpath:
