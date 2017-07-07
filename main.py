@@ -243,7 +243,9 @@ GD_MEMES = [
     ["ubuntu.png",          "Akien via Github"],
     ["vacation.png",        "nunodonato via Github"],
     ["fuckyoux11.png",      "reduz via Github"],
-    
+    ["boeing.png",          "reduz via Github"],
+    ["etc2comp.png",        "reduz via Github (Edited)"],
+
     ["utterbullshit.png",   "Akien via IRC"],
 
     ["abracadabra.jpg",     "Omicron666 via Discord"],
@@ -698,12 +700,26 @@ async def on_message(message):
                 await client.send_file(message.channel, f, content="**#{0}:**".format(c))
 
     if message.content.lower().startswith("!meme"):
+        choice_error = False
         fpath = None
         credit = "N/A"
+        c = message.content[6:]
 
-        rand_c = random.randint(0, len(GD_MEMES) - 1)
-        fpath = GD_MEMES[rand_c][0]
-        credit = GD_MEMES[rand_c][1]
+        if not len(c.strip()) or not message.content[5] == " ":
+            choice_error = True
+
+        submeme = []
+        if !choice_error:
+            for i in GD_MEMES:
+                if i[1].lower().find(c.lower()) != -1:
+                    submeme.append(i)
+
+        if choice_error or len(submeme) == 0:
+            submeme = GD_MEMES
+
+        rand_c = random.randint(0, len(submeme) - 1)
+        fpath = submeme[rand_c][0]
+        credit = submeme[rand_c][1]
 
         if fpath:
             with open(fpath, "rb") as f:
