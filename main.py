@@ -238,6 +238,8 @@ GD_MEMES = [
     ["steamsale.png",       "Noshyaar"],
     ["precious.png",        "Noshyaar"],
     ["cereal.png",          "Noshyaar"],
+    ["etc2comp-3.png",      "Noshyaar"],
+    ["etc2comp-4.png",      "Noshyaar"],
 
     ["feature.png",         "Akien via Github"],
     ["malware.png",         "Akien via Github"],
@@ -263,6 +265,7 @@ GD_MEMES = [
     ["whowouldwin.png",     "Noshyaar via Discord"],
     ["unity_logo.png",      "Noshyaar via Discord"],
     ["smallfix.png",        "Noshyaar via Discord"],
+    ["etc2comp-2.png",      "Noshyaar via Discord"],
 
     ["19250494.jpg",        "Adam Cooke via Facebook"],
     ["16819060.jpg",        "Oussama Boukhelf‎ via Facebook"],
