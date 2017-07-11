@@ -244,6 +244,7 @@ GD_MEMES = [
     ["feature.png",         "Akien via Github"],
     ["malware.png",         "Akien via Github"],
     ["ubuntu.png",          "Akien via Github"],
+    ["28066358.jpg",        "groud via Github"],
     ["vacation.png",        "nunodonato via Github"],
     ["fuckyoux11.png",      "reduz via Github"],
     ["boeing.png",          "reduz via Github"],
