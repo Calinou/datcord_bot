@@ -3,22 +3,9 @@ import asyncio
 import os
 import glob
 import random
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-from rss import RSSFeed, GH_OBJECT, GH_COMMIT, GH_PR, GH_ISSUE, GH_QA, GH_FORUM
-from models import Base, User, Stamp
+
 
 client = discord.Client()   # Initialize discord client
-feed = RSSFeed()            # Initialize RSS-scraper, see rss.py for config.
-
-# When running script, initialize db engine and create sqlite database
-# with tables if not existing.
-engine = create_engine("sqlite:///app.db")
-# Session maker object, to instantiate sessions from
-Session = sessionmaker(bind=engine)
-# Ensure all tables are created.
-print("Ensuring database scheme is up to date.")
-Base.metadata.create_all(engine)
 
 # CONFIG #
 # If you have set your token as an environment variable
@@ -34,58 +21,22 @@ AVAILABLE_ROLES = [
 ]
 
 # Channel ID's
-COMMIT_CHANNEL = "225147946109370369"
-ISSUE_CHANNEL = "225147946109370369"
-FORUM_CHANNEL = "246571722965385216"
-QA_CHANNEL = "246571722965385216"
 NEWCOMER_CHANNEL = "253576562136449024"
 GENERAL_CHANNEL = "212250894228652034"
 
-# URLs
-COMMIT_URL = "https://github.com/godotengine/godot/commits/master.atom"
-ISSUE_URL  = "https://api.github.com/repos/godotengine/godot/issues?sort=created"
-DOC_COMMIT_URL = "https://github.com/godotengine/godot-docs/commits/master.atom"
-DOC_ISSUE_URL = "https://api.github.com/repos/godotengine/godot-docs/issues?sort=created"
-FORUM_URL  = "https://godotdevelopers.org/forum/discussions/feed.rss"
-QA_URL     = "https://godotengine.org/qa/feed/questions.rss"
 
-# Embed settings
-MAX_DESC_LINES      =   4
-EMBED_COMMIT_COLOR  =   0x1E54F8
-EMBED_PR_COLOR      =   0x84D430
-EMBED_ISSUE_COLOR   =   0xD44730
-EMBED_QA_COLOR      =   0xF1E739
-EMBED_FORUM_COLOR   =   0x3D81A6
-EMBED_COMMIT_ICON   =   "https://cdnjs.cloudflare.com/ajax/libs/ionicons/2.0.1/png/512/clock.png"
-EMBED_PR_ICON       =   "https://cdnjs.cloudflare.com/ajax/libs/ionicons/2.0.1/png/512/pull-request.png"
-EMBED_ISSUE_ICON    =   "https://cdnjs.cloudflare.com/ajax/libs/ionicons/2.0.1/png/512/alert-circled.png"
-EMBED_QA_ICON       =   "https://cdnjs.cloudflare.com/ajax/libs/ionicons/2.0.1/png/512/help-circled.png"
-EMBED_FORUM_ICON    =   "https://cdnjs.cloudflare.com/ajax/libs/ionicons/2.0.1/png/512/chatbubbles.png"
 
 # Message that bot returns on !help
 HELP_STRING = """
 :book: **Commands:**
 !assign [role]: *assign yourself to one of the available roles.*\n
 !unassign [role]: *unassign yourself from a role.*\n
-!roles: *list available roles.*\n
-!xp: *shows your current xp*\n
-!rank: *show the 10 members with the most xp*"""
+!roles: *list available roles.*"""
 
-# Seconds to wait between checking feeds and stuff
-COMMIT_TIMEOUT = 8
-ISSUE_TIMEOUT = 66
-DOC_COMMIT_TIMEOUT = 60
-DOC_ISSUE_TIMEOUT = 660
-FORUM_TIMEOUT = 10
-QA_TIMEOUT = 10
 
 # How long to wait to delete messages
 FEEDBACK_DEL_TIMER = 5
 
-# XP rank globals
-RANK_MIN = 10
-RANK_MAX = 25
-RANK_SHRINK_DELAY = 30
 
 # RMS is a beautiful man.
 RMS_PATH = "rms"    # Folder where RMS memes are located.
@@ -238,8 +189,6 @@ GD_MEMES = [
     ["steamsale.png",       "Noshyaar"],
     ["precious.png",        "Noshyaar"],
     ["cereal.png",          "Noshyaar"],
-    ["etc2comp-3.png",      "Noshyaar"],
-    ["etc2comp-4.png",      "Noshyaar"],
 
     ["feature.png",         "Akien via Github"],
     ["malware.png",         "Akien via Github"],
@@ -248,7 +197,6 @@ GD_MEMES = [
     ["vacation.png",        "nunodonato via Github"],
     ["fuckyoux11.png",      "reduz via Github"],
     ["boeing.png",          "reduz via Github"],
-    ["etc2comp.png",        "reduz via Github (Edited)"],
 
     ["utterbullshit.png",   "Akien via IRC"],
 
@@ -266,7 +214,6 @@ GD_MEMES = [
     ["whowouldwin.png",     "Noshyaar via Discord"],
     ["unity_logo.png",      "Noshyaar via Discord"],
     ["smallfix.png",        "Noshyaar via Discord"],
-    ["etc2comp-2.png",      "Noshyaar via Discord"],
 
     ["19250494.jpg",        "Adam Cooke via Facebook"],
     ["16819060.jpg",        "Oussama Boukhelf‎ via Facebook"],
@@ -308,23 +255,6 @@ def populate_memes():
     for i in range(len(GD_MEMES)):
         GD_MEMES[i][0] = os.path.join(GD_PATH, GD_MEMES[i][0])
 
-async def shrink_rank_list(msg):
-    """
-    Takes the message that was posted with ranks and shortens it after a while.
-    """
-    await asyncio.sleep(RANK_SHRINK_DELAY)
-    sp = msg.content.split("\n")
-    if len(sp) > RANK_MIN + 1:  #
-        sp = [l + "\n" for l in sp[:RANK_MIN + 1]]
-        edited_msg = ""
-        for s in sp:
-            edited_msg += s
-    else:
-        # Won't do anything if there's not enough ranks.
-        edited_msg = msg.content
-    await client.edit_message(msg, edited_msg)
-
-
 async def delete_edit_timer(msg, time, error=False, call_msg=None):
     """
     Counts down by editing the response message, then deletes both that one and
@@ -350,284 +280,10 @@ async def delete_edit_timer(msg, time, error=False, call_msg=None):
             print("Call message does not exist.")
 
 
-async def check_duplicate_url(channel, url):
-    if not url:
-        print("URL is blank, won't check for duplicate.")
-        return False
-    async for log in client.logs_from(channel, limit=20):
-        for e in log.embeds:
-            if "url" in e:
-                if url == e["url"]:
-                    return True
-        else:   # No duplicates
-            continue    # Continue to next log item
-        break   # If there was duplicates, it reaches this
-    else:
-        return False
-
-
-def embed_gh(gh_object):
-    tiny = False
-    desc_text = gh_object["desc"]
-    line_count = desc_text.count("\n") + 1
-    if line_count > MAX_DESC_LINES:
-        lbreaks = [n for n in range(len(desc_text)) if desc_text.find('\n', n) == n]
-        desc_text = desc_text[0:lbreaks[MAX_DESC_LINES - 1]] + "\n....."
-    issue_number = gh_object["issue_number"] + " " if gh_object["issue_number"] else ""
-    post_type = icon_url = ""
-    color = 0xFFFFFF
-    if gh_object["type"] == GH_COMMIT:
-        post_type = "Commit"
-        color = EMBED_COMMIT_COLOR
-        icon_url = EMBED_COMMIT_ICON
-    elif gh_object["type"] == GH_PR:
-        post_type = "Pull request"
-        color = EMBED_PR_COLOR
-        icon_url = EMBED_PR_ICON
-    elif gh_object["type"] == GH_ISSUE:
-        post_type = "Issue"
-        color = EMBED_ISSUE_COLOR
-        icon_url = EMBED_ISSUE_ICON
-    elif gh_object["type"] == GH_QA:
-        post_type = "Question"
-        color = EMBED_QA_COLOR
-        icon_url = EMBED_QA_ICON
-        desc_text = discord.Embed.Empty
-        tiny = True
-    elif gh_object["type"] == GH_FORUM:
-        post_type = "Forum thread by " + gh_object["author"]
-        color = EMBED_FORUM_COLOR
-        icon_url = EMBED_FORUM_ICON
-        tiny = True
-
-    footer_text = "{type} {issue_number}| {r}".format(
-        type=post_type,
-        issue_number=issue_number,
-        r=gh_object["repository"]
-    )
-
-    e = discord.Embed(
-        title=gh_object["title"],
-        description=desc_text,
-        url=gh_object["url"],
-        color=color,
-    )
-    e.set_footer(
-        text=footer_text,
-        icon_url=icon_url
-    )
-    if not tiny:
-        e.set_author(
-            name=gh_object["author"],
-            url=gh_object["author_url"],
-            icon_url=gh_object["avatar_icon_url"]
-        )
-    return e
-
-
 @client.event
 async def on_ready():
     print("Logged in as: {0}--{1}".format(client.user.name, client.user.id))
     print("------")
-
-
-# To check feeds, they all work basically the same here.
-# They check the database for timestamps, if they don't exist they create new.
-# They pass those stamps to feedchecker in rss.py, which returns a string or
-# a list of strings, and a new stamp. The new stamp is then written back to the
-# database, and if there's any strings returned it will post them as messages
-# in their appropriate channels. Before posting the messages, they check if
-# that exact message has been posted before, by iterating through the 20 last
-# messages and comparing them.
-
-async def qa_checker():
-    await client.wait_until_ready()
-    channel = discord.Object(id=QA_CHANNEL)
-
-    while not client.is_closed:
-        session = Session()
-        qstamp = session.query(Stamp).filter_by(descriptor="qa").first()
-        gh_obj, stamp = feed.check_qa(QA_URL, qstamp.stamp if qstamp else "missing")
-
-        if qstamp:
-            if not qstamp.stamp == stamp:
-                qstamp.stamp = stamp
-        else:
-            dbstamp = Stamp(descriptor="qa", stamp=stamp)
-            session.add(dbstamp)
-            print("Adding new stamp in database for Q&A")
-
-        if gh_obj:
-            if await check_duplicate_url(channel, gh_obj["url"]):
-                print("Q&A thread already posted, abort!")
-            else:
-                print("Posting QA notification.")
-                await client.send_message(channel, embed=embed_gh(gh_obj))
-
-        session.commit()
-        await asyncio.sleep(QA_TIMEOUT)
-
-
-async def forum_checker():
-    await client.wait_until_ready()
-    channel = discord.Object(id=FORUM_CHANNEL)
-
-    while not client.is_closed:
-        session = Session()
-        fstamp = session.query(Stamp).filter_by(descriptor="forum").first()
-        gh_obj, stamp = feed.check_forum(
-            FORUM_URL,
-            fstamp.stamp if fstamp else "missing"
-        )
-
-        if fstamp:
-            if not fstamp.stamp == stamp:
-                fstamp.stamp = stamp
-        else:
-            # Creating new row for forum stamp
-            dbstamp = Stamp(descriptor="forum", stamp=stamp)
-            session.add(dbstamp)
-            print("Adding new stamp in database for forum.")
-
-        if gh_obj:
-            if await check_duplicate_url(channel, gh_obj["url"]):
-                print("Forum thread already posted, abort!")
-            else:
-                print("Posting Forum notification.")
-                await client.send_message(channel, embed=embed_gh(gh_obj))
-
-        session.commit()
-        await asyncio.sleep(FORUM_TIMEOUT)
-
-
-async def commit_checker():
-    await client.wait_until_ready()
-    channel = discord.Object(id=COMMIT_CHANNEL)
-
-    while not client.is_closed:
-        session = Session()
-        cstamp = session.query(Stamp).filter_by(descriptor="commit").first()
-        gh_obj, stamp = feed.check_commit(
-            COMMIT_URL,
-            cstamp.stamp if cstamp else "missing"
-        )
-
-        if cstamp:
-            if not cstamp.stamp == stamp:
-                # Updating stamp in db
-                cstamp.stamp = stamp
-        else:
-            dbstamp = Stamp(descriptor="commit", stamp=stamp)
-            session.add(dbstamp)
-            print("Adding new stamp to database for commits")
-
-        if gh_obj:
-            if await check_duplicate_url(channel, gh_obj["url"]):
-                print("Commit already posted, abort!")
-            else:
-                print("Posting Commit notification.")
-                await client.send_message(channel, embed=embed_gh(gh_obj))
-
-        session.commit()
-        await asyncio.sleep(COMMIT_TIMEOUT)
-
-
-async def issue_checker():
-    await client.wait_until_ready()
-    channel = discord.Object(id=ISSUE_CHANNEL)
-
-    while not client.is_closed:
-        session = Session()
-        istamp = session.query(Stamp).filter_by(descriptor="issue").first()
-        gh_objects, stamp = feed.check_issue(
-            ISSUE_URL,
-            istamp.stamp if istamp else "missing"
-        )
-
-        if istamp:
-            if not istamp.stamp == stamp:
-                # Updating stamp in db
-                istamp.stamp = stamp
-        else:
-            dbstamp = Stamp(descriptor="issue", stamp=stamp)
-            session.add(dbstamp)
-            print("Adding new stamp to database for issues")
-
-        if gh_objects:
-            for gh_obj in gh_objects:
-                if await check_duplicate_url(channel, gh_obj["url"]):
-                    print("Issue already posted, removing!")
-                else:
-                    print("Posting Issue notification.")
-                    await client.send_message(channel, embed=embed_gh(gh_obj))
-
-        session.commit()
-        await asyncio.sleep(ISSUE_TIMEOUT)
-
-
-async def doc_commit_checker():
-    await client.wait_until_ready()
-    channel = discord.Object(id=COMMIT_CHANNEL)
-
-    while not client.is_closed:
-        session = Session()
-        cstamp = session.query(Stamp).filter_by(descriptor="doc_commit").first()
-        gh_obj, stamp = feed.check_commit(
-            DOC_COMMIT_URL,
-            cstamp.stamp if cstamp else "missing"
-        )
-
-        if cstamp:
-            if not cstamp.stamp == stamp:
-                # Updating stamp in db
-                cstamp.stamp = stamp
-        else:
-            dbstamp = Stamp(descriptor="doc_commit", stamp=stamp)
-            session.add(dbstamp)
-            print("Adding new stamp to database for doc-commits")
-
-        if gh_obj:
-            if await check_duplicate_url(channel, gh_obj["url"]):
-                print("Commit already posted, abort!")
-            else:
-                print("Posting Commit notification.")
-                await client.send_message(channel, embed=embed_gh(gh_obj))
-
-        session.commit()
-        await asyncio.sleep(DOC_COMMIT_TIMEOUT)
-
-
-async def doc_issue_checker():
-    await client.wait_until_ready()
-    channel = discord.Object(id=ISSUE_CHANNEL)
-
-    while not client.is_closed:
-        session = Session()
-        istamp = session.query(Stamp).filter_by(descriptor="doc_issue").first()
-        gh_objects, stamp = feed.check_issue(
-            DOC_ISSUE_URL,
-            istamp.stamp if istamp else "missing"
-        )
-
-        if istamp:
-            if not istamp.stamp == stamp:
-                # Updating stamp in db
-                istamp.stamp = stamp
-        else:
-            dbstamp = Stamp(descriptor="doc_issue", stamp=stamp)
-            session.add(dbstamp)
-            print("Adding new stamp to database for doc-issues")
-
-        if gh_objects:
-            for gh_obj in gh_objects:
-                if await check_duplicate_url(channel, gh_obj["url"]):
-                    print("Issue already posted, removing!")
-                else:
-                    print("Posting Issue notification.")
-                    await client.send_message(channel, embed=embed_gh(gh_obj))
-
-        session.commit()
-        await asyncio.sleep(DOC_ISSUE_TIMEOUT)
 
 
 @client.event
@@ -637,28 +293,6 @@ async def on_message(message):
     # This was an easter egg by karroffel:
     #if message.author.id == "195659861600501761":
     #    await client.add_reaction(message, "🐖")
-
-    if message.author.id == client.user.id:
-        print("Not granting XP to bot.")
-    elif message.content.startswith("!"):
-        # Don't give XP for bot commands.
-        print("Ignoring message as a command, no xp.")
-    else:
-        xp = 1 + len(message.content) // 80
-        session = Session()
-        # Check if the user exists in the database and update the xp column.
-        # If user doesn't exist, create row.
-        if session.query(User).filter_by(userid=id).first():
-            session.query(User).filter_by(userid=id).update(
-                {"xp": User.xp + xp}
-            )
-            print("Awarded {0} xp to {1}".format(xp, message.author.name))
-        else:
-            print("Creating new user row for {0}".format(id))
-            u = User(userid=id, xp=xp)
-            session.add(u)
-
-        session.commit()
 
     # Posts quotes of Bob Ross
     if message.content.lower().startswith("!bobross") or message.content.lower().startswith("!ross") or message.content.lower().startswith("!br"):
@@ -751,61 +385,6 @@ async def on_message(message):
     ):
         await client.send_message(message.channel, HELP_STRING)
         await client.delete_message(message)
-
-    elif message.content.startswith("!xp"):
-        # Get the xp for the user sending the message, or for any mentions
-        # after the command.
-        session = Session()
-        msg = ""
-        if not message.mentions:
-            u = session.query(User).filter_by(userid=id).first()
-            if u:
-                msg = "{0}'s XP: **{1}**".format(
-                    message.author.nick if message.author.nick else message.author.name, u.xp
-                )
-            else:
-                msg = "**Not found.**"
-        else:
-            ranks = []
-            for m in message.mentions:
-                u = session.query(User).filter_by(userid=m.id).first()
-                if u:
-                    ranks.append(u)
-            ranks = sorted(ranks, key=lambda x: x.xp, reverse=True)
-            for u in ranks:
-                mem = message.server.get_member(u.userid)
-                msg += "{0}: **{1}**\n".format(
-                    mem.nick if mem.nick else mem.name,
-                    u.xp
-                )
-        if msg:
-            tmp = await client.send_message(message.channel, msg)
-            await delete_edit_timer(
-                tmp, FEEDBACK_DEL_TIMER
-            )
-        try:
-            await client.delete_message(message)
-        except:
-            pass
-
-    elif message.content.startswith("!rank"):
-        # Get's the top ranking users by their xp and posts a list of them.
-        session = Session()
-        ranks = session.query(User).order_by(User.xp.desc()).all()
-        ranks = ranks[:RANK_MAX]    # Slice. Perhaps use SQLAlchemy for this.
-        msg = "**XP leaderboard:**"
-
-        for u in ranks:
-            m = message.server.get_member(u.userid)
-            if m:
-                name = m.nick if m.nick else m.name
-                msg += "\n{0}: **{1}**".format(name, u.xp)
-
-        session.commit()
-
-        tmp = await client.send_message(message.channel, msg)
-        await client.delete_message(message)
-        await shrink_rank_list(tmp)
 
     # Show a list of assignable roles.
     elif message.content.startswith("!roles"):
@@ -976,10 +555,4 @@ async def on_member_join(member):
 
 # Prepare for takeoff.
 populate_memes()
-client.loop.create_task(commit_checker())
-client.loop.create_task(issue_checker())
-client.loop.create_task(doc_commit_checker())
-client.loop.create_task(doc_issue_checker())
-client.loop.create_task(forum_checker())
-client.loop.create_task(qa_checker())
 client.run(TOKEN)   # And we have liftoff.
