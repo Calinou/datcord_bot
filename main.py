@@ -7,6 +7,8 @@ import random
 
 client = discord.Client()   # Initialize discord client
 
+last_meme = ''
+
 # CONFIG #
 # If you have set your token as an environment variable
 TOKEN = os.environ.get("DISCORD_BOT_TOKEN")
@@ -343,7 +345,7 @@ async def on_message(message):
         fpath = None
         credit = "N/A"
         c = message.content[6:]
-
+        global last_meme
         if not len(c.strip()) or not message.content[5] == " ":
             choice_error = True
 
