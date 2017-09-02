@@ -33,8 +33,8 @@ HELP_STRING = """
 :book: **Commands:**
 !assign [role]: *assign yourself to one of the available roles.*\n
 !unassign [role]: *unassign yourself from a role.*\n
-!roles: *list available roles.*"""
-
+!roles: *list available roles.*\n
+!patreon [#hex]: *select custom colour if a patron"""
 
 # How long to wait to delete messages
 FEEDBACK_DEL_TIMER = 5
@@ -536,7 +536,41 @@ async def on_message(message):
                     tmp, FEEDBACK_DEL_TIMER, error=True, call_msg=message
                 )
 
-
+    elif message.content.startswith("!patreon"):
+        is_donator = False
+        for r in message.author.roles: #check if donator
+            if r.name.lower() == "donor":
+                is_donator = True
+        if is_donator:
+            colour_hex = message.content[10:]
+            if not len(colour_hex) or not message.content[8:10] == " #":
+                tmp = await client.send_message(message.channel, "Usage: **!patreon #ff0000** is red\n**!patreon #00ff00** is green\netc...")
+                await delete_edit_timer(tmp, FEEDBACK_DEL_TIMER, call_msg=message)
+                return
+            else: #check if hexademical number
+                try:
+                    role_colour = int(colour_hex, 16)
+                except ValueError:
+                    tmp = await client.send_message(
+                    message.channel, "Not a hexademical number")
+                    await delete_edit_timer(tmp, FEEDBACK_DEL_TIMER, call_msg=message)
+                    return
+                if role_colour > 16777216 or role_colour < 0:
+                    tmp = await client.send_message(message.channel, "Usage: **!patreon #ff0000** is red\n**!patreon #00ff00** is green\netc...")
+                    await delete_edit_timer(tmp, FEEDBACK_DEL_TIMER, call_msg=message)
+                    return
+                role_name = "donor_c_" + str(message.author)
+                for r in message.author.roles: #check if user has a patreon role and delete it
+                    if r.name.startswith("donor_"):
+                        await client.delete_role(message.server, r)
+                new_role = await client.create_role(
+                    message.server, name=role_name, colour=discord.Colour(role_colour)
+                )
+                await client.add_roles(message.author, new_role)
+        else:
+            tmp = await client.send_message(
+                message.channel, "You have to be a patron to get a custom colour. If you are a patron and see this message, please contact a moderator.\n\nhttps://www.patreon.com/godotengine")
+                
 @client.event
 async def on_member_join(member):
     # Actions to take when a new member joins the server.
