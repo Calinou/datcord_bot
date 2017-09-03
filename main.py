@@ -22,6 +22,9 @@ AVAILABLE_ROLES = [
     "sound designer"
 ]
 
+# Color roles will be put under this
+PARENT_COLOR_ROLE = "colors"
+
 # Channel ID's
 NEWCOMER_CHANNEL = "253576562136449024"
 GENERAL_CHANNEL = "212250894228652034"
@@ -562,38 +565,38 @@ async def on_message(message):
                 role_name = "color_" + str(message.author)
                 author_roles = message.author.roles.copy()
                 for r in author_roles: #check if user has already a colour role and edit the colour
-                    if r.name.startswith("color"):
+                    if r.name.startswith("color_"):
                         await client.edit_role(message.server, r, colour=discord.Colour(role_colour))
                         return
                 server_roles = message.server.roles.copy()
-                for r in server_roles: #check position of donor role
-                    if r.name.lower() == "donor":
-                        donor_pos = r.position
+                for r in server_roles: #get position of the parent role
+                    if r.name.lower() == PARENT_COLOR_ROLE.lower():
+                        parent_pos = r.position
                 new_role = await client.create_role(
                     message.server, name=role_name, colour=discord.Colour(role_colour)
                 )
-                await client.move_role(message.server, new_role, donor_pos)
+                await client.move_role(message.server, new_role, parent_pos)
                 await client.add_roles(message.author, new_role)
         else:
             tmp = await client.send_message(
                 message.channel, "You have to be a patron to get a custom colour. If you are a patron and get this message, please contact a moderator.\n\nhttps://www.patreon.com/godotengine")
 
-    elif message.content.startswith("!sort"): # moving all the colour roles below Donor role
+    elif message.content.startswith("!sort"): # moving all the colour roles below parent role
         is_admin = False
         for admin in message.author.roles: #check if admin
             if admin.name.lower() == "admin":
                 is_admin = True
                 break
         if is_admin:
-            donor_pos = 0
+            parent_pos = 0
             server_role_list = message.server.roles.copy()
             for r in server_role_list:
-                if r.name.lower() == "donor":
-                    donor_pos = r.position
+                if r.name.lower() == PARENT_COLOR_ROLE.lower():
+                    parent_pos = r.position
                     break
             for r in server_role_list:
-                if r.name.lower().startswith("color"):
-                    await client.move_role(message.server, r, donor_pos - 1)
+                if r.name.lower().startswith("color_"):
+                    await client.move_role(message.server, r, parent_pos - 1)
 
     elif message.content.startswith("!purge"): # delete colour roles for members who are no longer patrons
         is_admin = False
@@ -606,7 +609,7 @@ async def on_message(message):
             for m in message.server.members: #check if a user has donor color role but not a donor role
                 if not "donor" in (r.name.lower() for r in m.roles):
                     for role in m.roles:
-                        if role.name.startswith("color"):
+                        if role.name.startswith("color_"):
                             kills += 1
                             await client.delete_role(message.server, role)
             await client.send_message(message.channel, "kill count:  " + str(kills))
