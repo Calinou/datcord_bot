@@ -555,47 +555,61 @@ async def on_message(message):
                     message.channel, "Not a hexademical number")
                     await delete_edit_timer(tmp, FEEDBACK_DEL_TIMER, call_msg=message)
                     return
-                if role_colour > 16777216 or role_colour < 0:
+                if role_colour > 16777215 or role_colour < 0:
                     tmp = await client.send_message(message.channel, "Usage: `!patreon #ff0000` is red\n`!patreon #00ff00` is green\netc...")
                     await delete_edit_timer(tmp, FEEDBACK_DEL_TIMER, call_msg=message)
                     return
-                role_name = "donor_c_" + str(message.author)
-                for r in message.author.roles: #check if user has already a donor colour role and delete it
-                    if r.name.startswith("donor_"):
-                        await client.delete_role(message.server, r)
-                for r in message.server.roles: #check position of donor role
+                role_name = "color_" + str(message.author)
+                server_roles = message.server.roles.copy()
+                for r in server_roles: #check position of donor role
                     if r.name.lower() == "donor":
                         donor_pos = r.position
                 new_role = await client.create_role(
                     message.server, name=role_name, colour=discord.Colour(role_colour)
                 )
-                await client.move_role(message.server, new_role, donor_pos + 1)
+                await client.move_role(message.server, new_role, donor_pos)
+                author_roles = message.author.roles.copy()
+                for k in author_roles: #check if user has already a donor colour role and delete it
+                    if k.name.startswith("color"):
+                        await client.delete_role(message.server, k)
                 await client.add_roles(message.author, new_role)
         else:
             tmp = await client.send_message(
                 message.channel, "You have to be a patron to get a custom colour. If you are a patron and see this message, please contact a moderator.\n\nhttps://www.patreon.com/godotengine")
 
-    elif message.content.startswith("!sort_roles"):
-        for r in message.server.roles: #move donor role to position 1
-            if r.name.lower() == "donor":
-                await client.move_role(message.server, r, 1)
-                break
-        for r in message.server.roles: #move donor colour roles to position 2, so that the important roles stay above
-            if r.name.startswith("donor_"):
-                await client.move_role(message.server, r, 2)
-
-    elif message.content.startswith("!purge"): #delete colour roles for members who are no longer patrons
-        for admin in message.author.roles:
+    elif message.content.startswith("!sort"): # moving all the colour roles below Donor role
+        is_admin = False
+        for admin in message.author.roles: #check if admin
             if admin.name.lower() == "admin":
-                kills = 0
-                for m in message.server.members: #check if a user has donor color role but not a donor role
-                    if not "donor" in (r.name.lower() for r in m.roles):
-                        for role in m.roles:
-                            if role.name.startswith("donor_"):
-                                kills += 1
-                                await client.delete_role(message.server, role)
-                await client.send_message(message.channel, "kill count:  " + str(kills))
+                is_admin = True
                 break
+        if is_admin:
+            donor_pos = 0
+            server_role_list = message.server.roles.copy()
+            for r in server_role_list:
+                if r.name.lower() == "donor":
+                    donor_pos = r.position
+                    break
+            for r in server_role_list:
+                if r.name.lower().startswith("color"):
+                    await client.move_role(message.server, r, donor_pos - 1)
+
+    elif message.content.startswith("!purge"): # delete colour roles for members who are no longer patrons
+        is_admin = False
+        for admin in message.author.roles: #check if admin
+            if admin.name.lower() == "admin":
+                is_admin = True
+                break
+        if is_admin:
+            kills = 0
+            for m in message.server.members: #check if a user has donor color role but not a donor role
+                if not "donor" in (r.name.lower() for r in m.roles):
+                    for role in m.roles:
+                        if role.name.startswith("color"):
+                            kills += 1
+                            await client.delete_role(message.server, role)
+            await client.send_message(message.channel, "kill count:  " + str(kills))
+
 @client.event
 async def on_member_join(member):
     # Actions to take when a new member joins the server.
