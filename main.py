@@ -560,6 +560,11 @@ async def on_message(message):
                     await delete_edit_timer(tmp, FEEDBACK_DEL_TIMER, call_msg=message)
                     return
                 role_name = "color_" + str(message.author)
+                author_roles = message.author.roles.copy()
+                for r in author_roles: #check if user has already a colour role and edit the colour
+                    if r.name.startswith("color"):
+                        await client.edit_role(message.server, r, colour=discord.Colour(role_colour))
+                        return
                 server_roles = message.server.roles.copy()
                 for r in server_roles: #check position of donor role
                     if r.name.lower() == "donor":
@@ -568,14 +573,10 @@ async def on_message(message):
                     message.server, name=role_name, colour=discord.Colour(role_colour)
                 )
                 await client.move_role(message.server, new_role, donor_pos)
-                author_roles = message.author.roles.copy()
-                for k in author_roles: #check if user has already a donor colour role and delete it
-                    if k.name.startswith("color"):
-                        await client.delete_role(message.server, k)
                 await client.add_roles(message.author, new_role)
         else:
             tmp = await client.send_message(
-                message.channel, "You have to be a patron to get a custom colour. If you are a patron and see this message, please contact a moderator.\n\nhttps://www.patreon.com/godotengine")
+                message.channel, "You have to be a patron to get a custom colour. If you are a patron and get this message, please contact a moderator.\n\nhttps://www.patreon.com/godotengine")
 
     elif message.content.startswith("!sort"): # moving all the colour roles below Donor role
         is_admin = False
