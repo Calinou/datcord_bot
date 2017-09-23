@@ -213,6 +213,7 @@ GD_MEMES = [
     ["morpheus.png",        "kkolyv via Matrix"],
 
     ["godot-episode3.png",  "Calinou via Discord"],
+    ["godot-mlp01.gif",     "Calinou via Discord"],
     ["godot-chan03.png",    "kkolyv via Discord"],
     ["adamot.png",          "Noshyaar via Discord"],
     ["floor.png",           "Noshyaar via Discord"],
