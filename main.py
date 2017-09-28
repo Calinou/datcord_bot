@@ -231,6 +231,7 @@ GD_MEMES = [
     ["godonymous.png",      "Omicron666 via Discord"],
     ["collisionshape.png",  "sheepandshepherd via Discord"],
     ["kenny-tester.png",    "Zylann via Discord"],
+    ["godoterminator.jpg",  "Zylann via Discord"],
 
     ["cat-godot.jpg",       "Juan Linietsky via Facebook"],
     ["sad-godot.jpg",       "Juan Linietsky via Facebook"],
