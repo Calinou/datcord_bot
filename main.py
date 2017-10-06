@@ -227,6 +227,8 @@ GD_MEMES = [
     ["unity-spinner.png",   "Noshyaar via Discord"],
     ["smallfix.png",        "Noshyaar via Discord"],
     ["pending-prs.jpg",     "Noshyaar via Discord"],
+    ["torrent.png",         "Noshyaar via Discord"],
+    ["godoot.png",          "Noshyaar via Discord"],
     ["abracadabra.jpg",     "Omicron666 via Discord"],
     ["godonymous.png",      "Omicron666 via Discord"],
     ["collisionshape.png",  "sheepandshepherd via Discord"],
