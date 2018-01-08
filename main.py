@@ -245,6 +245,7 @@ GD_MEMES = [
     ["dragonball.jpg",      "William Tumeo via Facebook"],
     ["balloon.jpg",         "William Tumeo via Facebook"],
     ["galgodot1.jpg",       "Juan Bustelo via Facebook"],
+    ["gamedev_time.jpg",    "Mariano Suligoy via Facebook"],
     ["whereisgodot.jpg",    "Nahomy Mejia via Facebook"],
     ["dontwantnolife.jpg",  "Nahomy Mejia via Facebook"],
     ["sisterross.jpg",      "Nahomy Mejia via Facebook"],
@@ -272,7 +273,7 @@ GD_MEMES = [
     ["godot-chan02.png",    "anon via 4chan"],
 
     ["resolutions.png",     "anon (/agdg/), kkolyv (Discord)"],
-    ["revert.png",          "vnen (IRC), Akien, reduz (Github)"]
+    ["revert.png",          "vnen (IRC), Akien, reduz (GitHub)"],
 ]
 
 def populate_memes():
