@@ -237,6 +237,8 @@ GD_MEMES = [
     ["gd3_pbr_edition.png", "YeOldeDM via Discord"],
     ["kenny-tester.png",    "Zylann via Discord"],
     ["godoterminator.jpg",  "Zylann via Discord"],
+    ["godot_wind_waker_headshot_unity_meme.jpg", "LinPengtul via Discord"],
+    ["godot_let_go_meme.png", "LinPengtul via Discord"],
 
     ["cat-godot.jpg",       "Juan Linietsky via Facebook"],
     ["sad-godot.jpg",       "Juan Linietsky via Facebook"],
