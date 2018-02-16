@@ -9,7 +9,8 @@ client = discord.Client()   # Initialize discord client
 
 last_meme = ''
 
-# CONFIG #
+# Configuration
+#
 # If you have set your token as an environment variable
 TOKEN = os.environ.get("DISCORD_BOT_TOKEN")
 # Uncomment this instead if you'd like to specify it here
@@ -22,26 +23,22 @@ AVAILABLE_ROLES = [
     "sound designer"
 ]
 
-# Channel ID's
+# Channel IDs
 NEWCOMER_CHANNEL = "253576562136449024"
 GENERAL_CHANNEL = "212250894228652034"
 
-
-
-# Message that bot returns on !help
+# Message that the bot returns on `!help`
 HELP_STRING = """
 :book: **Commands:**
 !assign [role]: *assign yourself to one of the available roles.*\n
 !unassign [role]: *unassign yourself from a role.*\n
 !roles: *list available roles.*"""
 
-
-# How long to wait to delete messages
+# How long to wait for before deleting messages
 FEEDBACK_DEL_TIMER = 5
 
-
 # RMS is a beautiful man.
-RMS_PATH = "rms"    # Folder where RMS memes are located.
+RMS_PATH = "rms"  # Directory where RMS memes are located
 RMS_MEMES = []
 
 EMBED_ROSS_ICON = "http://i.imgur.com/OZLdaSn.png"
@@ -284,9 +281,10 @@ GD_MEMES = [
     ["revert.png",          "vnen (IRC), Akien, reduz (GitHub)"],
 ]
 
+
 def populate_memes():
     """
-    Retrieves all pictures in the RMS_PATH folder and sorts them by name
+    Retrieves all pictures in the RMS_PATH folder and sorts them by name.
     """
     global RMS_MEMES
     memes = [
@@ -302,6 +300,7 @@ def populate_memes():
 
     for i in range(len(GD_MEMES)):
         GD_MEMES[i][0] = os.path.join(GD_PATH, GD_MEMES[i][0])
+
 
 async def delete_edit_timer(msg, time, error=False, call_msg=None):
     """
@@ -338,10 +337,6 @@ async def on_ready():
 async def on_message(message):
     id = message.author.id
 
-    # This was an easter egg by karroffel:
-    #if message.author.id == "195659861600501761":
-    #    await client.add_reaction(message, "🐖")
-
     # Posts quotes of Bob Ross
     if message.content.lower().startswith("!bobross") or message.content.lower().startswith("!ross") or message.content.lower().startswith("!br"):
         rand_c = random.randint(0, len(ROSS_QUOTES) - 1)
@@ -355,7 +350,6 @@ async def on_message(message):
             icon_url=EMBED_ROSS_ICON
         )
         await client.send_message(message.channel, embed=e)
-
 
     # Posts a picture of RMS.
     if message.content.lower().startswith("!rms"):
@@ -412,11 +406,11 @@ async def on_message(message):
 
         tries = 0
         while tries < 4:
-        	rand_c = random.randint(0, len(submeme) - 1)
-        	fpath = submeme[rand_c][0]
-        	if fpath != last_meme:
-        		break
-        	tries += 1
+            rand_c = random.randint(0, len(submeme) - 1)
+            fpath = submeme[rand_c][0]
+            if fpath != last_meme:
+                break
+            tries += 1
 
         last_meme = fpath
 
