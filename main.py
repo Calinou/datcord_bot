@@ -337,6 +337,9 @@ async def on_ready():
 async def on_message(message):
     id = message.author.id
 
+    if message.channel.name == "memedialand":
+        return
+
     # Posts quotes of Bob Ross
     if message.content.lower().startswith("!bobross") or message.content.lower().startswith("!ross") or message.content.lower().startswith("!br"):
         rand_c = random.randint(0, len(ROSS_QUOTES) - 1)
