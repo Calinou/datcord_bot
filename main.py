@@ -380,8 +380,8 @@ async def on_message(message):
             with open(fpath, "rb") as f:
                 await client.send_file(message.channel, f, content="**#{0}:**".format(c))
 
-    if message.channel.name != "botspam":
-        return  # Ignore command if it's not written in botspam channel
+    if message.channel.name != "bot-cmd":
+        return  # Ignore command if it's not written in the bot commands channel
 
     if message.content.lower().startswith("!meme"):
         choice_error = False
