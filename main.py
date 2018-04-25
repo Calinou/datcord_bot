@@ -7,8 +7,6 @@ import random
 
 client = discord.Client()   # Initialize discord client
 
-last_meme = ''
-
 # Configuration
 #
 # If you have set your token as an environment variable
