@@ -1,11 +1,14 @@
 import discord
+from discord.ext import commands
 import asyncio
 import os
 import glob
 import random
 
 
-client = discord.Client()   # Initialize discord client
+client = commands.Bot(   # Initialize discord client
+    command_prefix='!'
+)
 
 # Configuration
 #
@@ -332,7 +335,7 @@ async def on_ready():
 
 
 @client.event
-async def on_message(message):
+async def on_message(message):  # TODO: split into commands, remove event
     id = message.author.id
 
     # Posts quotes of Bob Ross
@@ -576,7 +579,7 @@ async def on_message(message):
 
 
 @client.event
-async def on_member_join(member):
+async def on_member_join(member):  # TODO: clean this up
     # Actions to take when a new member joins the server.
     channel = discord.Object(id=NEWCOMER_CHANNEL)
     msg = ":new: {0} joined the server. Current member count: **{1}**".format(
@@ -589,7 +592,7 @@ async def on_member_join(member):
                 await client.add_reaction(tmp, e)
                 break
     msg = ":new: `add_child(`{0}`)`\nWelcome to the server! :tada:".format(member.mention)
-    channel = discord.Object(id=GENERAL_CHANNEL)
+    channel = discord.Object(id=GENERAL_CHANNEL)  # good lord
     tmp = await client.send_message(channel, msg)
 
 
