@@ -534,7 +534,7 @@ async def on_message(message):  # TODO: split into commands, remove event
                     tmp, FEEDBACK_DEL_TIMER, error=True, call_msg=message
                 )
 
-    client.process_commands(message)
+    await client.process_commands(message)
 
 
 @client.command(aliases=['ross', 'br'])
@@ -552,35 +552,20 @@ async def bobross():
 
 
 @client.command(pass_context=True)
-async def rms(ctx):
+async def rms(ctx, number: int):
     message = ctx.message
 
-    choice_error = False
-    fpath = None
-    c = message.content[5:]
+    fpath = (RMS_MEMES[number - 1]
+             if 0 < number <= len(RMS_MEMES)
+             else random.choice(RMS_MEMES))
 
-    if not len(c.strip()) or not message.content[4] == " ":
-        choice_error = True
+    with open(fpath, "rb") as f:
+        await client.send_file(message.channel, f, content="**#{0}:**".format(number))
 
-    try:
-        c = int(c.strip())
-        if c > 0 and c <= len(RMS_MEMES):
-            fpath = RMS_MEMES[c - 1]
-        else:
-            choice_error = True
-    except ValueError:
-        choice_error = True
 
-    if choice_error:
-        # choice_error occurs when a valid integer hasn't been supplied
-        # or it's out of bounds. This will pick a random image instead.
-        rand_c = random.randint(0, len(RMS_MEMES) - 1)
-        c = rand_c + 1  # c is the number which we will post alongside img.
-        fpath = RMS_MEMES[rand_c]
-
-    if fpath:
-        with open(fpath, "rb") as f:
-            await client.send_file(message.channel, f, content="**#{0}:**".format(c))
+@rms.error
+async def rms_choice_error(error, ctx):
+    await ctx.invoke(rms, random.randint(1, len(RMS_MEMES)))
 
 
 @client.event
