@@ -536,40 +536,31 @@ async def rms_choice_error(error, ctx):
 
 @client.command(pass_context=True)
 @bot_cmd_only()
-async def meme(ctx):
+async def meme(ctx, meme_filename=''):
+    global last_meme
     message = ctx.message
 
-    choice_error = False
-    fpath = None
+    fpath = ''
     credit = "N/A"
-    c = message.content[6:]
-    global last_meme
-    if not len(c.strip()) or not message.content[5] == " ":
-        choice_error = True
 
-    submeme = []
-    if not choice_error:
+    if meme_filename is not None:
+        submeme = []
         for i in GD_MEMES:
-            if i[1].lower().find(c.lower()) != -1:
+            if i[1].lower().find(meme_filename) != -1:
                 submeme.append(i)
-
-    if choice_error or len(submeme) == 0:
+    else:
         submeme = GD_MEMES
-
-    rand_c = 0
-    fpath = ""
 
     tries = 0
     while tries < 4:
-        rand_c = random.randint(0, len(submeme) - 1)
-        fpath = submeme[rand_c][0]
+        random_meme = random.choice(submeme)
+        fpath = random_meme[0]
+        credit = random_meme[1]
         if fpath != last_meme:
             break
         tries += 1
 
     last_meme = fpath
-
-    credit = submeme[rand_c][1]
 
     if fpath:
         with open(fpath, "rb") as f:
