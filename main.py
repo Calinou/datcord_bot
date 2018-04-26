@@ -338,35 +338,6 @@ async def on_ready():
 async def on_message(message):  # TODO: split into commands, remove event
     id = message.author.id
 
-    # Posts a picture of RMS.
-    if message.content.lower().startswith("!rms"):
-        choice_error = False
-        fpath = None
-        c = message.content[5:]
-
-        if not len(c.strip()) or not message.content[4] == " ":
-            choice_error = True
-
-        try:
-            c = int(c.strip())
-            if c > 0 and c <= len(RMS_MEMES):
-                fpath = RMS_MEMES[c - 1]
-            else:
-                choice_error = True
-        except ValueError:
-            choice_error = True
-
-        if choice_error:
-            # choice_error occurs when a valid integer hasn't been supplied
-            # or it's out of bounds. This will pick a random image instead.
-            rand_c = random.randint(0, len(RMS_MEMES) - 1)
-            c = rand_c + 1  # c is the number which we will post alongside img.
-            fpath = RMS_MEMES[rand_c]
-
-        if fpath:
-            with open(fpath, "rb") as f:
-                await client.send_file(message.channel, f, content="**#{0}:**".format(c))
-
     if message.channel.name != "bot-cmd":
         return  # Ignore command if it's not written in the bot commands channel
 
@@ -578,6 +549,38 @@ async def bobross():
         icon_url=EMBED_ROSS_ICON
     )
     await client.say(embed=e)
+
+
+@client.command(pass_context=True)
+async def rms(ctx):
+    message = ctx.message
+
+    choice_error = False
+    fpath = None
+    c = message.content[5:]
+
+    if not len(c.strip()) or not message.content[4] == " ":
+        choice_error = True
+
+    try:
+        c = int(c.strip())
+        if c > 0 and c <= len(RMS_MEMES):
+            fpath = RMS_MEMES[c - 1]
+        else:
+            choice_error = True
+    except ValueError:
+        choice_error = True
+
+    if choice_error:
+        # choice_error occurs when a valid integer hasn't been supplied
+        # or it's out of bounds. This will pick a random image instead.
+        rand_c = random.randint(0, len(RMS_MEMES) - 1)
+        c = rand_c + 1  # c is the number which we will post alongside img.
+        fpath = RMS_MEMES[rand_c]
+
+    if fpath:
+        with open(fpath, "rb") as f:
+            await client.send_file(message.channel, f, content="**#{0}:**".format(c))
 
 
 @client.event
