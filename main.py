@@ -338,20 +338,6 @@ async def on_ready():
 async def on_message(message):  # TODO: split into commands, remove event
     id = message.author.id
 
-    # Posts quotes of Bob Ross
-    if message.content.lower().startswith("!bobross") or message.content.lower().startswith("!ross") or message.content.lower().startswith("!br"):
-        rand_c = random.randint(0, len(ROSS_QUOTES) - 1)
-        quote = ROSS_QUOTES[rand_c]
-        e = discord.Embed(
-            color=EMBED_ROSS_COLOR,
-            description=quote
-        )
-        e.set_author(
-            name="Bob Ross",
-            icon_url=EMBED_ROSS_ICON
-        )
-        await client.send_message(message.channel, embed=e)
-
     # Posts a picture of RMS.
     if message.content.lower().startswith("!rms"):
         choice_error = False
@@ -576,6 +562,23 @@ async def on_message(message):  # TODO: split into commands, remove event
                 await delete_edit_timer(
                     tmp, FEEDBACK_DEL_TIMER, error=True, call_msg=message
                 )
+
+    client.process_commands(message)
+
+
+@client.command(aliases=['ross', 'br'])
+async def bobross():
+    rand_c = random.randint(0, len(ROSS_QUOTES) - 1)
+    quote = ROSS_QUOTES[rand_c]
+    e = discord.Embed(
+        color=EMBED_ROSS_COLOR,
+        description=quote
+    )
+    e.set_author(
+        name="Bob Ross",
+        icon_url=EMBED_ROSS_ICON
+    )
+    await client.say(embed=e)
 
 
 @client.event
