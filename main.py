@@ -334,61 +334,6 @@ async def on_ready():
     print("------")
 
 
-@client.event
-async def on_message(message):  # TODO: split into commands, remove event
-    id = message.author.id
-
-    if (
-        message.content.startswith("!unassign") or
-        message.content.startswith("!remove")
-    ):
-        error = False
-
-        # It's the same here that it was with !assign
-        if message.content.startswith("!unassign"):
-            s = message.content[10:]     # remove !unassign
-            if not len(s) or not message.content[9] == " ":
-                error = True
-        elif message.content.startswith("!remove"):
-            s = message.content[8:]     # remove !remove
-            if not len(s) or not message.content[7] == " ":
-                error = True
-
-        if error:
-            tmp = await client.send_message(
-                message.channel,
-                "Usage: !unassign [role]"
-            )
-            await delete_edit_timer(tmp, FEEDBACK_DEL_TIMER, call_msg=message)
-        else:
-            oldrole = s
-            roles = message.server.roles
-            for r in message.author.roles:
-                # print(r.name.lower())
-                if r.name.lower() == oldrole.lower():
-                    # print(r.name, "<-FOUND")
-                    await client.remove_roles(message.author, r)
-                    tmp = await client.send_message(
-                        message.channel, ":white_check_mark: Role was removed."
-                    )
-                    await delete_edit_timer(
-                        tmp, FEEDBACK_DEL_TIMER, call_msg=message
-                    )
-                    break
-            else:
-                tmp = await client.send_message(
-                    message.channel,
-                    ":no_entry: **{0}** <- You don't have that role.".format(
-                        oldrole.upper()
-                    )
-                )
-                await delete_edit_timer(
-                    tmp, FEEDBACK_DEL_TIMER, error=True, call_msg=message
-                )
-
-    await client.process_commands(message)
-
-
 def bot_cmd_only():
     def predicate(ctx):
         return ctx.message.channel.name == "bot-cmd"
@@ -529,6 +474,55 @@ async def assign(ctx, role_name):
     await delete_edit_timer(
         tmp, FEEDBACK_DEL_TIMER, call_msg=message
     )
+
+
+@client.command(pass_context=True, aliases=['remove'])
+@bot_cmd_only()
+async def unassign(ctx):
+    message = ctx.message
+    error = False
+
+    # It's the same here that it was with !assign
+    if message.content.startswith("!unassign"):
+        s = message.content[10:]     # remove !unassign
+        if not len(s) or not message.content[9] == " ":
+            error = True
+    elif message.content.startswith("!remove"):
+        s = message.content[8:]     # remove !remove
+        if not len(s) or not message.content[7] == " ":
+            error = True
+
+    if error:
+        tmp = await client.send_message(
+            message.channel,
+            "Usage: !unassign [role]"
+        )
+        await delete_edit_timer(tmp, FEEDBACK_DEL_TIMER, call_msg=message)
+    else:
+        oldrole = s
+        roles = message.server.roles
+        for r in message.author.roles:
+            # print(r.name.lower())
+            if r.name.lower() == oldrole.lower():
+                # print(r.name, "<-FOUND")
+                await client.remove_roles(message.author, r)
+                tmp = await client.send_message(
+                    message.channel, ":white_check_mark: Role was removed."
+                )
+                await delete_edit_timer(
+                    tmp, FEEDBACK_DEL_TIMER, call_msg=message
+                )
+                break
+        else:
+            tmp = await client.send_message(
+                message.channel,
+                ":no_entry: **{0}** <- You don't have that role.".format(
+                    oldrole.upper()
+                )
+            )
+            await delete_edit_timer(
+                tmp, FEEDBACK_DEL_TIMER, error=True, call_msg=message
+            )
 
 
 @assign.error
