@@ -476,55 +476,6 @@ async def assign(ctx, role_name):
     )
 
 
-@client.command(pass_context=True, aliases=['remove'])
-@bot_cmd_only()
-async def unassign(ctx):
-    message = ctx.message
-    error = False
-
-    # It's the same here that it was with !assign
-    if message.content.startswith("!unassign"):
-        s = message.content[10:]     # remove !unassign
-        if not len(s) or not message.content[9] == " ":
-            error = True
-    elif message.content.startswith("!remove"):
-        s = message.content[8:]     # remove !remove
-        if not len(s) or not message.content[7] == " ":
-            error = True
-
-    if error:
-        tmp = await client.send_message(
-            message.channel,
-            "Usage: !unassign [role]"
-        )
-        await delete_edit_timer(tmp, FEEDBACK_DEL_TIMER, call_msg=message)
-    else:
-        oldrole = s
-        roles = message.server.roles
-        for r in message.author.roles:
-            # print(r.name.lower())
-            if r.name.lower() == oldrole.lower():
-                # print(r.name, "<-FOUND")
-                await client.remove_roles(message.author, r)
-                tmp = await client.send_message(
-                    message.channel, ":white_check_mark: Role was removed."
-                )
-                await delete_edit_timer(
-                    tmp, FEEDBACK_DEL_TIMER, call_msg=message
-                )
-                break
-        else:
-            tmp = await client.send_message(
-                message.channel,
-                ":no_entry: **{0}** <- You don't have that role.".format(
-                    oldrole.upper()
-                )
-            )
-            await delete_edit_timer(
-                tmp, FEEDBACK_DEL_TIMER, error=True, call_msg=message
-            )
-
-
 @assign.error
 async def invalid_role_name(error, ctx):
     """ If a valid role hasn't been supplied. """
@@ -535,6 +486,38 @@ async def invalid_role_name(error, ctx):
     await delete_edit_timer(
         tmp, FEEDBACK_DEL_TIMER, error=True, call_msg=ctx.message
     )
+
+
+@client.command(pass_context=True, aliases=['remove'])
+@bot_cmd_only()
+async def unassign(ctx, role_name):
+    message = ctx.message
+
+    for r in message.author.roles:
+        # print(r.name.lower())
+        if r.name.lower() == role_name.lower():
+            # print(r.name, "<-FOUND")
+            await client.remove_roles(message.author, r)
+            tmp = await client.say(":white_check_mark: Role was removed.")
+            await delete_edit_timer(
+                tmp, FEEDBACK_DEL_TIMER, call_msg=message
+            )
+            break
+    else:
+        tmp = await client.say(":no_entry: **{0}** <- You don't have that role.".format(role_name.upper()))
+        await delete_edit_timer(
+            tmp, FEEDBACK_DEL_TIMER, error=True, call_msg=message
+        )
+
+
+@unassign.error
+async def invalid_role_name(error, ctx):
+    """ If a valid role hasn't been supplied. """
+    tmp = await client.send_message(
+        ctx.message.channel,
+        "Usage: !unassign [role]"
+    )
+    await delete_edit_timer(tmp, FEEDBACK_DEL_TIMER, call_msg=ctx.message)
 
 
 @client.event
