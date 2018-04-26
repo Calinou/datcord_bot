@@ -338,46 +338,6 @@ async def on_ready():
 async def on_message(message):  # TODO: split into commands, remove event
     id = message.author.id
 
-    if message.channel.name != "bot-cmd":
-        return  # Ignore command if it's not written in the bot commands channel
-
-    if message.content.lower().startswith("!meme"):
-        choice_error = False
-        fpath = None
-        credit = "N/A"
-        c = message.content[6:]
-        global last_meme
-        if not len(c.strip()) or not message.content[5] == " ":
-            choice_error = True
-
-        submeme = []
-        if not choice_error:
-            for i in GD_MEMES:
-                if i[1].lower().find(c.lower()) != -1:
-                    submeme.append(i)
-
-        if choice_error or len(submeme) == 0:
-            submeme = GD_MEMES
-
-        rand_c = 0
-        fpath = ""
-
-        tries = 0
-        while tries < 4:
-            rand_c = random.randint(0, len(submeme) - 1)
-            fpath = submeme[rand_c][0]
-            if fpath != last_meme:
-                break
-            tries += 1
-
-        last_meme = fpath
-
-        credit = submeme[rand_c][1]
-
-        if fpath:
-            with open(fpath, "rb") as f:
-                await client.send_file(message.channel, f, content="**By {0}**".format(credit))
-
     # Send help message.
     if (
         message.content.startswith("!help") or
@@ -537,6 +497,12 @@ async def on_message(message):  # TODO: split into commands, remove event
     await client.process_commands(message)
 
 
+def bot_cmd_only():
+    def predicate(ctx):
+        return ctx.message.channel.name == "bot-cmd"
+    return commands.check(predicate)
+
+
 @client.command(aliases=['ross', 'br'])
 async def bobross():
     quote = random.choice(ROSS_QUOTES)
@@ -566,6 +532,48 @@ async def rms(ctx, number: int):
 @rms.error
 async def rms_choice_error(error, ctx):
     await ctx.invoke(rms, random.randint(1, len(RMS_MEMES)))
+
+
+@client.command(pass_context=True)
+@bot_cmd_only()
+async def meme(ctx):
+    message = ctx.message
+
+    choice_error = False
+    fpath = None
+    credit = "N/A"
+    c = message.content[6:]
+    global last_meme
+    if not len(c.strip()) or not message.content[5] == " ":
+        choice_error = True
+
+    submeme = []
+    if not choice_error:
+        for i in GD_MEMES:
+            if i[1].lower().find(c.lower()) != -1:
+                submeme.append(i)
+
+    if choice_error or len(submeme) == 0:
+        submeme = GD_MEMES
+
+    rand_c = 0
+    fpath = ""
+
+    tries = 0
+    while tries < 4:
+        rand_c = random.randint(0, len(submeme) - 1)
+        fpath = submeme[rand_c][0]
+        if fpath != last_meme:
+            break
+        tries += 1
+
+    last_meme = fpath
+
+    credit = submeme[rand_c][1]
+
+    if fpath:
+        with open(fpath, "rb") as f:
+            await client.send_file(message.channel, f, content="**By {0}**".format(credit))
 
 
 @client.event
