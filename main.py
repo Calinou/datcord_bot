@@ -338,16 +338,8 @@ async def on_ready():
 async def on_message(message):  # TODO: split into commands, remove event
     id = message.author.id
 
-    # Send help message.
-    if (
-        message.content.startswith("!help") or
-        message.content.startswith("!commands")
-    ):
-        await client.send_message(message.channel, HELP_STRING)
-        await client.delete_message(message)
-
     # Show a list of assignable roles.
-    elif message.content.startswith("!roles"):
+    if message.content.startswith("!roles"):
         s = ":scroll: **Available roles:**\n"
         s += "```\n"
 
@@ -565,6 +557,17 @@ async def meme(ctx, meme_filename=''):
     if fpath:
         with open(fpath, "rb") as f:
             await client.send_file(message.channel, f, content="**By {0}**".format(credit))
+
+
+client.remove_command("help")  # unregister built-in help command
+
+
+@client.command(pass_context=True, aliases=['commands'])
+@bot_cmd_only()
+async def help(ctx):
+    """ Send help message. """
+    await client.say(HELP_STRING)
+    await client.delete_message(ctx.message)
 
 
 @client.event
