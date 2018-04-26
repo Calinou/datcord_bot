@@ -338,25 +338,8 @@ async def on_ready():
 async def on_message(message):  # TODO: split into commands, remove event
     id = message.author.id
 
-    # Show a list of assignable roles.
-    if message.content.startswith("!roles"):
-        s = ":scroll: **Available roles:**\n"
-        s += "```\n"
-
-        for i, r in enumerate(AVAILABLE_ROLES):
-            s += "{0}".format(r.upper())
-            if not i == len(AVAILABLE_ROLES) - 1:
-                s += ", "
-        s += "```"
-
-        await client.send_message(
-            message.channel,
-            s
-        )
-        await client.delete_message(message)
-
     # Attempt to assign the user to a role.
-    elif (
+    if (
         message.content.startswith("!assign") or
         message.content.startswith("!set") or
         message.content.startswith("!role")
@@ -567,6 +550,23 @@ client.remove_command("help")  # unregister built-in help command
 async def help(ctx):
     """ Send help message. """
     await client.say(HELP_STRING)
+    await client.delete_message(ctx.message)
+
+
+@client.command(pass_context=True)
+@bot_cmd_only()
+async def roles(ctx):
+    """ Show a list of assignable roles. """
+    s = ":scroll: **Available roles:**\n"
+    s += "```\n"
+
+    for i, r in enumerate(AVAILABLE_ROLES):
+        s += "{0}".format(r.upper())
+        if not i == len(AVAILABLE_ROLES) - 1:
+            s += ", "
+    s += "```"
+
+    await client.say(s)
     await client.delete_message(ctx.message)
 
 
