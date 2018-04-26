@@ -568,8 +568,7 @@ async def on_message(message):  # TODO: split into commands, remove event
 
 @client.command(aliases=['ross', 'br'])
 async def bobross():
-    rand_c = random.randint(0, len(ROSS_QUOTES) - 1)
-    quote = ROSS_QUOTES[rand_c]
+    quote = random.choice(ROSS_QUOTES)
     e = discord.Embed(
         color=EMBED_ROSS_COLOR,
         description=quote
