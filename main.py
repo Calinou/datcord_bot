@@ -579,21 +579,21 @@ async def on_message(message):  # TODO: split into commands, remove event
 
 
 @client.event
-async def on_member_join(member):  # TODO: clean this up
+async def on_member_join(member):
     # Actions to take when a new member joins the server.
-    channel = discord.Object(id=NEWCOMER_CHANNEL)
+    channel = member.server.get_channel(id=NEWCOMER_CHANNEL)
     msg = ":new: {0} joined the server. Current member count: **{1}**".format(
         member.mention, member.server.member_count
     )
     tmp = await client.send_message(channel, msg)
-    if (member.nick if member.nick else member.name) == "Goblok":
+    if (member.nick or member.name) == "Goblok":
         for e in member.server.emojis:
             if e.name == "angryfaic":
                 await client.add_reaction(tmp, e)
                 break
     msg = ":new: `add_child(`{0}`)`\nWelcome to the server! :tada:".format(member.mention)
-    channel = discord.Object(id=GENERAL_CHANNEL)  # good lord
-    tmp = await client.send_message(channel, msg)
+    channel = member.server.get_channel(id=GENERAL_CHANNEL)
+    await client.send_message(channel, msg)
 
 
 # Prepare for takeoff.
