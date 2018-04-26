@@ -338,90 +338,7 @@ async def on_ready():
 async def on_message(message):  # TODO: split into commands, remove event
     id = message.author.id
 
-    # Attempt to assign the user to a role.
     if (
-        message.content.startswith("!assign") or
-        message.content.startswith("!set") or
-        message.content.startswith("!role")
-    ):
-        # TODO Unassign all roles.
-        error = False
-
-        # Have to slice the message depending on the command alias given.
-        if message.content.startswith("!assign"):
-            s = message.content[8:]     # remove !assign
-            if not len(s) or not message.content[7] == " ":
-                error = True
-        elif message.content.startswith("!set"):
-            s = message.content[5:]
-            if not len(s) or not message.content[4] == " ":
-                error = True
-        elif message.content.startswith("!role"):
-            s = message.content[6:]
-            if not len(s) or not message.content[5] == " ":
-                error = True
-
-        if error:
-            # If a valid role hasn't been supplied.
-            tmp = await client.send_message(
-                message.channel,
-                "Usage: !assign [role]"
-            )
-            await delete_edit_timer(
-                tmp, FEEDBACK_DEL_TIMER, error=True, call_msg=message
-            )
-        else:
-            # This looks messy, but it works. There must be a more effective
-            # method of getting the role object rather than iterating over
-            # all available roles and checking their name.
-            newrole = s
-            roles = message.server.roles
-
-            for r in roles:
-                if r.name.lower() == newrole.lower():
-                    if r.name.lower() in AVAILABLE_ROLES:
-                        if r not in message.author.roles:
-                            await client.add_roles(message.author, r)
-                            tmp = await client.send_message(
-                                message.channel,
-                                ":white_check_mark: User {0} added to {1}.".format(
-                                    message.author.name, r.name
-                                )
-                            )
-                            await delete_edit_timer(
-                                tmp, FEEDBACK_DEL_TIMER, call_msg=message
-                            )
-                        else:
-                            tmp = await client.send_message(
-                                message.channel,
-                                "You already have that role."
-                            )
-                            await delete_edit_timer(
-                                tmp, FEEDBACK_DEL_TIMER,
-                                error=True, call_msg=message
-                            )
-                    else:
-                        tmp = await client.send_message(
-                            message.channel,
-                            ":no_entry: *You're not allowed to assign yourself to that role.*"
-                        )
-                        await delete_edit_timer(
-                            tmp, FEEDBACK_DEL_TIMER, error=True,
-                            call_msg=message
-                        )
-                    break
-            else:
-                tmp = await client.send_message(
-                    message.channel,
-                    ":no_entry: **{0}** <- *Role not found.*".format(
-                        newrole.upper()
-                    )
-                )
-                await delete_edit_timer(
-                    tmp, FEEDBACK_DEL_TIMER, error=True, call_msg=message
-                )
-
-    elif (
         message.content.startswith("!unassign") or
         message.content.startswith("!remove")
     ):
@@ -568,6 +485,89 @@ async def roles(ctx):
 
     await client.say(s)
     await client.delete_message(ctx.message)
+
+
+@client.command(pass_context=True, aliases=['set', 'role'])
+@bot_cmd_only()
+async def assign(ctx):
+    """ Attempt to assign the user to a role. """
+    message = ctx.message
+    # TODO Unassign all roles.
+    error = False
+
+    # Have to slice the message depending on the command alias given.
+    if message.content.startswith("!assign"):
+        s = message.content[8:]     # remove !assign
+        if not len(s) or not message.content[7] == " ":
+            error = True
+    elif message.content.startswith("!set"):
+        s = message.content[5:]
+        if not len(s) or not message.content[4] == " ":
+            error = True
+    elif message.content.startswith("!role"):
+        s = message.content[6:]
+        if not len(s) or not message.content[5] == " ":
+            error = True
+
+    if error:
+        # If a valid role hasn't been supplied.
+        tmp = await client.send_message(
+            message.channel,
+            "Usage: !assign [role]"
+        )
+        await delete_edit_timer(
+            tmp, FEEDBACK_DEL_TIMER, error=True, call_msg=message
+        )
+    else:
+        # This looks messy, but it works. There must be a more effective
+        # method of getting the role object rather than iterating over
+        # all available roles and checking their name.
+        newrole = s
+        roles = message.server.roles
+
+        for r in roles:
+            if r.name.lower() == newrole.lower():
+                if r.name.lower() in AVAILABLE_ROLES:
+                    if r not in message.author.roles:
+                        await client.add_roles(message.author, r)
+                        tmp = await client.send_message(
+                            message.channel,
+                            ":white_check_mark: User {0} added to {1}.".format(
+                                message.author.name, r.name
+                            )
+                        )
+                        await delete_edit_timer(
+                            tmp, FEEDBACK_DEL_TIMER, call_msg=message
+                        )
+                    else:
+                        tmp = await client.send_message(
+                            message.channel,
+                            "You already have that role."
+                        )
+                        await delete_edit_timer(
+                            tmp, FEEDBACK_DEL_TIMER,
+                            error=True, call_msg=message
+                        )
+                else:
+                    tmp = await client.send_message(
+                        message.channel,
+                        ":no_entry: *You're not allowed to assign yourself to that role.*"
+                    )
+                    await delete_edit_timer(
+                        tmp, FEEDBACK_DEL_TIMER, error=True,
+                        call_msg=message
+                    )
+                break
+        else:
+            tmp = await client.send_message(
+                message.channel,
+                ":no_entry: **{0}** <- *Role not found.*".format(
+                    newrole.upper()
+                )
+            )
+            await delete_edit_timer(
+                tmp, FEEDBACK_DEL_TIMER, error=True, call_msg=message
+            )
 
 
 @client.event
