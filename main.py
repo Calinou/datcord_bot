@@ -489,85 +489,58 @@ async def roles(ctx):
 
 @client.command(pass_context=True, aliases=['set', 'role'])
 @bot_cmd_only()
-async def assign(ctx):
+async def assign(ctx, role_name):
     """ Attempt to assign the user to a role. """
     message = ctx.message
     # TODO Unassign all roles.
-    error = False
 
-    # Have to slice the message depending on the command alias given.
-    if message.content.startswith("!assign"):
-        s = message.content[8:]     # remove !assign
-        if not len(s) or not message.content[7] == " ":
-            error = True
-    elif message.content.startswith("!set"):
-        s = message.content[5:]
-        if not len(s) or not message.content[4] == " ":
-            error = True
-    elif message.content.startswith("!role"):
-        s = message.content[6:]
-        if not len(s) or not message.content[5] == " ":
-            error = True
+    role_object = discord.utils.find(lambda r: r.name.lower() == role_name.lower(), message.server.roles)
 
-    if error:
-        # If a valid role hasn't been supplied.
-        tmp = await client.send_message(
-            message.channel,
-            "Usage: !assign [role]"
-        )
+    # does the role actually exist?
+    if role_object is None:
+        tmp = await client.say(":no_entry: **{0}** <- *Role not found.*".format(role_name.upper()))
         await delete_edit_timer(
             tmp, FEEDBACK_DEL_TIMER, error=True, call_msg=message
         )
-    else:
-        # This looks messy, but it works. There must be a more effective
-        # method of getting the role object rather than iterating over
-        # all available roles and checking their name.
-        newrole = s
-        roles = message.server.roles
+        return
 
-        for r in roles:
-            if r.name.lower() == newrole.lower():
-                if r.name.lower() in AVAILABLE_ROLES:
-                    if r not in message.author.roles:
-                        await client.add_roles(message.author, r)
-                        tmp = await client.send_message(
-                            message.channel,
-                            ":white_check_mark: User {0} added to {1}.".format(
-                                message.author.name, r.name
-                            )
-                        )
-                        await delete_edit_timer(
-                            tmp, FEEDBACK_DEL_TIMER, call_msg=message
-                        )
-                    else:
-                        tmp = await client.send_message(
-                            message.channel,
-                            "You already have that role."
-                        )
-                        await delete_edit_timer(
-                            tmp, FEEDBACK_DEL_TIMER,
-                            error=True, call_msg=message
-                        )
-                else:
-                    tmp = await client.send_message(
-                        message.channel,
-                        ":no_entry: *You're not allowed to assign yourself to that role.*"
-                    )
-                    await delete_edit_timer(
-                        tmp, FEEDBACK_DEL_TIMER, error=True,
-                        call_msg=message
-                    )
-                break
-        else:
-            tmp = await client.send_message(
-                message.channel,
-                ":no_entry: **{0}** <- *Role not found.*".format(
-                    newrole.upper()
-                )
-            )
-            await delete_edit_timer(
-                tmp, FEEDBACK_DEL_TIMER, error=True, call_msg=message
-            )
+    # if so, is it available to be assigned?
+    if role_object.name.lower() not in AVAILABLE_ROLES:
+        tmp = await client.say(":no_entry: *You're not allowed to assign yourself to that role.*")
+        await delete_edit_timer(
+            tmp, FEEDBACK_DEL_TIMER, error=True,
+            call_msg=message
+        )
+        return
+
+    # if so, does the user already have it?
+    if role_object in message.author.roles:
+        tmp = await client.say("You already have that role.")
+        await delete_edit_timer(
+            tmp, FEEDBACK_DEL_TIMER,
+            error=True, call_msg=message
+        )
+        return
+
+    # conditions check out, so add the role
+    await client.add_roles(message.author, role_object)
+    tmp = await client.say(":white_check_mark: User {0} added to {1}."
+                           .format(message.author.name, role_object.name))
+    await delete_edit_timer(
+        tmp, FEEDBACK_DEL_TIMER, call_msg=message
+    )
+
+
+@assign.error
+async def invalid_role_name(error, ctx):
+    """ If a valid role hasn't been supplied. """
+    tmp = await client.send_message(
+        ctx.message.channel,
+        "Usage: !assign [role]"
+    )
+    await delete_edit_timer(
+        tmp, FEEDBACK_DEL_TIMER, error=True, call_msg=ctx.message
+    )
 
 
 @client.event
