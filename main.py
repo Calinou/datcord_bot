@@ -181,105 +181,6 @@ ROSS_QUOTES = [
 ]
 
 last_meme = ""
-GD_PATH = "gdmeme"
-GD_MEMES = [
-    ["wolf3d_godot.png",    "Calinou"],
-    ["questions.png",       "Noshyaar"],
-    ["steamsale.png",       "Noshyaar"],
-    ["precious.png",        "Noshyaar"],
-    ["cereal.png",          "Noshyaar"],
-    ["asset-store.png",     "Noshyaar"],
-    ["languages.png",       "Noshyaar"],
-    ["plot-twist.png",      "Noshyaar"],
-    ["just-godot.png",      "Noshyaar"],
-    ["alpaca.png",          "Noshyaar"],
-    ["friendzoned.png",     "Noshyaar"],
-    ["init.png",            "Noshyaar"],
-
-    ["feature.png",         "Akien via GitHub"],
-    ["malwareinstall.png",  "Akien via GitHub"],
-    ["ubuntu.png",          "Akien via GitHub"],
-    ["whole-new-world.png", "Akien via GitHub"],
-    ["nodeintobool.jpg",    "groud via GitHub"],
-    ["vacation.png",        "nunodonato via GitHub"],
-    ["fuckyoux11.png",      "reduz via GitHub"],
-    ["boeing.png",          "reduz via GitHub"],
-    ["about-gnu-linux.png", "Noshyaar via GitHub"],
-
-    ["utterbullshit.png",   "Akien via IRC"],
-    ["ads-dock.png",        "Akien via IRC"],
-    ["godoit.png",          "bojidar_bg via IRC"],
-    ["godoit2.png",         "groud via IRC"],
-    ["docs-howto.png",      "Fryy via IRC"],
-
-    ["karroffel-tim.png",   "karroffel via Matrix"],
-    ["shy-godot.png",       "kkolyv via Matrix"],
-    ["morpheus.png",        "kkolyv via Matrix"],
-
-    ["godot-episode3.png",  "Calinou via Discord"],
-    ["i_didnt_listen.png",  "Calinou via Discord"],
-    ["chad-godot.png",      "Gors via Discord"],
-    ["godot-chan03.png",    "kkolyv via Discord"],
-    ["noodlescript.png",    "NoeDev via Discord"],
-    ["adamot.png",          "Noshyaar via Discord"],
-    ["floor.png",           "Noshyaar via Discord"],
-    ["godots.png",          "Noshyaar via Discord"],
-    ["mrworldwide.png",     "Noshyaar via Discord"],
-    ["notclear.png",        "Noshyaar via Discord"],
-    ["rare.png",            "Noshyaar via Discord"],
-    ["scons.png",           "Noshyaar via Discord"],
-    ["wow.png",             "Noshyaar via Discord"],
-    ["unity-spinner.png",   "Noshyaar via Discord"],
-    ["pending-prs.jpg",     "Noshyaar via Discord"],
-    ["torrent.png",         "Noshyaar via Discord"],
-    ["godoot.png",          "Noshyaar via Discord"],
-    ["abracadabra.jpg",     "Omicron666 via Discord"],
-    ["godonymous.png",      "Omicron666 via Discord"],
-    ["godot_airlines.jpg",  "onur via Discord"],
-    ["collisionshape.png",  "sheepandshepherd via Discord"],
-    ["gd3_pbr_edition.png", "YeOldeDM via Discord"],
-    ["kenny-tester.png",    "Zylann via Discord"],
-    ["godoterminator.jpg",  "Zylann via Discord"],
-
-    ["cat-godot.jpg",       "Juan Linietsky via Facebook"],
-    ["sad-godot.jpg",       "Juan Linietsky via Facebook"],
-    ["tuxedot.jpg",         "Juan Linietsky via Facebook"],
-    ["comingofage.jpg",     "Juan Linietsky via Facebook"],
-    ["galgodot2.jpg",       "Adam Cooke via Facebook"],
-    ["untitled01.jpg",      "Oussama Boukhelf via Facebook"],
-    ["dragonball.jpg",      "William Tumeo via Facebook"],
-    ["balloon.jpg",         "William Tumeo via Facebook"],
-    ["galgodot1.jpg",       "Juan Bustelo via Facebook"],
-    ["gamedev_time.jpg",    "Mariano Suligoy via Facebook"],
-    ["whereisgodot.jpg",    "Nahomy Mejia via Facebook"],
-    ["dontwantnolife.jpg",  "Nahomy Mejia via Facebook"],
-    ["sisterross.jpg",      "Nahomy Mejia via Facebook"],
-    ["spongebob.jpg",       "Nahomy Mejia via Facebook"],
-    ["first-word.jpg",      "Nahomy Mejia via Facebook"],
-    ["ugly-mid-school.jpg", "Rafał Michałuszek via Facebook"],
-    ["jam-theme.jpg",       "José A Barrera Díaz via Facebook"],
-    ["votetime.jpg",        "José A Barrera Díaz via Facebook"],
-    ["meme-engine.jpg",     "Henrique Alves via Facebook"],
-    ["mrgodot.jpg",         "Henrique Campos via Facebook"],
-    ["terminator.jpg",      "Bruno Correia da Silva via Facebook"],
-    ["dotgot-engine.jpg",   "Christian Melgarejo Bresanovich via Facebook"],
-    ["trust-godot.jpg",     "anon via Facebook"],
-
-    ["new3.0build.png",     "zopyz via /r/godot"],
-    ["unity-malware.png",   "zopyz via /r/godot"],
-    ["unity-graveyard.png", "zopyz via /r/godot"],
-    ["replacegdscript.png", "zopyz via /r/godot"],
-    ["rickroll.jpg",        "zopyz via /r/godot"],
-    ["godot-products.png",  "jaydonteh via /r/godot"],
-
-    ["guy-looks-gal.jpg",   "Sam Vila on Twitter"],
-
-    ["godot-chan01.png",    "anon via 4chan"],
-    ["godot-chan02.png",    "anon via 4chan"],
-
-    ["resolutions.png",     "anon (/agdg/), kkolyv (Discord)"],
-    ["revert.png",          "vnen (IRC), Akien, reduz (GitHub)"],
-]
 
 
 def populate_memes():
@@ -297,9 +198,6 @@ def populate_memes():
     ]
     # "sorted" defaults to alphabetical on strings.
     RMS_MEMES = sorted([j for i in memes for j in i])
-
-    for i in range(len(GD_MEMES)):
-        GD_MEMES[i][0] = os.path.join(GD_PATH, GD_MEMES[i][0])
 
 
 async def delete_edit_timer(msg, time, error=False, call_msg=None):
@@ -382,43 +280,6 @@ async def on_message(message):
 
     if message.channel.name != "bot-cmd":
         return  # Ignore command if it's not written in the bot commands channel
-
-    if message.content.lower().startswith("!meme"):
-        choice_error = False
-        fpath = None
-        credit = "N/A"
-        c = message.content[6:]
-        global last_meme
-        if not len(c.strip()) or not message.content[5] == " ":
-            choice_error = True
-
-        submeme = []
-        if not choice_error:
-            for i in GD_MEMES:
-                if i[1].lower().find(c.lower()) != -1:
-                    submeme.append(i)
-
-        if choice_error or len(submeme) == 0:
-            submeme = GD_MEMES
-
-        rand_c = 0
-        fpath = ""
-
-        tries = 0
-        while tries < 4:
-            rand_c = random.randint(0, len(submeme) - 1)
-            fpath = submeme[rand_c][0]
-            if fpath != last_meme:
-                break
-            tries += 1
-
-        last_meme = fpath
-
-        credit = submeme[rand_c][1]
-
-        if fpath:
-            with open(fpath, "rb") as f:
-                await client.send_file(message.channel, f, content="**By {0}**".format(credit))
 
     # Send help message.
     if (
