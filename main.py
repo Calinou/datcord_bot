@@ -20,7 +20,8 @@ AVAILABLE_ROLES = [
     "programmer",
     "designer",
     "artist",
-    "sound designer"
+    "sound designer",
+    "helper"
 ]
 
 # Channel IDs
