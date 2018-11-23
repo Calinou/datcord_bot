@@ -220,6 +220,7 @@ GD_MEMES = [
     ["live_dangerously.png", "01lifeleft via Discord"],
     ["godot-episode3.png",   "Calinou via Discord"],
     ["i_didnt_listen.png",   "Calinou via Discord"],
+    ["nine_inch_nodes.png",  "Calinou via Discord"],
     ["chad-godot.png",       "Gors via Discord"],
     ["godot-chan03.png",     "kkolyv via Discord"],
     ["noodlescript.png",     "NoeDev via Discord"],
