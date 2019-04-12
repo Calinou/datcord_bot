@@ -1,0 +1,23 @@
+[tool.poetry]
+name = "datcord_bot"
+version = "1.0.0"
+description = "Weirdly specific Discord bot with role assigning and lots of memery (used on the Godot Discord server)"
+license = "MIT"
+repository = "https://github.com/Calinou/datcord_bot"
+homepage = "https://godotengine.org/community"
+readme = "README.md"
+
+authors = [
+    "Calinou",
+    "NiclasEriksen",
+    "karroffel",
+]
+
+keywords = [
+    "discord",
+    "discord-bot",
+]
+
+[tool.poetry.dependencies]
+python = "^3.5"
+"discord.py" = "^0.16"
