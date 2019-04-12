@@ -15,7 +15,7 @@ This repository contains the source code for the [Godot Engine Discord](https://
 
 ## License
 
-Copyright © 2016-2018 Godot Engine contributors
+Copyright © 2016-2019 Godot Engine contributors
 
 - Unless otherwise specified, files in this repository are licensed under
   the MIT license; see [LICENSE.md](LICENSE.md) for more information.
