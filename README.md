@@ -1,17 +1,34 @@
 # Godot Engine Discord server bot
 
-This repository contains the source code for the [Godot Engine Discord](https://godotengine.org/community) bot.
+This repository contains the source code for the
+[Godot Engine Discord](https://godotengine.org/community) bot.
 
 ## Commands
 
-| Command            | Description                                               |
-|    ---:            | :---                                                      |
-| `!assign [role]`   | Assigns yourself to one of the available roles.           |
-| `!meme [author]`   | Returns a meme (only usable in the **#botspam** channel). |
-| `!roles`           | Lists available roles.                                    |
-| `!rms [number]`    | Returns a Richard Stallman-related item.                  |
-| `!ross`            | Returns a Bob Ross quote.                                 |
+|            Command | Description                                               |
+| -----------------: | :-------------------------------------------------------- |
+|   `!assign [role]` | Assigns yourself to one of the available roles.           |
+|   `!meme [author]` | Returns a meme (only usable in the **#botspam** channel). |
+|           `!roles` | Lists available roles.                                    |
+|    `!rms [number]` | Returns a Richard Stallman-related item.                  |
+|            `!ross` | Returns a Bob Ross quote.                                 |
 | `!unassign [role]` | Unassigns yourself from a role.                           |
+
+## Installation
+
+### Prerequisites
+
+- Python 3.5 or 3.6 (Python 3.7 isn't supported yet).
+- [Poetry](https://github.com/sdispater/poetry) for installing dependencies.
+
+### Running
+
+- Clone this repository or
+  [download a ZIP archive](https://github.com/Calinou/datcord_bot/archive/master.zip).
+- Run `poetry install` while in the repository's directory to install
+  dependencies.
+- Set the `DISCORD_BOT_TOKEN` environment variable to the bot's Discord token.
+- Run the script with `python3 main.py`.
 
 ## License
 
