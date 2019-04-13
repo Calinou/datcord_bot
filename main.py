@@ -5,23 +5,16 @@ import glob
 import random
 
 
-client = discord.Client()   # Initialize discord client
+client = discord.Client()
 
-last_meme = ''
+last_meme = ""
 
 # Configuration
 #
-# If you have set your token as an environment variable
+# Set the token as an environment variable before running the script.
 TOKEN = os.environ.get("DISCORD_BOT_TOKEN")
-# Uncomment this instead if you'd like to specify it here
-# TOKEN = "YOUR_TOKEN"
 # Roles that users can assign themselves to, must be lower case.
-AVAILABLE_ROLES = [
-    "programmer",
-    "designer",
-    "artist",
-    "sound designer"
-]
+AVAILABLE_ROLES = ["programmer", "designer", "artist", "sound designer"]
 
 # Channel IDs
 NEWCOMER_CHANNEL = "253576562136449024"
@@ -177,111 +170,102 @@ ROSS_QUOTES = [
     "There are no mistakes. You can fix anything that happens.",
     "That’s why I paint - because I can create the kind of world I want - and I can make this world as happy as I want it.",
     "How do you make a round circle with a square knife? That’s your challenge for the day.",
-    "Just think about these things in your mind - then bring them into your world."
+    "Just think about these things in your mind - then bring them into your world.",
 ]
 
 last_meme = ""
 GD_PATH = "gdmeme"
 GD_MEMES = [
-    ["wolf3d_godot.png",     "Calinou"],
-    ["questions.png",        "Anonymous"],
-    ["steamsale.png",        "Anonymous"],
-    ["precious.png",         "Anonymous"],
-    ["cereal.png",           "Anonymous"],
-    ["asset-store.png",      "Anonymous"],
-    ["languages.png",        "Anonymous"],
-    ["plot-twist.png",       "Anonymous"],
-    ["just-godot.png",       "Anonymous"],
-    ["alpaca.png",           "Anonymous"],
-    ["friendzoned.png",      "Anonymous"],
-    ["init.png",             "Anonymous"],
-    ["adamot.png",           "Anonymous"],
-    ["floor.png",            "Anonymous"],
-    ["godots.png",           "Anonymous"],
-    ["mrworldwide.png",      "Anonymous"],
-    ["notclear.png",         "Anonymous"],
-    ["rare.png",             "Anonymous"],
-    ["scons.png",            "Anonymous"],
-    ["wow.png",              "Anonymous"],
-    ["unity-spinner.png",    "Anonymous"],
-    ["pending-prs.jpg",      "Anonymous"],
-    ["torrent.png",          "Anonymous"],
-    ["godoot.png",           "Anonymous"],
-
-    ["feature.png",          "Akien via GitHub"],
-    ["malwareinstall.png",   "Akien via GitHub"],
-    ["ubuntu.png",           "Akien via GitHub"],
-    ["whole-new-world.png",  "Akien via GitHub"],
-    ["nodeintobool.jpg",     "groud via GitHub"],
-    ["vacation.png",         "nunodonato via GitHub"],
-    ["fuckyoux11.png",       "reduz via GitHub"],
-    ["boeing.png",           "reduz via GitHub"],
-    ["about-gnu-linux.png",  "Anonymous via GitHub"],
-
-    ["utterbullshit.png",    "Akien via IRC"],
-    ["ads-dock.png",         "Akien via IRC"],
-    ["godoit.png",           "bojidar_bg via IRC"],
-    ["godoit2.png",          "groud via IRC"],
-    ["docs-howto.png",       "Fryy via IRC"],
-
-    ["karroffel-tim.png",    "karroffel via Matrix"],
-    ["shy-godot.png",        "kkolyv via Matrix"],
-    ["morpheus.png",         "kkolyv via Matrix"],
-
-    ["do_it_for_her.png",    "01lifeleft via Discord"],
+    ["wolf3d_godot.png", "Calinou"],
+    ["questions.png", "Anonymous"],
+    ["steamsale.png", "Anonymous"],
+    ["precious.png", "Anonymous"],
+    ["cereal.png", "Anonymous"],
+    ["asset-store.png", "Anonymous"],
+    ["languages.png", "Anonymous"],
+    ["plot-twist.png", "Anonymous"],
+    ["just-godot.png", "Anonymous"],
+    ["alpaca.png", "Anonymous"],
+    ["friendzoned.png", "Anonymous"],
+    ["init.png", "Anonymous"],
+    ["adamot.png", "Anonymous"],
+    ["floor.png", "Anonymous"],
+    ["godots.png", "Anonymous"],
+    ["mrworldwide.png", "Anonymous"],
+    ["notclear.png", "Anonymous"],
+    ["rare.png", "Anonymous"],
+    ["scons.png", "Anonymous"],
+    ["wow.png", "Anonymous"],
+    ["unity-spinner.png", "Anonymous"],
+    ["pending-prs.jpg", "Anonymous"],
+    ["torrent.png", "Anonymous"],
+    ["godoot.png", "Anonymous"],
+    ["feature.png", "Akien via GitHub"],
+    ["malwareinstall.png", "Akien via GitHub"],
+    ["ubuntu.png", "Akien via GitHub"],
+    ["whole-new-world.png", "Akien via GitHub"],
+    ["nodeintobool.jpg", "groud via GitHub"],
+    ["vacation.png", "nunodonato via GitHub"],
+    ["fuckyoux11.png", "reduz via GitHub"],
+    ["boeing.png", "reduz via GitHub"],
+    ["about-gnu-linux.png", "Anonymous via GitHub"],
+    ["utterbullshit.png", "Akien via IRC"],
+    ["ads-dock.png", "Akien via IRC"],
+    ["godoit.png", "bojidar_bg via IRC"],
+    ["godoit2.png", "groud via IRC"],
+    ["docs-howto.png", "Fryy via IRC"],
+    ["karroffel-tim.png", "karroffel via Matrix"],
+    ["shy-godot.png", "kkolyv via Matrix"],
+    ["morpheus.png", "kkolyv via Matrix"],
+    ["do_it_for_her.png", "01lifeleft via Discord"],
     ["live_dangerously.png", "01lifeleft via Discord"],
-    ["godot-episode3.png",   "Calinou via Discord"],
-    ["i_didnt_listen.png",   "Calinou via Discord"],
-    ["nine_inch_nodes.png",  "Calinou via Discord"],
-    ["chad-godot.png",       "Gors via Discord"],
-    ["godot-chan03.png",     "kkolyv via Discord"],
-    ["noodlescript.png",     "NoeDev via Discord"],
-    ["abracadabra.jpg",      "Omicron666 via Discord"],
-    ["godonymous.png",       "Omicron666 via Discord"],
-    ["godot_airlines.jpg",   "onur via Discord"],
-    ["collisionshape.png",   "sheepandshepherd via Discord"],
-    ["gd3_pbr_edition.png",  "YeOldeDM via Discord"],
-    ["kenny-tester.png",     "Zylann via Discord"],
-    ["godoterminator.jpg",   "Zylann via Discord"],
-
-    ["cat-godot.jpg",        "Juan Linietsky via Facebook"],
-    ["sad-godot.jpg",        "Juan Linietsky via Facebook"],
-    ["tuxedot.jpg",          "Juan Linietsky via Facebook"],
-    ["comingofage.jpg",      "Juan Linietsky via Facebook"],
-    ["galgodot2.jpg",        "Adam Cooke via Facebook"],
-    ["untitled01.jpg",       "Oussama Boukhelf via Facebook"],
-    ["dragonball.jpg",       "William Tumeo via Facebook"],
-    ["balloon.jpg",          "William Tumeo via Facebook"],
-    ["galgodot1.jpg",        "Juan Bustelo via Facebook"],
-    ["gamedev_time.jpg",     "Mariano Suligoy via Facebook"],
-    ["whereisgodot.jpg",     "Nahomy Mejia via Facebook"],
-    ["dontwantnolife.jpg",   "Nahomy Mejia via Facebook"],
-    ["sisterross.jpg",       "Nahomy Mejia via Facebook"],
-    ["spongebob.jpg",        "Nahomy Mejia via Facebook"],
-    ["first-word.jpg",       "Nahomy Mejia via Facebook"],
-    ["ugly-mid-school.jpg",  "Rafał Michałuszek via Facebook"],
-    ["jam-theme.jpg",        "José A Barrera Díaz via Facebook"],
-    ["votetime.jpg",         "José A Barrera Díaz via Facebook"],
-    ["meme-engine.jpg",      "Henrique Alves via Facebook"],
-    ["mrgodot.jpg",          "Henrique Campos via Facebook"],
-    ["terminator.jpg",       "Bruno Correia da Silva via Facebook"],
-    ["dotgot-engine.jpg",    "Christian Melgarejo Bresanovich via Facebook"],
-    ["trust-godot.jpg",      "anon via Facebook"],
-
-    ["new3.0build.png",      "zopyz via /r/godot"],
-    ["unity-malware.png",    "zopyz via /r/godot"],
-    ["unity-graveyard.png",  "zopyz via /r/godot"],
-    ["replacegdscript.png",  "zopyz via /r/godot"],
-    ["rickroll.jpg",         "zopyz via /r/godot"],
-    ["godot-products.png",   "jaydonteh via /r/godot"],
-
-    ["guy-looks-gal.jpg",    "Sam Vila on Twitter"],
-
-    ["godot-chan01.png",     "anon via 4chan"],
-    ["godot-chan02.png",     "anon via 4chan"],
-
-    ["resolutions.png",      "anon (/agdg/), kkolyv (Discord)"],
-    ["revert.png",           "vnen (IRC), Akien, reduz (GitHub)"],
+    ["godot-episode3.png", "Calinou via Discord"],
+    ["i_didnt_listen.png", "Calinou via Discord"],
+    ["nine_inch_nodes.png", "Calinou via Discord"],
+    ["chad-godot.png", "Gors via Discord"],
+    ["godot-chan03.png", "kkolyv via Discord"],
+    ["noodlescript.png", "NoeDev via Discord"],
+    ["abracadabra.jpg", "Omicron666 via Discord"],
+    ["godonymous.png", "Omicron666 via Discord"],
+    ["godot_airlines.jpg", "onur via Discord"],
+    ["collisionshape.png", "sheepandshepherd via Discord"],
+    ["gd3_pbr_edition.png", "YeOldeDM via Discord"],
+    ["kenny-tester.png", "Zylann via Discord"],
+    ["godoterminator.jpg", "Zylann via Discord"],
+    ["cat-godot.jpg", "Juan Linietsky via Facebook"],
+    ["sad-godot.jpg", "Juan Linietsky via Facebook"],
+    ["tuxedot.jpg", "Juan Linietsky via Facebook"],
+    ["comingofage.jpg", "Juan Linietsky via Facebook"],
+    ["galgodot2.jpg", "Adam Cooke via Facebook"],
+    ["untitled01.jpg", "Oussama Boukhelf via Facebook"],
+    ["dragonball.jpg", "William Tumeo via Facebook"],
+    ["balloon.jpg", "William Tumeo via Facebook"],
+    ["galgodot1.jpg", "Juan Bustelo via Facebook"],
+    ["gamedev_time.jpg", "Mariano Suligoy via Facebook"],
+    ["whereisgodot.jpg", "Nahomy Mejia via Facebook"],
+    ["dontwantnolife.jpg", "Nahomy Mejia via Facebook"],
+    ["sisterross.jpg", "Nahomy Mejia via Facebook"],
+    ["spongebob.jpg", "Nahomy Mejia via Facebook"],
+    ["first-word.jpg", "Nahomy Mejia via Facebook"],
+    ["ugly-mid-school.jpg", "Rafał Michałuszek via Facebook"],
+    ["jam-theme.jpg", "José A Barrera Díaz via Facebook"],
+    ["votetime.jpg", "José A Barrera Díaz via Facebook"],
+    ["meme-engine.jpg", "Henrique Alves via Facebook"],
+    ["mrgodot.jpg", "Henrique Campos via Facebook"],
+    ["terminator.jpg", "Bruno Correia da Silva via Facebook"],
+    ["dotgot-engine.jpg", "Christian Melgarejo Bresanovich via Facebook"],
+    ["trust-godot.jpg", "anon via Facebook"],
+    ["new3.0build.png", "zopyz via /r/godot"],
+    ["unity-malware.png", "zopyz via /r/godot"],
+    ["unity-graveyard.png", "zopyz via /r/godot"],
+    ["replacegdscript.png", "zopyz via /r/godot"],
+    ["rickroll.jpg", "zopyz via /r/godot"],
+    ["godot-products.png", "jaydonteh via /r/godot"],
+    ["guy-looks-gal.jpg", "Sam Vila on Twitter"],
+    ["godot-chan01.png", "anon via 4chan"],
+    ["godot-chan02.png", "anon via 4chan"],
+    ["resolutions.png", "anon (/agdg/), kkolyv (Discord)"],
+    ["revert.png", "vnen (IRC), Akien, reduz (GitHub)"],
 ]
 
 
@@ -291,11 +275,16 @@ def populate_memes():
     """
     global RMS_MEMES
     memes = [
-        glob.glob(
-            os.path.join(RMS_PATH, e)
-        ) for e in [
-            '*.jpg', '*.JPG', '*.jpeg', '*.JPEG',
-            '*.gif', '*.GIF', '*.png', '*.PNG'
+        glob.glob(os.path.join(RMS_PATH, e))
+        for e in [
+            "*.jpg",
+            "*.JPG",
+            "*.jpeg",
+            "*.JPEG",
+            "*.gif",
+            "*.GIF",
+            "*.png",
+            "*.PNG",
         ]
     ]
     # "sorted" defaults to alphabetical on strings.
@@ -314,9 +303,7 @@ async def delete_edit_timer(msg, time, error=False, call_msg=None):
     bs = ":black_small_square:"
 
     for i in range(time + 1):
-        await client.edit_message(
-            msg, msg.content + "\n" + ws * (time - i) + bs * i
-        )
+        await client.edit_message(msg, msg.content + "\n" + ws * (time - i) + bs * i)
         await asyncio.sleep(1)
 
     await client.delete_message(msg)
@@ -341,17 +328,15 @@ async def on_message(message):
     id = message.author.id
 
     # Posts quotes of Bob Ross
-    if message.content.lower().startswith("!bobross") or message.content.lower().startswith("!ross") or message.content.lower().startswith("!br"):
+    if (
+        message.content.lower().startswith("!bobross")
+        or message.content.lower().startswith("!ross")
+        or message.content.lower().startswith("!br")
+    ):
         rand_c = random.randint(0, len(ROSS_QUOTES) - 1)
         quote = ROSS_QUOTES[rand_c]
-        e = discord.Embed(
-            color=EMBED_ROSS_COLOR,
-            description=quote
-        )
-        e.set_author(
-            name="Bob Ross",
-            icon_url=EMBED_ROSS_ICON
-        )
+        e = discord.Embed(color=EMBED_ROSS_COLOR, description=quote)
+        e.set_author(name="Bob Ross", icon_url=EMBED_ROSS_ICON)
         await client.send_message(message.channel, embed=e)
 
     # Posts a picture of RMS.
@@ -381,7 +366,9 @@ async def on_message(message):
 
         if fpath:
             with open(fpath, "rb") as f:
-                await client.send_file(message.channel, f, content="**#{0}:**".format(c))
+                await client.send_file(
+                    message.channel, f, content="**#{0}:**".format(c)
+                )
 
     if message.channel.name != "bot-cmd":
         return  # Ignore command if it's not written in the bot commands channel
@@ -421,13 +408,12 @@ async def on_message(message):
 
         if fpath:
             with open(fpath, "rb") as f:
-                await client.send_file(message.channel, f, content="**By {0}**".format(credit))
+                await client.send_file(
+                    message.channel, f, content="**By {0}**".format(credit)
+                )
 
     # Send help message.
-    if (
-        message.content.startswith("!help") or
-        message.content.startswith("!commands")
-    ):
+    if message.content.startswith("!help") or message.content.startswith("!commands"):
         await client.send_message(message.channel, HELP_STRING)
         await client.delete_message(message)
 
@@ -442,24 +428,21 @@ async def on_message(message):
                 s += ", "
         s += "```"
 
-        await client.send_message(
-            message.channel,
-            s
-        )
+        await client.send_message(message.channel, s)
         await client.delete_message(message)
 
     # Attempt to assign the user to a role.
     elif (
-        message.content.startswith("!assign") or
-        message.content.startswith("!set") or
-        message.content.startswith("!role")
+        message.content.startswith("!assign")
+        or message.content.startswith("!set")
+        or message.content.startswith("!role")
     ):
         # TODO Unassign all roles.
         error = False
 
         # Have to slice the message depending on the command alias given.
         if message.content.startswith("!assign"):
-            s = message.content[8:]     # remove !assign
+            s = message.content[8:]  # remove !assign
             if not len(s) or not message.content[7] == " ":
                 error = True
         elif message.content.startswith("!set"):
@@ -473,10 +456,7 @@ async def on_message(message):
 
         if error:
             # If a valid role hasn't been supplied.
-            tmp = await client.send_message(
-                message.channel,
-                "Usage: !assign [role]"
-            )
+            tmp = await client.send_message(message.channel, "Usage: !assign [role]")
             await delete_edit_timer(
                 tmp, FEEDBACK_DEL_TIMER, error=True, call_msg=message
             )
@@ -496,62 +476,53 @@ async def on_message(message):
                                 message.channel,
                                 ":white_check_mark: User {0} added to {1}.".format(
                                     message.author.name, r.name
-                                )
+                                ),
                             )
                             await delete_edit_timer(
                                 tmp, FEEDBACK_DEL_TIMER, call_msg=message
                             )
                         else:
                             tmp = await client.send_message(
-                                message.channel,
-                                "You already have that role."
+                                message.channel, "You already have that role."
                             )
                             await delete_edit_timer(
-                                tmp, FEEDBACK_DEL_TIMER,
-                                error=True, call_msg=message
+                                tmp, FEEDBACK_DEL_TIMER, error=True, call_msg=message
                             )
                     else:
                         tmp = await client.send_message(
                             message.channel,
-                            ":no_entry: *You're not allowed to assign yourself to that role.*"
+                            ":no_entry: *You're not allowed to assign yourself to that role.*",
                         )
                         await delete_edit_timer(
-                            tmp, FEEDBACK_DEL_TIMER, error=True,
-                            call_msg=message
+                            tmp, FEEDBACK_DEL_TIMER, error=True, call_msg=message
                         )
                     break
             else:
                 tmp = await client.send_message(
                     message.channel,
-                    ":no_entry: **{0}** <- *Role not found.*".format(
-                        newrole.upper()
-                    )
+                    ":no_entry: **{0}** <- *Role not found.*".format(newrole.upper()),
                 )
                 await delete_edit_timer(
                     tmp, FEEDBACK_DEL_TIMER, error=True, call_msg=message
                 )
 
-    elif (
-        message.content.startswith("!unassign") or
-        message.content.startswith("!remove")
+    elif message.content.startswith("!unassign") or message.content.startswith(
+        "!remove"
     ):
         error = False
 
         # It's the same here that it was with !assign
         if message.content.startswith("!unassign"):
-            s = message.content[10:]     # remove !unassign
+            s = message.content[10:]  # remove !unassign
             if not len(s) or not message.content[9] == " ":
                 error = True
         elif message.content.startswith("!remove"):
-            s = message.content[8:]     # remove !remove
+            s = message.content[8:]  # remove !remove
             if not len(s) or not message.content[7] == " ":
                 error = True
 
         if error:
-            tmp = await client.send_message(
-                message.channel,
-                "Usage: !unassign [role]"
-            )
+            tmp = await client.send_message(message.channel, "Usage: !unassign [role]")
             await delete_edit_timer(tmp, FEEDBACK_DEL_TIMER, call_msg=message)
         else:
             oldrole = s
@@ -564,16 +535,14 @@ async def on_message(message):
                     tmp = await client.send_message(
                         message.channel, ":white_check_mark: Role was removed."
                     )
-                    await delete_edit_timer(
-                        tmp, FEEDBACK_DEL_TIMER, call_msg=message
-                    )
+                    await delete_edit_timer(tmp, FEEDBACK_DEL_TIMER, call_msg=message)
                     break
             else:
                 tmp = await client.send_message(
                     message.channel,
                     ":no_entry: **{0}** <- You don't have that role.".format(
                         oldrole.upper()
-                    )
+                    ),
                 )
                 await delete_edit_timer(
                     tmp, FEEDBACK_DEL_TIMER, error=True, call_msg=message
@@ -593,11 +562,13 @@ async def on_member_join(member):
             if e.name == "angryfaic":
                 await client.add_reaction(tmp, e)
                 break
-    msg = ":new: `add_child(`{0}`)`\nWelcome to the server! :tada:".format(member.mention)
+    msg = ":new: `add_child(`{0}`)`\nWelcome to the server! :tada:".format(
+        member.mention
+    )
     channel = discord.Object(id=GENERAL_CHANNEL)
     tmp = await client.send_message(channel, msg)
 
 
 # Prepare for takeoff.
 populate_memes()
-client.run(TOKEN)   # And we have liftoff.
+client.run(TOKEN)  # And we have liftoff.
