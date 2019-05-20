@@ -370,7 +370,7 @@ async def on_message(message):
                     message.channel, f, content="**#{0}:**".format(c)
                 )
 
-    if message.channel.name != "bot-cmd":
+    if message.channel.name != "bot_cmd":
         return  # Ignore command if it's not written in the bot commands channel
 
     if message.content.lower().startswith("!meme"):
