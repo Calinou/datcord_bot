@@ -3,38 +3,45 @@ import asyncio
 import os
 import glob
 import random
+from typing import List
+from typing_extensions import Final
 
-
-client = discord.Client()
+client: Final = discord.Client()
 
 # Configuration
 #
 # Set the token as an environment variable before running the script.
-TOKEN = os.environ.get("DISCORD_BOT_TOKEN")
+TOKEN: Final = os.environ.get("DISCORD_BOT_TOKEN")
 # Roles that users can assign themselves to, must be lower case.
-AVAILABLE_ROLES = ["programmer", "designer", "artist", "sound designer", "helper"]
+AVAILABLE_ROLES: Final = [
+    "programmer",
+    "designer",
+    "artist",
+    "sound designer",
+    "helper",
+]
 
 # Channel IDs
-NEWCOMER_CHANNEL = "253576562136449024"
-GENERAL_CHANNEL = "212250894228652034"
+NEWCOMER_CHANNEL: Final = "253576562136449024"
+GENERAL_CHANNEL: Final = "212250894228652034"
 
 # Message that the bot returns on `!help`
-HELP_STRING = """
+HELP_STRING: Final = """
 :book: **Commands:**
 !assign [role]: *assign yourself to one of the available roles.*\n
 !unassign [role]: *unassign yourself from a role.*\n
 !roles: *list available roles.*"""
 
 # How long to wait for before deleting messages
-FEEDBACK_DEL_TIMER = 5
+FEEDBACK_DEL_TIMER: Final = 5
 
 # RMS is a beautiful man.
-RMS_PATH = "rms"  # Directory where RMS memes are located
-RMS_MEMES = []
+RMS_PATH: Final = "rms"  # Directory where RMS memes are located
+RMS_MEMES: List[str] = []
 
-EMBED_ROSS_ICON = "http://i.imgur.com/OZLdaSn.png"
-EMBED_ROSS_COLOR = 0x000F89
-ROSS_QUOTES = [
+EMBED_ROSS_ICON: Final = "http://i.imgur.com/OZLdaSn.png"
+EMBED_ROSS_COLOR: Final = 0x000F89
+ROSS_QUOTES: Final = [
     "There’s nothing wrong with having a tree as a friend.",
     "The secret to doing anything is believing that you can do it. Anything that you believe you can do strong enough, you can do. Anything. As long as you believe.",
     "We don’t make mistakes. We just have happy accidents.",
@@ -171,8 +178,8 @@ ROSS_QUOTES = [
     "Just think about these things in your mind - then bring them into your world.",
 ]
 
-GD_PATH = "gdmeme"
-GD_MEMES = [
+GD_PATH: Final = "gdmeme"
+GD_MEMES: Final = [
     ["wolf3d_godot.png", "Calinou"],
     ["questions.png", "Anonymous"],
     ["steamsale.png", "Anonymous"],
@@ -269,7 +276,7 @@ GD_MEMES = [
 last_meme = ""
 
 
-def populate_memes():
+def populate_memes() -> None:
     """
     Retrieves all pictures in the RMS_PATH folder and sorts them by name.
     """
@@ -294,13 +301,13 @@ def populate_memes():
         GD_MEMES[i][0] = os.path.join(GD_PATH, GD_MEMES[i][0])
 
 
-async def delete_edit_timer(msg, time, error=False, call_msg=None):
+async def delete_edit_timer(msg, time: int, error=False, call_msg=None) -> None:
     """
     Counts down by editing the response message, then deletes both that one and
     the original message.
     """
-    ws = ":white_small_square:"
-    bs = ":black_small_square:"
+    ws: Final = ":white_small_square:"
+    bs: Final = ":black_small_square:"
 
     for i in range(time + 1):
         await client.edit_message(msg, msg.content + "\n" + ws * (time - i) + bs * i)
@@ -318,13 +325,13 @@ async def delete_edit_timer(msg, time, error=False, call_msg=None):
 
 
 @client.event
-async def on_ready():
+async def on_ready() -> None:
     print("Logged in as: {0}--{1}".format(client.user.name, client.user.id))
     print("------")
 
 
 @client.event
-async def on_message(message):
+async def on_message(message) -> None:
     id = message.author.id
 
     # Posts quotes of Bob Ross
@@ -422,9 +429,9 @@ async def on_message(message):
         s = ":scroll: **Available roles:**\n"
         s += "```\n"
 
-        for i, r in enumerate(AVAILABLE_ROLES):
-            s += "{0}".format(r.upper())
-            if not i == len(AVAILABLE_ROLES) - 1:
+        for index, role in enumerate(AVAILABLE_ROLES):
+            s += "{0}".format(role.upper())
+            if not index == len(AVAILABLE_ROLES) - 1:
                 s += ", "
         s += "```"
 
@@ -464,18 +471,18 @@ async def on_message(message):
             # This looks messy, but it works. There must be a more effective
             # method of getting the role object rather than iterating over
             # all available roles and checking their name.
-            newrole = s
+            new_role = s
             roles = message.server.roles
 
-            for r in roles:
-                if r.name.lower() == newrole.lower():
-                    if r.name.lower() in AVAILABLE_ROLES:
-                        if r not in message.author.roles:
-                            await client.add_roles(message.author, r)
+            for role in roles:
+                if role.name.lower() == new_role.lower():
+                    if role.name.lower() in AVAILABLE_ROLES:
+                        if role not in message.author.roles:
+                            await client.add_roles(message.author, role)
                             tmp = await client.send_message(
                                 message.channel,
                                 ":white_check_mark: User {0} added to {1}.".format(
-                                    message.author.name, r.name
+                                    message.author.name, role.name
                                 ),
                             )
                             await delete_edit_timer(
@@ -500,7 +507,7 @@ async def on_message(message):
             else:
                 tmp = await client.send_message(
                     message.channel,
-                    ":no_entry: **{0}** <- *Role not found.*".format(newrole.upper()),
+                    ":no_entry: **{0}** <- *Role not found.*".format(new_role.upper()),
                 )
                 await delete_edit_timer(
                     tmp, FEEDBACK_DEL_TIMER, error=True, call_msg=message
@@ -525,13 +532,11 @@ async def on_message(message):
             tmp = await client.send_message(message.channel, "Usage: !unassign [role]")
             await delete_edit_timer(tmp, FEEDBACK_DEL_TIMER, call_msg=message)
         else:
-            oldrole = s
+            old_role = s
             roles = message.server.roles
-            for r in message.author.roles:
-                # print(r.name.lower())
-                if r.name.lower() == oldrole.lower():
-                    # print(r.name, "<-FOUND")
-                    await client.remove_roles(message.author, r)
+            for role in message.author.roles:
+                if role.name.lower() == old_role.lower():
+                    await client.remove_roles(message.author, role)
                     tmp = await client.send_message(
                         message.channel, ":white_check_mark: Role was removed."
                     )
@@ -541,7 +546,7 @@ async def on_message(message):
                 tmp = await client.send_message(
                     message.channel,
                     ":no_entry: **{0}** <- You don't have that role.".format(
-                        oldrole.upper()
+                        old_role.upper()
                     ),
                 )
                 await delete_edit_timer(
@@ -550,7 +555,7 @@ async def on_message(message):
 
 
 @client.event
-async def on_member_join(member):
+async def on_member_join(member) -> None:
     # Actions to take when a new member joins the server.
     channel = discord.Object(id=NEWCOMER_CHANNEL)
     msg = ":new: {0} joined the server. Current member count: **{1}**".format(
@@ -558,9 +563,9 @@ async def on_member_join(member):
     )
     tmp = await client.send_message(channel, msg)
     if (member.nick if member.nick else member.name) == "Goblok":
-        for e in member.server.emojis:
-            if e.name == "angryfaic":
-                await client.add_reaction(tmp, e)
+        for emoji in member.server.emojis:
+            if emoji.name == "angryfaic":
+                await client.add_reaction(tmp, emoji)
                 break
     msg = ":new: `add_child(`{0}`)`\nWelcome to the server! :tada:".format(
         member.mention
