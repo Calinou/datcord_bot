@@ -7,8 +7,6 @@ import random
 
 client = discord.Client()
 
-last_meme = ""
-
 # Configuration
 #
 # Set the token as an environment variable before running the script.
@@ -173,7 +171,6 @@ ROSS_QUOTES = [
     "Just think about these things in your mind - then bring them into your world.",
 ]
 
-last_meme = ""
 GD_PATH = "gdmeme"
 GD_MEMES = [
     ["wolf3d_godot.png", "Calinou"],
@@ -267,6 +264,8 @@ GD_MEMES = [
     ["resolutions.png", "anon (/agdg/), kkolyv (Discord)"],
     ["revert.png", "vnen (IRC), Akien, reduz (GitHub)"],
 ]
+
+last_meme = ""
 
 
 def populate_memes():
