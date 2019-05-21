@@ -14,7 +14,7 @@ last_meme = ""
 # Set the token as an environment variable before running the script.
 TOKEN = os.environ.get("DISCORD_BOT_TOKEN")
 # Roles that users can assign themselves to, must be lower case.
-AVAILABLE_ROLES = ["programmer", "designer", "artist", "sound designer"]
+AVAILABLE_ROLES = ["programmer", "designer", "artist", "sound designer", "helper"]
 
 # Channel IDs
 NEWCOMER_CHANNEL = "253576562136449024"
