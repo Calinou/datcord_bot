@@ -1,0 +1,19 @@
+language: python
+
+python:
+  - "3.6"
+
+cache:
+  pip: true
+  directories:
+    - "$HOME/.cache/pypoetry"
+    - "$HOME/.cache/pre-commit"
+
+install:
+  - curl -sSL https://raw.githubusercontent.com/sdispater/poetry/master/get-poetry.py | python
+  - source "$HOME/.poetry/env"
+  - poetry install -v
+  - pip3 install pre-commit
+
+script:
+  - pre-commit run --all-files
