@@ -332,8 +332,6 @@ async def on_ready() -> None:
 
 @client.event
 async def on_message(message) -> None:
-    id = message.author.id
-
     # Posts quotes of Bob Ross
     if (
         message.content.lower().startswith("!bobross")
