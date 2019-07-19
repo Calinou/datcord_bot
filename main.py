@@ -554,26 +554,6 @@ async def on_message(message) -> None:
                 )
 
 
-@client.event
-async def on_member_join(member) -> None:
-    # Actions to take when a new member joins the server.
-    channel = discord.Object(id=NEWCOMER_CHANNEL)
-    msg = ":new: {0} joined the server. Current member count: **{1}**".format(
-        member.mention, member.server.member_count
-    )
-    tmp = await client.send_message(channel, msg)
-    if (member.nick if member.nick else member.name) == "Goblok":
-        for emoji in member.server.emojis:
-            if emoji.name == "angryfaic":
-                await client.add_reaction(tmp, emoji)
-                break
-    msg = ":new: `add_child(`{0}`)`\nWelcome to the server! :tada:".format(
-        member.mention
-    )
-    channel = discord.Object(id=GENERAL_CHANNEL)
-    tmp = await client.send_message(channel, msg)
-
-
 # Prepare for takeoff.
 populate_memes()
 client.run(TOKEN)  # And we have liftoff.
