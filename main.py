@@ -25,6 +25,13 @@ AVAILABLE_ROLES: Final = [
 NEWCOMER_CHANNEL: Final = "253576562136449024"
 GENERAL_CHANNEL: Final = "212250894228652034"
 
+# URLs
+STEP_BY_STEP_URL: Final = "https://docs.godotengine.org/en/3.1/getting_started/step_by_step/index.html"
+C_SHARP_URL: Final = "http://godotsharp.net/"
+CLASS_API_URL: Final = "https://docs.godotengine.org/en/3.1/classes/index.html"
+KIDS_CAN_CODE_YT: Final = "https://www.youtube.com/channel/UCNaPQ5uLX5iIEHUCLmfAgKg"
+GDQUEST_YT: Final = "https://www.youtube.com/channel/UCxboW7x0jZqFdvMdCFKTMsQ"
+
 # Message that the bot returns on `!help`
 HELP_STRING: Final = """
 :book: **Commands:**
@@ -34,6 +41,9 @@ HELP_STRING: Final = """
 
 # How long to wait for before deleting messages
 FEEDBACK_DEL_TIMER: Final = 5
+
+# A lot of people ask how to prounce Godot
+HOW_TO_PRONOUNCE_GODOT: Final = "There is no right way. It varies based on your region."
 
 # RMS is a beautiful man.
 RMS_PATH: Final = "rms"  # Directory where RMS memes are located
@@ -550,6 +560,24 @@ async def on_message(message) -> None:
                 await delete_edit_timer(
                     tmp, FEEDBACK_DEL_TIMER, error=True, call_msg=message
                 )
+
+    if message.content.lower().startswith("!step"):
+        await client.send_message(message.channel, STEP_BY_STEP_URL)
+
+    if message.content.lower().startswith("!csharp"):
+        await client.send_message(message.channel, C_SHARP_URL)
+
+    if message.content.lower().startswith("!api"):
+        await client.send_message(message.channel, CLASS_API_URL)
+
+    if message.content.lower().startswith("!kcc"):
+        await client.send_message(message.channel, KIDS_CAN_CODE_YT)
+
+    if message.content.lower().startswith("!gdquest"):
+        await client.send_message(message.channel, GDQUEST_YT)
+
+    if message.content.lower().startswith("!pronounce"):
+        await client.send_message(message.channel, HOW_TO_PRONOUNCE_GODOT)
 
 
 # Prepare for takeoff.
