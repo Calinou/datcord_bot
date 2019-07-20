@@ -21,9 +21,9 @@ AVAILABLE_ROLES: Final = [
     "helper",
 ]
 
-# Channel IDs
-NEWCOMER_CHANNEL: Final = "253576562136449024"
-GENERAL_CHANNEL: Final = "212250894228652034"
+# Channel names
+# Some commands can only be used in the bot commands channel to avoid spam
+BOT_COMMANDS_CHANNEL: Final = "bot_cmd"
 
 # URLs
 STEP_BY_STEP_URL: Final = "https://docs.godotengine.org/en/3.1/getting_started/step_by_step/index.html"
@@ -344,7 +344,8 @@ async def on_ready() -> None:
 async def on_message(message) -> None:
     # Posts quotes of Bob Ross
     if (
-        message.content.lower().startswith("!bobross")
+        message.channel.name == BOT_COMMANDS_CHANNEL
+        and message.content.lower().startswith("!bobross")
         or message.content.lower().startswith("!ross")
         or message.content.lower().startswith("!br")
     ):
@@ -355,7 +356,9 @@ async def on_message(message) -> None:
         await client.send_message(message.channel, embed=e)
 
     # Posts a picture of RMS.
-    if message.content.lower().startswith("!rms"):
+    elif message.channel.name == BOT_COMMANDS_CHANNEL and message.content.lower().startswith(
+        "!rms"
+    ):
         choice_error = False
         fpath = None
         c = message.content[5:]
@@ -385,10 +388,9 @@ async def on_message(message) -> None:
                     message.channel, f, content="**#{0}:**".format(c)
                 )
 
-    if message.channel.name != "bot_cmd":
-        return  # Ignore command if it's not written in the bot commands channel
-
-    if message.content.lower().startswith("!meme"):
+    elif message.channel.name == BOT_COMMANDS_CHANNEL and message.content.lower().startswith(
+        "!meme"
+    ):
         choice_error = False
         fpath = None
         credit = "N/A"
@@ -428,12 +430,18 @@ async def on_message(message) -> None:
                 )
 
     # Send help message.
-    if message.content.startswith("!help") or message.content.startswith("!commands"):
+    elif (
+        message.channel.name == BOT_COMMANDS_CHANNEL
+        and message.content.startswith("!help")
+        or message.content.startswith("!commands")
+    ):
         await client.send_message(message.channel, HELP_STRING)
         await client.delete_message(message)
 
     # Show a list of assignable roles.
-    elif message.content.startswith("!roles"):
+    elif message.channel.name == BOT_COMMANDS_CHANNEL and message.content.startswith(
+        "!roles"
+    ):
         s = ":scroll: **Available roles:**\n"
         s += "```\n"
 
@@ -448,7 +456,8 @@ async def on_message(message) -> None:
 
     # Attempt to assign the user to a role.
     elif (
-        message.content.startswith("!assign")
+        message.channel.name == BOT_COMMANDS_CHANNEL
+        and message.content.startswith("!assign")
         or message.content.startswith("!set")
         or message.content.startswith("!role")
     ):
@@ -521,8 +530,10 @@ async def on_message(message) -> None:
                     tmp, FEEDBACK_DEL_TIMER, error=True, call_msg=message
                 )
 
-    elif message.content.startswith("!unassign") or message.content.startswith(
-        "!remove"
+    elif (
+        message.channel.name == BOT_COMMANDS_CHANNEL
+        and message.content.startswith("!unassign")
+        or message.content.startswith("!remove")
     ):
         error = False
 
@@ -561,22 +572,22 @@ async def on_message(message) -> None:
                     tmp, FEEDBACK_DEL_TIMER, error=True, call_msg=message
                 )
 
-    if message.content.lower().startswith("!step"):
+    elif message.content.lower().startswith("!step"):
         await client.send_message(message.channel, STEP_BY_STEP_URL)
 
-    if message.content.lower().startswith("!csharp"):
+    elif message.content.lower().startswith("!csharp"):
         await client.send_message(message.channel, C_SHARP_URL)
 
-    if message.content.lower().startswith("!api"):
+    elif message.content.lower().startswith("!api"):
         await client.send_message(message.channel, CLASS_API_URL)
 
-    if message.content.lower().startswith("!kcc"):
+    elif message.content.lower().startswith("!kcc"):
         await client.send_message(message.channel, KIDS_CAN_CODE_YT)
 
-    if message.content.lower().startswith("!gdquest"):
+    elif message.content.lower().startswith("!gdquest"):
         await client.send_message(message.channel, GDQUEST_YT)
 
-    if message.content.lower().startswith("!pronounce"):
+    elif message.content.lower().startswith("!pronounce"):
         await client.send_message(message.channel, HOW_TO_PRONOUNCE_GODOT)
 
 
