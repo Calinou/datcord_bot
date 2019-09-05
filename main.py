@@ -240,6 +240,7 @@ GD_MEMES: Final = [
     ["chad-godot.png", "Gors via Discord"],
     ["godot-chan03.png", "kkolyv via Discord"],
     ["internet-activity.png", "Mistery Man via Discord"],
+    ["perfect_godette.png", "Mistery Man via Discord"],
     ["noodlescript.png", "NoeDev via Discord"],
     ["abracadabra.jpg", "Omicron666 via Discord"],
     ["godonymous.png", "Omicron666 via Discord"],
