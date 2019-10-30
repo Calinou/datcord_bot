@@ -506,20 +506,21 @@ async def on_message(message) -> None:
                             tmp = await message.channel.send(
                                 ":white_check_mark: User {0} added to {1}.".format(
                                     message.author.name, role.name
-                                ),
+                                )
                             )
                             await delete_edit_timer(
                                 tmp, FEEDBACK_DEL_TIMER, call_msg=message
                             )
                         else:
-                            tmp = await message.channel.send("You already have that role."
+                            tmp = await message.channel.send(
+                                "You already have that role."
                             )
                             await delete_edit_timer(
                                 tmp, FEEDBACK_DEL_TIMER, error=True, call_msg=message
                             )
                     else:
                         tmp = await message.channel.send(
-                            ":no_entry: *You're not allowed to assign yourself to that role.*",
+                            ":no_entry: *You're not allowed to assign yourself to that role.*"
                         )
                         await delete_edit_timer(
                             tmp, FEEDBACK_DEL_TIMER, error=True, call_msg=message
@@ -527,7 +528,7 @@ async def on_message(message) -> None:
                     break
             else:
                 tmp = await message.channel.send(
-                    ":no_entry: **{0}** <- *Role not found.*".format(new_role.upper()),
+                    ":no_entry: **{0}** <- *Role not found.*".format(new_role.upper())
                 )
                 await delete_edit_timer(
                     tmp, FEEDBACK_DEL_TIMER, error=True, call_msg=message
@@ -559,7 +560,8 @@ async def on_message(message) -> None:
             for role in message.author.roles:
                 if role.name.lower() == old_role.lower():
                     await message.author.remove_roles(role)
-                    tmp = await message.channel.send(":white_check_mark: Role was removed."
+                    tmp = await message.channel.send(
+                        ":white_check_mark: Role was removed."
                     )
                     await delete_edit_timer(tmp, FEEDBACK_DEL_TIMER, call_msg=message)
                     break
@@ -567,7 +569,7 @@ async def on_message(message) -> None:
                 tmp = await message.channel.send(
                     ":no_entry: **{0}** <- You don't have that role.".format(
                         old_role.upper()
-                    ),
+                    )
                 )
                 await delete_edit_timer(
                     tmp, FEEDBACK_DEL_TIMER, error=True, call_msg=message
