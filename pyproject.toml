@@ -19,8 +19,6 @@ keywords = [
 ]
 
 [tool.poetry.dependencies]
-# Python 3.7 and later aren't working due to discord.py < 1.0.0 being used
-# See <https://github.com/Rapptz/discord.py/issues/1396>
 python = "^3.5.3, < 3.8"
 "discord.py" = "^1.2"
 typing_extensions = "^3.7"
