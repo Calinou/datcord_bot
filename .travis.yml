@@ -16,4 +16,6 @@ install:
   - pip3 install pre-commit
 
 script:
+  # Run Black manually first to get a diff in the CI output in case of failure
+  - black *.py --diff
   - pre-commit run --all-files
