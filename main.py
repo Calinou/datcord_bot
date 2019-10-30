@@ -391,8 +391,9 @@ async def on_message(message) -> None:
 
         if fpath:
             with open(fpath, "rb") as f:
-                await client.send_file(
-                    message.channel, f, content="**#{0}:**".format(c)
+                await message.channel.send(
+                    "**#{0}:**".format(c),
+                    file=discord.File(f)
                 )
 
     elif message.channel.name == BOT_COMMANDS_CHANNEL and message.content.lower().startswith(
@@ -432,8 +433,9 @@ async def on_message(message) -> None:
 
         if fpath:
             with open(fpath, "rb") as f:
-                await client.send_file(
-                    message.channel, f, content="**By {0}**".format(credit)
+                await message.channel.send(
+                    "**By {0}**".format(credit),
+                    file=discord.File(f)
                 )
 
     # Send help message.
