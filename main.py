@@ -321,17 +321,22 @@ async def delete_edit_timer(msg, time: int, error=False, call_msg=None) -> None:
     ws: Final = ":white_small_square:"
     bs: Final = ":black_small_square:"
 
+    # Cache the message content. We can't use msg.content in the for
+    # loop as the msg object is mutable (so that we would append a new
+    # line for every loop iteration).
+    msg_text: str = msg.content
+
     for i in range(time + 1):
-        await client.edit_message(msg, msg.content + "\n" + ws * (time - i) + bs * i)
+        await msg.edit(content=msg_text + "\n" + ws * (time - i) + bs * i)
         await asyncio.sleep(1)
 
-    await client.delete_message(msg)
+    await msg.delete()
 
     if call_msg:
         # Prevent crash if the call message has been deleted before the bot
         # gets to it.
         try:
-            await client.delete_message(call_msg)
+            await call_msg.delete()
         except:
             print("Call message does not exist.")
 
@@ -355,7 +360,7 @@ async def on_message(message) -> None:
         quote = ROSS_QUOTES[rand_c]
         e = discord.Embed(color=EMBED_ROSS_COLOR, description=quote)
         e.set_author(name="Bob Ross", icon_url=EMBED_ROSS_ICON)
-        await client.send_message(message.channel, embed=e)
+        await message.channel.send(embed=e)
 
     # Posts a picture of RMS.
     elif message.channel.name == BOT_COMMANDS_CHANNEL and message.content.lower().startswith(
@@ -437,8 +442,8 @@ async def on_message(message) -> None:
         and message.content.startswith("!help")
         or message.content.startswith("!commands")
     ):
-        await client.send_message(message.channel, HELP_STRING)
-        await client.delete_message(message)
+        await message.channel.send(HELP_STRING)
+        await message.delete()
 
     # Show a list of assignable roles.
     elif message.channel.name == BOT_COMMANDS_CHANNEL and message.content.startswith(
@@ -453,8 +458,8 @@ async def on_message(message) -> None:
                 s += ", "
         s += "```"
 
-        await client.send_message(message.channel, s)
-        await client.delete_message(message)
+        await message.channel.send(s)
+        await message.delete()
 
     # Attempt to assign the user to a role.
     elif (
@@ -482,7 +487,7 @@ async def on_message(message) -> None:
 
         if error:
             # If a valid role hasn't been supplied.
-            tmp = await client.send_message(message.channel, "Usage: !assign [role]")
+            tmp = await message.channel.send("Usage: !assign [role]")
             await delete_edit_timer(
                 tmp, FEEDBACK_DEL_TIMER, error=True, call_msg=message
             )
@@ -491,15 +496,14 @@ async def on_message(message) -> None:
             # method of getting the role object rather than iterating over
             # all available roles and checking their name.
             new_role = s
-            roles = message.server.roles
+            roles = message.guild.roles
 
             for role in roles:
                 if role.name.lower() == new_role.lower():
                     if role.name.lower() in AVAILABLE_ROLES:
                         if role not in message.author.roles:
-                            await client.add_roles(message.author, role)
-                            tmp = await client.send_message(
-                                message.channel,
+                            await message.author.add_roles(role)
+                            tmp = await message.channel.send(
                                 ":white_check_mark: User {0} added to {1}.".format(
                                     message.author.name, role.name
                                 ),
@@ -508,15 +512,13 @@ async def on_message(message) -> None:
                                 tmp, FEEDBACK_DEL_TIMER, call_msg=message
                             )
                         else:
-                            tmp = await client.send_message(
-                                message.channel, "You already have that role."
+                            tmp = await message.channel.send("You already have that role."
                             )
                             await delete_edit_timer(
                                 tmp, FEEDBACK_DEL_TIMER, error=True, call_msg=message
                             )
                     else:
-                        tmp = await client.send_message(
-                            message.channel,
+                        tmp = await message.channel.send(
                             ":no_entry: *You're not allowed to assign yourself to that role.*",
                         )
                         await delete_edit_timer(
@@ -524,8 +526,7 @@ async def on_message(message) -> None:
                         )
                     break
             else:
-                tmp = await client.send_message(
-                    message.channel,
+                tmp = await message.channel.send(
                     ":no_entry: **{0}** <- *Role not found.*".format(new_role.upper()),
                 )
                 await delete_edit_timer(
@@ -550,22 +551,20 @@ async def on_message(message) -> None:
                 error = True
 
         if error:
-            tmp = await client.send_message(message.channel, "Usage: !unassign [role]")
+            tmp = await message.channel.send("Usage: !unassign [role]")
             await delete_edit_timer(tmp, FEEDBACK_DEL_TIMER, call_msg=message)
         else:
             old_role = s
-            roles = message.server.roles
+            roles = message.guild.roles
             for role in message.author.roles:
                 if role.name.lower() == old_role.lower():
-                    await client.remove_roles(message.author, role)
-                    tmp = await client.send_message(
-                        message.channel, ":white_check_mark: Role was removed."
+                    await message.author.remove_roles(role)
+                    tmp = await message.channel.send(":white_check_mark: Role was removed."
                     )
                     await delete_edit_timer(tmp, FEEDBACK_DEL_TIMER, call_msg=message)
                     break
             else:
-                tmp = await client.send_message(
-                    message.channel,
+                tmp = await message.channel.send(
                     ":no_entry: **{0}** <- You don't have that role.".format(
                         old_role.upper()
                     ),
@@ -575,25 +574,25 @@ async def on_message(message) -> None:
                 )
 
     elif message.content.lower().startswith("!step"):
-        await client.send_message(message.channel, STEP_BY_STEP_URL)
+        await message.channel.send(STEP_BY_STEP_URL)
 
     elif message.content.lower().startswith("!csharp"):
-        await client.send_message(message.channel, C_SHARP_URL)
+        await message.channel.send(C_SHARP_URL)
 
     elif message.content.lower().startswith("!api"):
-        await client.send_message(message.channel, CLASS_API_URL)
+        await message.channel.send(CLASS_API_URL)
 
     elif message.content.lower().startswith("!nightly"):
-        await client.send_message(message.channel, NIGHTLY_URL)
+        await message.channel.send(NIGHTLY_URL)
 
     elif message.content.lower().startswith("!kcc"):
-        await client.send_message(message.channel, KIDS_CAN_CODE_YT)
+        await message.channel.send(KIDS_CAN_CODE_YT)
 
     elif message.content.lower().startswith("!gdquest"):
-        await client.send_message(message.channel, GDQUEST_YT)
+        await message.channel.send(GDQUEST_YT)
 
     elif message.content.lower().startswith("!pronounce"):
-        await client.send_message(message.channel, HOW_TO_PRONOUNCE_GODOT)
+        await message.channel.send(HOW_TO_PRONOUNCE_GODOT)
 
 
 # Prepare for takeoff.
