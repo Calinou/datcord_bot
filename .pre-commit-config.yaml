@@ -8,11 +8,10 @@ repos:
       - id: mixed-line-ending
         args: [--fix=lf]
 
-  - repo: https://github.com/ambv/black
+  - repo: https://github.com/psf/black
     rev: stable
     hooks:
-    - id: black
-      language_version: python3.6
+      - id: black
 
   # Disabled as there are currently type checking errors
   # - repo: https://github.com/pre-commit/mirrors-mypy
