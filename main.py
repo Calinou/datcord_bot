@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import discord
 import asyncio
 import os
