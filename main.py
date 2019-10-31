@@ -441,7 +441,6 @@ async def on_message(message) -> None:
         or message.content.startswith("!commands")
     ):
         await message.channel.send(HELP_STRING)
-        await message.delete()
 
     # Show a list of assignable roles.
     elif message.channel.name == BOT_COMMANDS_CHANNEL and message.content.startswith(
@@ -457,7 +456,6 @@ async def on_message(message) -> None:
         s += "```"
 
         await message.channel.send(s)
-        await message.delete()
 
     # Attempt to assign the user to a role.
     elif (
