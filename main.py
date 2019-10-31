@@ -391,10 +391,7 @@ async def on_message(message) -> None:
 
         if fpath:
             with open(fpath, "rb") as f:
-                await message.channel.send(
-                    "**#{0}:**".format(c),
-                    file=discord.File(f)
-                )
+                await message.channel.send("**#{0}:**".format(c), file=discord.File(f))
 
     elif message.channel.name == BOT_COMMANDS_CHANNEL and message.content.lower().startswith(
         "!meme"
@@ -434,8 +431,7 @@ async def on_message(message) -> None:
         if fpath:
             with open(fpath, "rb") as f:
                 await message.channel.send(
-                    "**By {0}**".format(credit),
-                    file=discord.File(f)
+                    "**By {0}**".format(credit), file=discord.File(f)
                 )
 
     # Send help message.
