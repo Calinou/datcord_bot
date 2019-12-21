@@ -13,7 +13,7 @@ install:
   - curl -sSL https://raw.githubusercontent.com/sdispater/poetry/master/get-poetry.py | python
   - source "$HOME/.poetry/env"
   - poetry install -v
-  - pip3 install pre-commit
+  - pip3 install black pre-commit
 
 script:
   # Run Black manually first to get a diff in the CI output in case of failure
