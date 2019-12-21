@@ -21,6 +21,9 @@ AVAILABLE_ROLES: Final = [
     "artist",
     "sound designer",
     "helper",
+    "she/her",
+    "he/him",
+    "they/them",
 ]
 
 # Channel names
