@@ -242,6 +242,7 @@ GD_MEMES: Final = [
     ["godot-episode3.png", "Calinou via Discord"],
     ["i_didnt_listen.png", "Calinou via Discord"],
     ["nine_inch_nodes.png", "Calinou via Discord"],
+    ["cute-in-execute.png", "Dramatico via Discord"],
     ["chad-godot.png", "Gors via Discord"],
     ["godot-chan03.png", "kkolyv via Discord"],
     ["internet-activity.png", "Mistery Man via Discord"],
