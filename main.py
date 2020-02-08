@@ -31,9 +31,9 @@ AVAILABLE_ROLES: Final = [
 BOT_COMMANDS_CHANNEL: Final = "bot_cmd"
 
 # URLs
-STEP_BY_STEP_URL: Final = "https://docs.godotengine.org/en/3.1/getting_started/step_by_step/index.html"
+STEP_BY_STEP_URL: Final = "https://docs.godotengine.org/en/3.2/getting_started/step_by_step/index.html"
 C_SHARP_URL: Final = "http://godotsharp.net/"
-CLASS_API_URL: Final = "https://docs.godotengine.org/en/3.1/classes/index.html"
+CLASS_API_URL: Final = "https://docs.godotengine.org/en/3.2/classes/index.html"
 NIGHTLY_URL: Final = "https://hugo.pro/projects/godot-builds/"
 KIDS_CAN_CODE_YT: Final = "https://www.youtube.com/channel/UCNaPQ5uLX5iIEHUCLmfAgKg"
 GDQUEST_YT: Final = "https://www.youtube.com/channel/UCxboW7x0jZqFdvMdCFKTMsQ"
