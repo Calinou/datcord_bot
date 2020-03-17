@@ -34,6 +34,7 @@ BOT_COMMANDS_CHANNEL: Final = "bot_cmd"
 STEP_BY_STEP_URL: Final = "https://docs.godotengine.org/en/3.2/getting_started/step_by_step/index.html"
 C_SHARP_URL: Final = "http://godotsharp.net/"
 CLASS_API_URL: Final = "https://docs.godotengine.org/en/3.2/classes/index.html"
+TUTORIALS_URL: Final = "https://docs.godotengine.org/en/latest/community/tutorials.html"
 NIGHTLY_URL: Final = "https://hugo.pro/projects/godot-builds/"
 KIDS_CAN_CODE_YT: Final = "https://www.youtube.com/channel/UCNaPQ5uLX5iIEHUCLmfAgKg"
 GDQUEST_YT: Final = "https://www.youtube.com/channel/UCxboW7x0jZqFdvMdCFKTMsQ"
@@ -587,6 +588,9 @@ async def on_message(message) -> None:
 
     elif message.content.lower().startswith("!api"):
         await message.channel.send(CLASS_API_URL)
+
+    elif message.content.lower().startswith("!tut"):
+        await message.channel.send(TUTORIALS_URL)
 
     elif message.content.lower().startswith("!nightly"):
         await message.channel.send(NIGHTLY_URL)
