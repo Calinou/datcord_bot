@@ -40,11 +40,19 @@ KIDS_CAN_CODE_YT: Final = "https://www.youtube.com/channel/UCNaPQ5uLX5iIEHUCLmfA
 GDQUEST_YT: Final = "https://www.youtube.com/channel/UCxboW7x0jZqFdvMdCFKTMsQ"
 
 # Message that the bot returns on `!help`
-HELP_STRING: Final = """
-:book: **Commands:**
-!assign [role]: *assign yourself to one of the available roles.*\n
-!unassign [role]: *unassign yourself from a role.*\n
-!roles: *list available roles.*"""
+HELP_STRING: Final = """:book: **Commands:**
+!assign [role]: *Assign yourself to one of the available roles.*
+!unassign [role]: *Unassign yourself from a role.*
+!roles: *List available roles.*
+:book: **Factoids:**
+!step: *Godot step by step documentation.*
+!csharp: *Godot C# documentation.*
+!api: *Online Godot class reference.*
+!tut: *List of tutorials in the Godot documentation.*
+!nightly: *Calinou's nightly Godot builds.*
+!kcc: *KidsCanCode YouTube channel.*
+!gdquest: *GDquest YouTube channel.*
+!pronounce: *Godot pronounciation.*"""
 
 # How long to wait for before deleting messages
 FEEDBACK_DEL_TIMER: Final = 5
