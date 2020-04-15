@@ -537,6 +537,12 @@ async def on_message(message) -> None:
                     tmp, FEEDBACK_DEL_TIMER, error=True, call_msg=message
                 )
 
+    elif message.content.lower().startswith("!class"):
+        class_name = message.content[7:].lower()  # remove !class
+        await message.channel.send(
+            "https://docs.godotengine.org/en/stable/classes/class_%s.html" % class_name
+        )
+
     elif message.content.lower().startswith("!step"):
         await message.channel.send(STEP_BY_STEP_URL)
 
