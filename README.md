@@ -8,23 +8,26 @@ This repository contains the source code for the
 |            Command | Description                                               |
 |-------------------:|:----------------------------------------------------------|
 |   `!assign [role]` | Assigns yourself to one of the available roles.           |
-|   `!meme [author]` | Returns a meme (only usable in the **#botspam** channel). |
+|   `!meme [author]` | Returns a meme (only usable in the **#bot_cmd** channel). |
 |           `!roles` | Lists available roles.                                    |
 |            `!ross` | Returns a Bob Ross quote.                                 |
+| `!unassign [role]` | Unassigns yourself from a role.                           |
 | `!unassign [role]` | Unassigns yourself from a role.                           |
 
 There are also some commands which print a URL or fixed message
 for convenience's sake:
 
-|      Command | What it prints                                     |
-|-------------:|:---------------------------------------------------|
-|       `!api` | The URL to the Godot class reference.              |
-|    `!csharp` | The URL to GodotSharp, a C# community resource.    |
-|   `!gdquest` | The URL to GDquest's YouTube channel.              |
-|       `!kcc` | The URL to KidsCanCode's YouTube channel.          |
-|   `!nightly` | The URL to Calinou's nightly builds.               |
-| `!pronounce` | A sentence about how "Godot" should be pronounced. |
-|      `!step` | The URL to the official step-by-step tutorial.     |
+|          Command | What it prints                                               |
+|-----------------:|:-------------------------------------------------------------|
+|           `!api` | The URL to the Godot class reference.                        |
+| `!class [class]` | The URL to the specified class in the Godot class reference. |
+|        `!csharp` | The URL to GodotSharp, a C# community resource.              |
+|       `!gdquest` | The URL to GDquest's YouTube channel.                        |
+|           `!kcc` | The URL to KidsCanCode's YouTube channel.                    |
+|       `!nightly` | The URL to Calinou's nightly builds.                         |
+|     `!pronounce` | A sentence about how "Godot" should be pronounced.           |
+|          `!step` | The URL to the official step-by-step tutorial.               |
+|           `!tut` | The URL to the list of tutorials in the documentation.       |
 
 ## Installation
 

@@ -537,35 +537,39 @@ async def on_message(message) -> None:
                     tmp, FEEDBACK_DEL_TIMER, error=True, call_msg=message
                 )
 
-    elif message.content.lower().startswith("!class"):
-        class_name = message.content[7:].lower()  # remove !class
-        await message.channel.send(
-            "https://docs.godotengine.org/en/stable/classes/class_%s.html" % class_name
-        )
+    elif message.content.lower().startswith("!api"):
+        await message.channel.send(CLASS_API_URL)
 
-    elif message.content.lower().startswith("!step"):
-        await message.channel.send(STEP_BY_STEP_URL)
+    elif message.content.lower().startswith("!class"):
+        class_name: Final = message.content[7:].lower()  # remove !class
+        if class_name != "":
+            await message.channel.send(
+                "https://docs.godotengine.org/en/stable/classes/class_%s.html"
+                % class_name
+            )
+        else:
+            await message.channel.send("Usage: !class [class]")
 
     elif message.content.lower().startswith("!csharp"):
         await message.channel.send(C_SHARP_URL)
 
-    elif message.content.lower().startswith("!api"):
-        await message.channel.send(CLASS_API_URL)
-
-    elif message.content.lower().startswith("!tut"):
-        await message.channel.send(TUTORIALS_URL)
-
-    elif message.content.lower().startswith("!nightly"):
-        await message.channel.send(NIGHTLY_URL)
+    elif message.content.lower().startswith("!gdquest"):
+        await message.channel.send(GDQUEST_YT)
 
     elif message.content.lower().startswith("!kcc"):
         await message.channel.send(KIDS_CAN_CODE_YT)
 
-    elif message.content.lower().startswith("!gdquest"):
-        await message.channel.send(GDQUEST_YT)
+    elif message.content.lower().startswith("!nightly"):
+        await message.channel.send(NIGHTLY_URL)
 
     elif message.content.lower().startswith("!pronounce"):
         await message.channel.send(HOW_TO_PRONOUNCE_GODOT)
+
+    elif message.content.lower().startswith("!step"):
+        await message.channel.send(STEP_BY_STEP_URL)
+
+    elif message.content.lower().startswith("!tut"):
+        await message.channel.send(TUTORIALS_URL)
 
 
 # Prepare for takeoff.
