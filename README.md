@@ -10,7 +10,6 @@ This repository contains the source code for the
 |   `!assign [role]` | Assigns yourself to one of the available roles.           |
 |   `!meme [author]` | Returns a meme (only usable in the **#botspam** channel). |
 |           `!roles` | Lists available roles.                                    |
-|    `!rms [number]` | Returns a Richard Stallman-related item.                  |
 |            `!ross` | Returns a Bob Ross quote.                                 |
 | `!unassign [role]` | Unassigns yourself from a role.                           |
 
@@ -54,5 +53,4 @@ Copyright © 2016-2019 Godot Engine contributors
   and is licensed under CC BY 3.0 Unported; see
   [LOGO_LICENSE.md](https://github.com/godotengine/godot/blob/master/LOGO_LICENSE.md)
   for more information.
-- Files in the `gdmeme/` and `rms/` directories are not licensed under
-  the MIT license.
+- Files in the `gdmeme/` directory are not licensed under the MIT license.

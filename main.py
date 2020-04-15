@@ -60,10 +60,6 @@ FEEDBACK_DEL_TIMER: Final = 5
 # A lot of people ask how to prounce Godot
 HOW_TO_PRONOUNCE_GODOT: Final = "There is no right way. It varies based on your region."
 
-# RMS is a beautiful man.
-RMS_PATH: Final = "rms"  # Directory where RMS memes are located
-RMS_MEMES: List[str] = []
-
 EMBED_ROSS_ICON: Final = "http://i.imgur.com/OZLdaSn.png"
 EMBED_ROSS_COLOR: Final = 0x000F89
 ROSS_QUOTES: Final = [
@@ -307,24 +303,8 @@ last_meme = ""
 
 def populate_memes() -> None:
     """
-    Retrieves all pictures in the RMS_PATH folder and sorts them by name.
+    Retrieves all pictures ``GD_MEMES`` folder and sorts them by name.
     """
-    global RMS_MEMES
-    memes = [
-        glob.glob(os.path.join(RMS_PATH, e))
-        for e in [
-            "*.jpg",
-            "*.JPG",
-            "*.jpeg",
-            "*.JPEG",
-            "*.gif",
-            "*.GIF",
-            "*.png",
-            "*.PNG",
-        ]
-    ]
-    # "sorted" defaults to alphabetical on strings.
-    RMS_MEMES = sorted([j for i in memes for j in i])
 
     for i in range(len(GD_MEMES)):
         GD_MEMES[i][0] = os.path.join(GD_PATH, GD_MEMES[i][0])
@@ -378,37 +358,6 @@ async def on_message(message) -> None:
         e = discord.Embed(color=EMBED_ROSS_COLOR, description=quote)
         e.set_author(name="Bob Ross", icon_url=EMBED_ROSS_ICON)
         await message.channel.send(embed=e)
-
-    # Posts a picture of RMS.
-    elif message.channel.name == BOT_COMMANDS_CHANNEL and message.content.lower().startswith(
-        "!rms"
-    ):
-        choice_error = False
-        fpath = None
-        c = message.content[5:]
-
-        if not len(c.strip()) or not message.content[4] == " ":
-            choice_error = True
-
-        try:
-            c = int(c.strip())
-            if c > 0 and c <= len(RMS_MEMES):
-                fpath = RMS_MEMES[c - 1]
-            else:
-                choice_error = True
-        except ValueError:
-            choice_error = True
-
-        if choice_error:
-            # choice_error occurs when a valid integer hasn't been supplied
-            # or it's out of bounds. This will pick a random image instead.
-            rand_c = random.randint(0, len(RMS_MEMES) - 1)
-            c = rand_c + 1  # c is the number which we will post alongside img.
-            fpath = RMS_MEMES[rand_c]
-
-        if fpath:
-            with open(fpath, "rb") as f:
-                await message.channel.send("**#{0}:**".format(c), file=discord.File(f))
 
     elif message.channel.name == BOT_COMMANDS_CHANNEL and message.content.lower().startswith(
         "!meme"
