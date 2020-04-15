@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 
-import discord
 import asyncio
 import os
 import random
+
 from typing_extensions import Final
+
+import discord
 
 client: Final = discord.Client()
 
