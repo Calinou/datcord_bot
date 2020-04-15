@@ -45,14 +45,15 @@ HELP_STRING: Final = """:book: **Commands:**
 !unassign [role]: *Unassign yourself from a role.*
 !roles: *List available roles.*
 :book: **Factoids:**
-!step: *Godot step by step documentation.*
-!csharp: *Godot C# documentation.*
 !api: *Online Godot class reference.*
-!tut: *List of tutorials in the Godot documentation.*
-!nightly: *Calinou's nightly Godot builds.*
-!kcc: *KidsCanCode YouTube channel.*
+!class [class]: *Online Godot class reference for the specified class.*
+!csharp: *Godot C# documentation.*
 !gdquest: *GDquest YouTube channel.*
-!pronounce: *Godot pronounciation.*"""
+!kcc: *KidsCanCode YouTube channel.*
+!nightly: *Calinou's nightly Godot builds.*
+!pronounce: *Godot pronounciation.*
+!step: *Godot step by step documentation.*
+!tut: *List of tutorials in the Godot documentation.*"""
 
 # How long to wait for before deleting messages
 FEEDBACK_DEL_TIMER: Final = 5
