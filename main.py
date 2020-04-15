@@ -3,9 +3,7 @@
 import discord
 import asyncio
 import os
-import glob
 import random
-from typing import List
 from typing_extensions import Final
 
 client: Final = discord.Client()
