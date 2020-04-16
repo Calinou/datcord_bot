@@ -4,6 +4,7 @@ import asyncio
 import os
 import random
 
+from typing import Any
 from typing_extensions import Final
 
 import discord
@@ -311,7 +312,9 @@ def populate_memes() -> None:
         GD_MEMES[i][0] = os.path.join(GD_PATH, GD_MEMES[i][0])
 
 
-async def delete_edit_timer(msg, time: int, error=False, call_msg=None) -> None:
+async def delete_edit_timer(
+    msg: Any, time: int, error: bool = False, call_msg: Any = None
+) -> None:
     """
     Counts down by editing the response message, then deletes both that one and
     the original message.
@@ -346,7 +349,7 @@ async def on_ready() -> None:
 
 
 @client.event
-async def on_message(message) -> None:
+async def on_message(message: Any) -> None:
     # Posts quotes of Bob Ross
     if (
         message.channel.name == BOT_COMMANDS_CHANNEL
