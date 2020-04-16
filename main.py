@@ -41,9 +41,11 @@ NIGHTLY_URL: Final = "https://hugo.pro/projects/godot-builds/"
 KIDS_CAN_CODE_YT: Final = "https://www.youtube.com/channel/UCNaPQ5uLX5iIEHUCLmfAgKg"
 GDQUEST_YT: Final = "https://www.youtube.com/channel/UCxboW7x0jZqFdvMdCFKTMsQ"
 
-# Valid class name regular expression.
-# This avoids possible exploits, such as highlighting blocked users on Discord or redirecting to unwanted pages.
-CLASS_REGEX: Final = re.compile("^[a-zA-Z0-9@]+$")
+# Valid class name regular expression. This avoids possible exploits, such as
+# highlighting blocked users on Discord or redirecting to unwanted pages.
+# TODO: Remove `_` once Godot 4.0 is released, as `IP_Unix` and `TCP_Server` have been
+# renamed to `IPUnix` and `TCPServer` respectively.
+CLASS_REGEX: Final = re.compile("^[a-zA-Z0-9@_]+$")
 
 # Message that the bot returns on `!help`
 HELP_STRING: Final = """:book: **Commands:**
@@ -553,7 +555,7 @@ async def on_message(message: Any) -> None:
             )
         elif class_name != "":
             await message.channel.send(
-                "Invalid class name (must not contain spaces or special characters other than `@`)."
+                "Invalid class name (must not contain spaces or special characters other than `@` and `_`)."
             )
         else:
             await message.channel.send("Usage: !class [class]")
