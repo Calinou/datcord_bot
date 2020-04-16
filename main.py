@@ -3,8 +3,9 @@
 import asyncio
 import os
 import random
-
+import re
 from typing import Any
+
 from typing_extensions import Final
 
 import discord
@@ -39,6 +40,10 @@ TUTORIALS_URL: Final = "https://docs.godotengine.org/en/latest/community/tutoria
 NIGHTLY_URL: Final = "https://hugo.pro/projects/godot-builds/"
 KIDS_CAN_CODE_YT: Final = "https://www.youtube.com/channel/UCNaPQ5uLX5iIEHUCLmfAgKg"
 GDQUEST_YT: Final = "https://www.youtube.com/channel/UCxboW7x0jZqFdvMdCFKTMsQ"
+
+# Valid class name regular expression.
+# This avoids possible exploits, such as highlighting blocked users on Discord or redirecting to unwanted pages.
+CLASS_REGEX: Final = re.compile("^[a-zA-Z0-9@]+$")
 
 # Message that the bot returns on `!help`
 HELP_STRING: Final = """:book: **Commands:**
@@ -539,10 +544,16 @@ async def on_message(message: Any) -> None:
         await message.channel.send(CLASS_API_URL)
 
     elif message.content.lower().startswith("!class"):
-        class_name: Final = message.content[7:].lower()  # remove !class
-        if class_name != "":
+        class_name: Final = message.content[7:].lower()  # Remove `!class`.
+        if class_name != "" and CLASS_REGEX.match(class_name):
+            # Percent-encode the `@` symbol to prevent highlighting users on Discord.
+            class_name_escaped: Final = class_name.replace("@", "%40")
             await message.channel.send(
-                f"https://docs.godotengine.org/en/stable/classes/class_{class_name}.html"
+                f"https://docs.godotengine.org/en/stable/classes/class_{class_name_escaped}.html"
+            )
+        elif class_name != "":
+            await message.channel.send(
+                "Invalid class name (must not contain spaces or special characters other than `@`)."
             )
         else:
             await message.channel.send("Usage: !class [class]")
