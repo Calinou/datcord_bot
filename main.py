@@ -344,7 +344,7 @@ async def delete_edit_timer(
 
 @client.event
 async def on_ready() -> None:
-    print("Logged in as: {0}--{1}".format(client.user.name, client.user.id))
+    print(f"Logged in as: {client.user.name}--{client.user.id}")
     print("------")
 
 
@@ -400,9 +400,7 @@ async def on_message(message: Any) -> None:
 
         if fpath:
             with open(fpath, "rb") as f:
-                await message.channel.send(
-                    "**By {0}**".format(credit), file=discord.File(f)
-                )
+                await message.channel.send(f"**By {credit}**", file=discord.File(f))
 
     # Send help message.
     elif (
@@ -420,7 +418,7 @@ async def on_message(message: Any) -> None:
         s += "```\n"
 
         for index, role in enumerate(AVAILABLE_ROLES):
-            s += "{0}".format(role.upper())
+            s += f"{role.upper()}"
             if not index == len(AVAILABLE_ROLES) - 1:
                 s += ", "
         s += "```"
@@ -470,9 +468,7 @@ async def on_message(message: Any) -> None:
                         if role not in message.author.roles:
                             await message.author.add_roles(role)
                             tmp = await message.channel.send(
-                                ":white_check_mark: User {0} added to {1}.".format(
-                                    message.author.name, role.name
-                                )
+                                f":white_check_mark: User {message.author.name} added to {role.name}."
                             )
                             await delete_edit_timer(
                                 tmp, FEEDBACK_DEL_TIMER, call_msg=message
@@ -494,7 +490,7 @@ async def on_message(message: Any) -> None:
                     break
             else:
                 tmp = await message.channel.send(
-                    ":no_entry: **{0}** <- *Role not found.*".format(new_role.upper())
+                    f":no_entry: **{new_role.upper()}** <- *Role not found.*"
                 )
                 await delete_edit_timer(
                     tmp, FEEDBACK_DEL_TIMER, error=True, call_msg=message
@@ -533,9 +529,7 @@ async def on_message(message: Any) -> None:
                     break
             else:
                 tmp = await message.channel.send(
-                    ":no_entry: **{0}** <- You don't have that role.".format(
-                        old_role.upper()
-                    )
+                    f":no_entry: **{old_role.upper()}** <- You don't have that role."
                 )
                 await delete_edit_timer(
                     tmp, FEEDBACK_DEL_TIMER, error=True, call_msg=message
@@ -548,8 +542,7 @@ async def on_message(message: Any) -> None:
         class_name: Final = message.content[7:].lower()  # remove !class
         if class_name != "":
             await message.channel.send(
-                "https://docs.godotengine.org/en/stable/classes/class_%s.html"
-                % class_name
+                f"https://docs.godotengine.org/en/stable/classes/class_{class_name}.html"
             )
         else:
             await message.channel.send("Usage: !class [class]")

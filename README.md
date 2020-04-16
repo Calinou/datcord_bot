@@ -33,7 +33,7 @@ for convenience's sake:
 
 ### Prerequisites
 
-- Python 3.5 or 3.6 (Python 3.7 isn't supported yet).
+- Python 3.6 (Python 3.7 or later aren't supported yet).
 - [Poetry](https://github.com/sdispater/poetry) for installing dependencies.
 
 ### Running

@@ -19,6 +19,6 @@ keywords = [
 ]
 
 [tool.poetry.dependencies]
-python = "^3.5.3"
+python = "^3.6.0"
 "discord.py" = "^1.2"
 typing_extensions = "^3.7"
