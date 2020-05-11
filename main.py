@@ -40,6 +40,7 @@ TUTORIALS_URL: Final = "https://docs.godotengine.org/en/latest/community/tutoria
 NIGHTLY_URL: Final = "https://hugo.pro/projects/godot-builds/"
 KIDS_CAN_CODE_YT: Final = "https://www.youtube.com/channel/UCNaPQ5uLX5iIEHUCLmfAgKg"
 GDQUEST_YT: Final = "https://www.youtube.com/channel/UCxboW7x0jZqFdvMdCFKTMsQ"
+GAME_PROGRAMMING_PATTERNS_URL: Final = "http://gameprogrammingpatterns.com/contents.html"
 
 # Valid class name regular expression. This avoids possible exploits, such as
 # highlighting blocked users on Discord or redirecting to unwanted pages.
@@ -69,6 +70,7 @@ FEEDBACK_DEL_TIMER: Final = 5
 # A lot of people ask how to prounce Godot
 HOW_TO_PRONOUNCE_GODOT: Final = "There is no right way. It varies based on your region."
 
+WORK_ON_GAME: Final = "https://imgur.com/a/egsXCBs"
 EMBED_ROSS_ICON: Final = "http://i.imgur.com/OZLdaSn.png"
 EMBED_ROSS_COLOR: Final = 0x000F89
 ROSS_QUOTES: Final = [
@@ -580,6 +582,12 @@ async def on_message(message: Any) -> None:
 
     elif message.content.lower().startswith("!tut"):
         await message.channel.send(TUTORIALS_URL)
+    
+    elif message.content.lower().startswith("!patterns"):
+        await message.channel.send(GAME_PROGRAMMING_PATTERNS_URL)
+    
+    elif message.content.lower().startswith("!game"):
+        await message.channel.send(WORK_ON_GAME)
 
 
 # Prepare for takeoff.
