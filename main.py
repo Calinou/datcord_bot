@@ -30,7 +30,7 @@ AVAILABLE_ROLES: Final = [
 
 # Channel names
 # Some commands can only be used in the bot commands channel to avoid spam
-BOT_COMMANDS_CHANNEL: Final = "bot_cmd"
+BOT_COMMANDS_CHANNEL: Final = "bot-cmd"
 
 # URLs
 STEP_BY_STEP_URL: Final = "https://docs.godotengine.org/en/latest/getting_started/step_by_step/index.html"
