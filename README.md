@@ -22,9 +22,12 @@ for convenience's sake:
 |           `!api` | The URL to the Godot class reference.                        |
 | `!class [class]` | The URL to the specified class in the Godot class reference. |
 |        `!csharp` | The URL to GodotSharp, a C# community resource.              |
+|          `!game` | An image telling you to work on your game.                   |
 |       `!gdquest` | The URL to GDquest's YouTube channel.                        |
 |           `!kcc` | The URL to KidsCanCode's YouTube channel.                    |
+|        `!mirror` | The URL to Calinou's download mirror.                        |
 |       `!nightly` | The URL to Calinou's nightly builds.                         |
+|      `!patterns` | The URL to the Game Programming Patterns book.               |
 |     `!pronounce` | A sentence about how "Godot" should be pronounced.           |
 |          `!step` | The URL to the official step-by-step tutorial.               |
 |           `!tut` | The URL to the list of tutorials in the documentation.       |

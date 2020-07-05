@@ -566,6 +566,9 @@ async def on_message(message: Any) -> None:
     elif message.content.lower().startswith("!csharp"):
         await message.channel.send(C_SHARP_URL)
 
+    elif message.content.lower().startswith("!game"):
+        await message.channel.send(WORK_ON_GAME)
+
     elif message.content.lower().startswith("!gdquest"):
         await message.channel.send(GDQUEST_YT)
 
@@ -578,6 +581,9 @@ async def on_message(message: Any) -> None:
     elif message.content.lower().startswith("!nightly"):
         await message.channel.send(NIGHTLY_URL)
 
+    elif message.content.lower().startswith("!patterns"):
+        await message.channel.send(GAME_PROGRAMMING_PATTERNS_URL)
+
     elif message.content.lower().startswith("!pronounce"):
         await message.channel.send(HOW_TO_PRONOUNCE_GODOT)
 
@@ -586,12 +592,6 @@ async def on_message(message: Any) -> None:
 
     elif message.content.lower().startswith("!tut"):
         await message.channel.send(TUTORIALS_URL)
-
-    elif message.content.lower().startswith("!patterns"):
-        await message.channel.send(GAME_PROGRAMMING_PATTERNS_URL)
-
-    elif message.content.lower().startswith("!game"):
-        await message.channel.send(WORK_ON_GAME)
 
 
 # Prepare for takeoff.
