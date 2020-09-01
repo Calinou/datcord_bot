@@ -43,7 +43,7 @@ GDQUEST_YT: Final = "https://www.youtube.com/channel/UCxboW7x0jZqFdvMdCFKTMsQ"
 GAME_PROGRAMMING_PATTERNS_URL: Final = "http://gameprogrammingpatterns.com/contents.html"
 DOWNLOAD_MIRROR_URL: Final = "https://archive.hugo.pro/godot-tuxfamily/"
 SUPPORTED_LANGUAGES: Final = "https://github.com/Vivraan/godot-lang-support"
-CONSOLE_SUPPORT: Final = "https://docs.godotengine.org/en/stable/tutorials/platform/consoles.html#third-party-support"
+CONSOLE_SUPPORT: Final = "https://docs.godotengine.org/en/latest/tutorials/platform/consoles.html"
 
 # Valid class name regular expression. This avoids possible exploits, such as
 # highlighting blocked users on Discord or redirecting to unwanted pages.
@@ -66,8 +66,8 @@ HELP_STRING: Final = """:book: **Commands:**
 !pronounce: *Godot pronounciation.*
 !step: *Godot step by step documentation.*
 !tut: *List of tutorials in the Godot documentation.*
-!lang: *Shows a list of the language support in Godot.*
-!consoles: *How you can port your games to consoles.*"""
+!lang: *Community-maintained list of programming languages supported in Godot.*
+!consoles: *Documentation about porting a Godot project to consoles.*"""
 
 # How long to wait for before deleting messages
 FEEDBACK_DEL_TIMER: Final = 5
