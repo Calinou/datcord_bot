@@ -42,6 +42,8 @@ KIDS_CAN_CODE_YT: Final = "https://www.youtube.com/channel/UCNaPQ5uLX5iIEHUCLmfA
 GDQUEST_YT: Final = "https://www.youtube.com/channel/UCxboW7x0jZqFdvMdCFKTMsQ"
 GAME_PROGRAMMING_PATTERNS_URL: Final = "http://gameprogrammingpatterns.com/contents.html"
 DOWNLOAD_MIRROR_URL: Final = "https://archive.hugo.pro/godot-tuxfamily/"
+SUPPORTED_LANGUAGES: Final = "https://github.com/Vivraan/godot-lang-support"
+CONSOLE_SUPPORT: Final = "https://docs.godotengine.org/en/latest/tutorials/platform/consoles.html"
 
 # Valid class name regular expression. This avoids possible exploits, such as
 # highlighting blocked users on Discord or redirecting to unwanted pages.
@@ -63,7 +65,9 @@ HELP_STRING: Final = """:book: **Commands:**
 !nightly: *Calinou's nightly Godot builds.*
 !pronounce: *Godot pronounciation.*
 !step: *Godot step by step documentation.*
-!tut: *List of tutorials in the Godot documentation.*"""
+!tut: *List of tutorials in the Godot documentation.*
+!lang: *Community-maintained list of programming languages supported in Godot.*
+!consoles: *Documentation about porting a Godot project to consoles.*"""
 
 # How long to wait for before deleting messages
 FEEDBACK_DEL_TIMER: Final = 5
@@ -592,7 +596,12 @@ async def on_message(message: Any) -> None:
 
     elif message.content.lower().startswith("!tut"):
         await message.channel.send(TUTORIALS_URL)
+    
+    elif message.content.lower().startswith("!lang"):
+        await message.channel.send(SUPPORTED_LANGUAGES)
 
+    elif message.content.lower().startswith("!consoles"):
+        await message.channel.send(CONSOLE_SUPPORT)
 
 # Prepare for takeoff.
 populate_memes()
