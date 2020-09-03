@@ -67,13 +67,17 @@ HELP_STRING: Final = """:book: **Commands:**
 !step: *Godot step by step documentation.*
 !tut: *List of tutorials in the Godot documentation.*
 !lang: *Community-maintained list of programming languages supported in Godot.*
-!consoles: *Documentation about porting a Godot project to consoles.*"""
+!consoles: *Documentation about porting a Godot project to consoles.*
+!ask: *Response to be used when users are asking if they can ask a question, which is redundant.*"""
 
 # How long to wait for before deleting messages
 FEEDBACK_DEL_TIMER: Final = 5
 
 # A lot of people ask how to prounce Godot
 HOW_TO_PRONOUNCE_GODOT: Final = "There is no right way. It varies based on your region."
+
+# Don't ask to ask, just ask :)
+ASK_QUESTIONS: Final = "You do not need to ask permission to ask a question. Just ask your question and anyone that can help will answer you as soon as possible."
 
 WORK_ON_GAME: Final = "https://imgur.com/a/egsXCBs"
 EMBED_ROSS_ICON: Final = "http://i.imgur.com/OZLdaSn.png"
@@ -602,6 +606,9 @@ async def on_message(message: Any) -> None:
 
     elif message.content.lower().startswith("!consoles"):
         await message.channel.send(CONSOLE_SUPPORT)
+
+    elif message.content.lower().startswith("!ask"):
+        await message.channel.send(ASK_QUESTIONS)
 
 # Prepare for takeoff.
 populate_memes()
