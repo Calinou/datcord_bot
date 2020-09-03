@@ -32,19 +32,6 @@ AVAILABLE_ROLES: Final = [
 # Some commands can only be used in the bot commands channel to avoid spam
 BOT_COMMANDS_CHANNEL: Final = "bot-cmd"
 
-# URLs
-STEP_BY_STEP_URL: Final = "https://docs.godotengine.org/en/latest/getting_started/step_by_step/index.html"
-C_SHARP_URL: Final = "http://godotsharp.net/"
-CLASS_API_URL: Final = "https://docs.godotengine.org/en/latest/classes/index.html"
-TUTORIALS_URL: Final = "https://docs.godotengine.org/en/latest/community/tutorials.html"
-NIGHTLY_URL: Final = "https://hugo.pro/projects/godot-builds/"
-KIDS_CAN_CODE_YT: Final = "https://www.youtube.com/channel/UCNaPQ5uLX5iIEHUCLmfAgKg"
-GDQUEST_YT: Final = "https://www.youtube.com/channel/UCxboW7x0jZqFdvMdCFKTMsQ"
-GAME_PROGRAMMING_PATTERNS_URL: Final = "http://gameprogrammingpatterns.com/contents.html"
-DOWNLOAD_MIRROR_URL: Final = "https://archive.hugo.pro/godot-tuxfamily/"
-SUPPORTED_LANGUAGES: Final = "https://github.com/Vivraan/godot-lang-support"
-CONSOLE_SUPPORT: Final = "https://docs.godotengine.org/en/latest/tutorials/platform/consoles.html"
-
 # Valid class name regular expression. This avoids possible exploits, such as
 # highlighting blocked users on Discord or redirecting to unwanted pages.
 # TODO: Remove `_` once Godot 4.0 is released, as `IP_Unix` and `TCP_Server` have been
@@ -73,13 +60,6 @@ HELP_STRING: Final = """:book: **Commands:**
 # How long to wait for before deleting messages
 FEEDBACK_DEL_TIMER: Final = 5
 
-# A lot of people ask how to prounce Godot
-HOW_TO_PRONOUNCE_GODOT: Final = "There is no right way. It varies based on your region."
-
-# Don't ask to ask, just ask :)
-ASK_QUESTIONS: Final = "You do not need to ask permission to ask a question. Just ask your question and anyone that can help will answer you as soon as possible."
-
-WORK_ON_GAME: Final = "https://imgur.com/a/egsXCBs"
 EMBED_ROSS_ICON: Final = "http://i.imgur.com/OZLdaSn.png"
 EMBED_ROSS_COLOR: Final = 0x000F89
 ROSS_QUOTES: Final = [
@@ -553,9 +533,6 @@ async def on_message(message: Any) -> None:
                     tmp, FEEDBACK_DEL_TIMER, error=True, call_msg=message
                 )
 
-    elif message.content.lower().startswith("!api"):
-        await message.channel.send(CLASS_API_URL)
-
     elif message.content.lower().startswith("!class"):
         class_name: Final = message.content[7:].lower()  # Remove `!class`.
         if class_name != "" and CLASS_REGEX.match(class_name):
@@ -571,44 +548,79 @@ async def on_message(message: Any) -> None:
         else:
             await message.channel.send("Usage: !class [class]")
 
+    # Factoid commands (returns a constant string).
+
+    elif message.content.lower().startswith("!api"):
+        # Online Godot API class reference.
+        await message.channel.send(
+            "https://docs.godotengine.org/en/latest/classes/index.html"
+        )
+
     elif message.content.lower().startswith("!csharp"):
-        await message.channel.send(C_SHARP_URL)
+        # GodotSharp community website.
+        await message.channel.send("http://godotsharp.net/")
 
     elif message.content.lower().startswith("!game"):
-        await message.channel.send(WORK_ON_GAME)
+        # "Work on your game!" image.
+        await message.channel.send("https://imgur.com/a/egsXCBs")
 
     elif message.content.lower().startswith("!gdquest"):
-        await message.channel.send(GDQUEST_YT)
+        # GDQuest YouTube channel.
+        await message.channel.send(
+            "https://www.youtube.com/channel/UCxboW7x0jZqFdvMdCFKTMsQ"
+        )
 
     elif message.content.lower().startswith("!kcc"):
-        await message.channel.send(KIDS_CAN_CODE_YT)
+        # Kids Can Code YouTube channel.
+        await message.channel.send(
+            "https://www.youtube.com/channel/UCNaPQ5uLX5iIEHUCLmfAgKg"
+        )
 
     elif message.content.lower().startswith("!mirror"):
-        await message.channel.send(DOWNLOAD_MIRROR_URL)
+        # Unofficial Godot download mirror (for people experiencing slowness with the official mirror).
+        await message.channel.send("https://archive.hugo.pro/godot-tuxfamily/")
 
     elif message.content.lower().startswith("!nightly"):
-        await message.channel.send(NIGHTLY_URL)
+        # Calinou's nightly Godot builds.
+        await message.channel.send("https://hugo.pro/projects/godot-builds/")
 
     elif message.content.lower().startswith("!patterns"):
-        await message.channel.send(GAME_PROGRAMMING_PATTERNS_URL)
+        # Game Programming Patterns book (online version).
+        await message.channel.send("http://gameprogrammingpatterns.com/contents.html")
 
     elif message.content.lower().startswith("!pronounce"):
-        await message.channel.send(HOW_TO_PRONOUNCE_GODOT)
+        await message.channel.send(
+            'Godot is usually pronounced "go-dough" (the "t" is silent).'
+        )
 
     elif message.content.lower().startswith("!step"):
-        await message.channel.send(STEP_BY_STEP_URL)
+        # Official step-by-step tutorial.
+        await message.channel.send(
+            "https://docs.godotengine.org/en/latest/getting_started/step_by_step/index.html"
+        )
 
     elif message.content.lower().startswith("!tut"):
-        await message.channel.send(TUTORIALS_URL)
-    
+        # List of community tutorials in the Godot documentation.
+        await message.channel.send(
+            "https://docs.godotengine.org/en/latest/community/tutorials.html"
+        )
+
     elif message.content.lower().startswith("!lang"):
-        await message.channel.send(SUPPORTED_LANGUAGES)
+        # Programming language support in Godot.
+        await message.channel.send("https://github.com/Vivraan/godot-lang-support")
 
     elif message.content.lower().startswith("!consoles"):
-        await message.channel.send(CONSOLE_SUPPORT)
+        # Documentation page "Console support in Godot".
+        await message.channel.send(
+            "https://docs.godotengine.org/en/latest/tutorials/platform/consoles.html"
+        )
 
     elif message.content.lower().startswith("!ask"):
-        await message.channel.send(ASK_QUESTIONS)
+        # Don't ask to ask, just ask :)
+        await message.channel.send(
+            "You do not need to ask permission to ask a question. Just ask your question and anyone that can help will answer you as soon as possible."
+        )
+
 
 # Prepare for takeoff.
 populate_memes()
