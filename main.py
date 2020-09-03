@@ -76,7 +76,7 @@ FEEDBACK_DEL_TIMER: Final = 5
 # A lot of people ask how to prounce Godot
 HOW_TO_PRONOUNCE_GODOT: Final = "There is no right way. It varies based on your region."
 
-# I'm not sure where else to put this as I don't see any other single line strings being defined.
+# Don't ask to ask, just ask :)
 ASK_QUESTIONS: Final = "You do not need to ask permission to ask a question. Just ask your question and anyone that can help will answer you as soon as possible."
 
 WORK_ON_GAME: Final = "https://imgur.com/a/egsXCBs"
