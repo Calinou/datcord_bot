@@ -49,6 +49,7 @@ HELP_STRING: Final = """:book: **Commands:**
 !csharp: *Godot C# documentation.*
 !gdquest: *GDquest YouTube channel.*
 !kcc: *KidsCanCode YouTube channel.*
+!bcg: *BornCG Youtube channel.*
 !nightly: *Calinou's nightly Godot builds.*
 !pronounce: *Godot pronounciation.*
 !step: *Godot step by step documentation.*
@@ -552,13 +553,11 @@ async def on_message(message: Any) -> None:
 
     elif message.content.lower().startswith("!api"):
         # Online Godot API class reference.
-        await message.channel.send(
-            "https://docs.godotengine.org/en/latest/classes/index.html"
-        )
+        await message.channel.send("https://docs.godotengine.org/en/latest/classes/index.html")
 
     elif message.content.lower().startswith("!csharp"):
         # GodotSharp community website.
-        await message.channel.send("http://godotsharp.net/")
+        await message.channel.send("https://godotsharp.net/")
 
     elif message.content.lower().startswith("!game"):
         # "Work on your game!" image.
@@ -566,15 +565,15 @@ async def on_message(message: Any) -> None:
 
     elif message.content.lower().startswith("!gdquest"):
         # GDQuest YouTube channel.
-        await message.channel.send(
-            "https://www.youtube.com/channel/UCxboW7x0jZqFdvMdCFKTMsQ"
-        )
+        await message.channel.send("https://www.youtube.com/channel/UCxboW7x0jZqFdvMdCFKTMsQ")
 
     elif message.content.lower().startswith("!kcc"):
         # Kids Can Code YouTube channel.
-        await message.channel.send(
-            "https://www.youtube.com/channel/UCNaPQ5uLX5iIEHUCLmfAgKg"
-        )
+        await message.channel.send("https://www.youtube.com/channel/UCNaPQ5uLX5iIEHUCLmfAgKg/playlists")
+
+    elif message.content.lower().startswith("!bcg"):
+        # Born CG YouTube channel.
+        await message.channel.send("https://m.youtube.com/playlist?list=PLda3VoSoc_TSBBOBYwcmlamF1UrjVtccZ")
 
     elif message.content.lower().startswith("!mirror"):
         # Unofficial Godot download mirror (for people experiencing slowness with the official mirror).
@@ -586,24 +585,19 @@ async def on_message(message: Any) -> None:
 
     elif message.content.lower().startswith("!patterns"):
         # Game Programming Patterns book (online version).
-        await message.channel.send("http://gameprogrammingpatterns.com/contents.html")
+        await message.channel.send("https://gameprogrammingpatterns.com/contents.html")
 
     elif message.content.lower().startswith("!pronounce"):
-        await message.channel.send(
-            'Godot is usually pronounced "go-dough" (the "t" is silent).'
-        )
+        # How to pronounce the word "Godot".
+        await message.channel.send('Godot is usually pronounced "go-dough" (the "t" is silent).')
 
     elif message.content.lower().startswith("!step"):
         # Official step-by-step tutorial.
-        await message.channel.send(
-            "https://docs.godotengine.org/en/latest/getting_started/step_by_step/index.html"
-        )
+        await message.channel.send("https://docs.godotengine.org/en/latest/getting_started/step_by_step/index.html")
 
     elif message.content.lower().startswith("!tut"):
         # List of community tutorials in the Godot documentation.
-        await message.channel.send(
-            "https://docs.godotengine.org/en/latest/community/tutorials.html"
-        )
+        await message.channel.send("https://docs.godotengine.org/en/latest/community/tutorials.html)
 
     elif message.content.lower().startswith("!lang"):
         # Programming language support in Godot.
@@ -611,15 +605,11 @@ async def on_message(message: Any) -> None:
 
     elif message.content.lower().startswith("!consoles"):
         # Documentation page "Console support in Godot".
-        await message.channel.send(
-            "https://docs.godotengine.org/en/latest/tutorials/platform/consoles.html"
-        )
+        await message.channel.send("https://docs.godotengine.org/en/latest/tutorials/platform/consoles.html")
 
     elif message.content.lower().startswith("!ask"):
         # Don't ask to ask, just ask :)
-        await message.channel.send(
-            "You do not need to ask permission to ask a question. Just ask your question and anyone that can help will answer you as soon as possible."
-        )
+        await message.channel.send("You do not need to ask for permission to ask a question. Just ask your question and anyone that can help will answer you as soon as possible.")
 
 
 # Prepare for takeoff.
