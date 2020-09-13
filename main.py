@@ -573,7 +573,7 @@ async def on_message(message: Any) -> None:
     elif message.content.lower().startswith("!kcc"):
         # Kids Can Code YouTube channel.
         await message.channel.send(
-            "https://www.youtube.com/channel/UCNaPQ5uLX5iIEHUCLmfAgKg"
+            "https://youtube.com/channel/UCNaPQ5uLX5iIEHUCLmfAgKg/playlists"
         )
 
     elif message.content.lower().startswith("!mirror"):
