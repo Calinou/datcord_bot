@@ -579,7 +579,7 @@ async def on_message(message: Any) -> None:
 
     elif message.content.lower().startswith("!bcg"):
         # Born CG YouTube channel.
-        await message.channel.send("https://youtube.com/playlist?list=PLda3VoSoc_TSBBOBYwcmlamF1UrjVtccZ")
+        await message.channel.send("https://www.youtube.com/playlist?list=PLda3VoSoc_TSBBOBYwcmlamF1UrjVtccZ")
 
     elif message.content.lower().startswith("!mirror"):
         # Unofficial Godot download mirror (for people experiencing slowness with the official mirror).
