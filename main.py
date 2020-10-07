@@ -49,6 +49,7 @@ HELP_STRING: Final = """:book: **Commands:**
 !csharp: *Godot C# documentation.*
 !gdquest: *GDquest YouTube channel.*
 !kcc: *KidsCanCode YouTube channel.*
+!heart: *HeartBeast Youtube channel.*
 !bcg: *BornCG YouTube channel.*
 !nightly: *Calinou's nightly Godot builds.*
 !pronounce: *Godot pronounciation.*
@@ -576,6 +577,10 @@ async def on_message(message: Any) -> None:
         await message.channel.send(
             "https://www.youtube.com/channel/UCNaPQ5uLX5iIEHUCLmfAgKg/playlists"
         )
+
+    elif message.content.lower().startswith("!heart"):
+        # HeartBeast YouTube channel.
+        await message.channel.send("https://www.youtube.com/c/uheartbeast/playlists")
 
     elif message.content.lower().startswith("!bcg"):
         # Born CG YouTube channel.
