@@ -49,7 +49,7 @@ HELP_STRING: Final = """:book: **Commands:**
 !csharp: *Godot C# documentation.*
 !gdquest: *GDquest YouTube channel.*
 !kcc: *KidsCanCode YouTube channel.*
-!heart: *HeartBeast Youtube channel.*
+!heart: *HeartBeast YouTube channel.*
 !bcg: *BornCG YouTube channel.*
 !nightly: *Calinou's nightly Godot builds.*
 !pronounce: *Godot pronounciation.*
