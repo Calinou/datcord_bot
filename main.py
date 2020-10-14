@@ -56,7 +56,9 @@ HELP_STRING: Final = """:book: **Commands:**
 !tut: *List of tutorials in the Godot documentation.*
 !lang: *Community-maintained list of programming languages supported in Godot.*
 !consoles: *Documentation about porting a Godot project to consoles.*
-!ask: *Response to be used when users are asking if they can ask a question, which is redundant.*"""
+!ask: *Response to be used when users are asking if they can ask a question, which is redundant.*
+
+Bot source code: <https://github.com/Calinou/datcord_bot>"""
 
 # How long to wait for before deleting messages
 FEEDBACK_DEL_TIMER: Final = 5
@@ -579,7 +581,9 @@ async def on_message(message: Any) -> None:
 
     elif message.content.lower().startswith("!bcg"):
         # Born CG YouTube channel.
-        await message.channel.send("https://www.youtube.com/playlist?list=PLda3VoSoc_TSBBOBYwcmlamF1UrjVtccZ")
+        await message.channel.send(
+            "https://www.youtube.com/playlist?list=PLda3VoSoc_TSBBOBYwcmlamF1UrjVtccZ"
+        )
 
     elif message.content.lower().startswith("!mirror"):
         # Unofficial Godot download mirror (for people experiencing slowness with the official mirror).
