@@ -557,7 +557,7 @@ async def on_message(message: Any) -> None:
     elif message.content.lower().startswith("!api"):
         # Online Godot API class reference.
         await message.channel.send(
-            "https://docs.godotengine.org/en/latest/classes/index.html"
+            "https://docs.godotengine.org/en/stable/classes/index.html"
         )
 
     elif message.content.lower().startswith("!csharp"):
@@ -611,13 +611,13 @@ async def on_message(message: Any) -> None:
     elif message.content.lower().startswith("!step"):
         # Official step-by-step tutorial.
         await message.channel.send(
-            "https://docs.godotengine.org/en/latest/getting_started/step_by_step/index.html"
+            "https://docs.godotengine.org/en/stable/getting_started/step_by_step/index.html"
         )
 
     elif message.content.lower().startswith("!tut"):
         # List of community tutorials in the Godot documentation.
         await message.channel.send(
-            "https://docs.godotengine.org/en/latest/community/tutorials.html"
+            "https://docs.godotengine.org/en/stable/community/tutorials.html"
         )
 
     elif message.content.lower().startswith("!lang"):
@@ -627,7 +627,7 @@ async def on_message(message: Any) -> None:
     elif message.content.lower().startswith("!consoles"):
         # Documentation page "Console support in Godot".
         await message.channel.send(
-            "https://docs.godotengine.org/en/latest/tutorials/platform/consoles.html"
+            "https://docs.godotengine.org/en/stable/tutorials/platform/consoles.html"
         )
 
     elif message.content.lower().startswith("!ask"):
