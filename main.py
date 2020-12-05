@@ -58,6 +58,7 @@ HELP_STRING: Final = """:book: **Commands:**
 !lang: *Community-maintained list of programming languages supported in Godot.*
 !consoles: *Documentation about porting a Godot project to consoles.*
 !ask: *Response to be used when users are asking if they can ask a question, which is redundant.*
+!code: *Shows you how to format your code in Discord*
 
 Bot source code: <https://github.com/Calinou/datcord_bot>"""
 
@@ -634,6 +635,12 @@ async def on_message(message: Any) -> None:
         # Don't ask to ask, just ask :)
         await message.channel.send(
             "You do not need to ask for permission to ask a question. Just ask your question and anyone that can help will answer you as soon as possible."
+        )
+
+    elif message.content.lower().startswith("!code"):
+        # Syntax highlighting and code formating
+        await message.channel.send(
+            "You can format and syntax highlight your GDScript code by putting **\`\`\`swift** a line above it, and **\`\`\`** a line below it."
         )
 
 
