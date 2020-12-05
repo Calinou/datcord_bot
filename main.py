@@ -58,7 +58,7 @@ HELP_STRING: Final = """:book: **Commands:**
 !lang: *Community-maintained list of programming languages supported in Godot.*
 !consoles: *Documentation about porting a Godot project to consoles.*
 !ask: *Response to be used when users are asking if they can ask a question, which is redundant.*
-!code: *Shows you how to format your code in Discord*
+!code: *Instructions for formatting GDScript code on Discord.*
 
 Bot source code: <https://github.com/Calinou/datcord_bot>"""
 
