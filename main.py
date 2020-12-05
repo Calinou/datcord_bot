@@ -638,7 +638,7 @@ async def on_message(message: Any) -> None:
         )
 
     elif message.content.lower().startswith("!code"):
-        # Syntax highlighting and code formating
+        # Instructions for syntax highlighting and code formatting.
         await message.channel.send(
             "You can format and syntax highlight your GDScript code by putting **\`\`\`swift** a line above it, and **\`\`\`** a line below it."
         )
