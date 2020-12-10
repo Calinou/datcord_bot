@@ -31,6 +31,7 @@ for convenience's sake:
 |     `!pronounce` | A sentence about how "Godot" should be pronounced.           |
 |          `!step` | The URL to the official step-by-step tutorial.               |
 |           `!tut` | The URL to the list of tutorials in the documentation.       |
+|          `!code` | Brief instructions for embedding code snippets in Discord.   |
 
 ## Installation
 

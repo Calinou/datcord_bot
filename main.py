@@ -640,7 +640,17 @@ async def on_message(message: Any) -> None:
     elif message.content.lower().startswith("!code"):
         # Instructions for syntax highlighting and code formatting.
         await message.channel.send(
-            "You can format and syntax highlight your GDScript code by putting **\`\`\`swift** a line above it, and **\`\`\`** a line below it."
+            """You can embed formatted code snippets directly into Discord by surrounding the code block with triple-backticks. Adding `swift` at the top also gives it some basic syntax highlighting.
+            **\`\`\`swift**
+            *your code goes here*
+            **\`\`\`**
+            This produces a code block that looks like this:
+            ```swift
+            your code goes here
+            ```
+            You can also format code inline with single backticks: \`one_command()\` => `one_command()`
+            
+            For sharing large scripts, please post your script to a pastebin like https://hastebin.com or even consider sharing a remote git repo on GitHub or GitLab."""
         )
 
 
