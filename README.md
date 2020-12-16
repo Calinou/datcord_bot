@@ -32,6 +32,7 @@ for convenience's sake:
 |          `!step` | The URL to the official step-by-step tutorial.               |
 |           `!tut` | The URL to the list of tutorials in the documentation.       |
 |          `!code` | Brief instructions for embedding code snippets in Discord.   |
+|            `!xy` | Ask for the REAL problem, and explain what XY-problems are.  |
 
 ## Installation
 

@@ -59,6 +59,7 @@ HELP_STRING: Final = """:book: **Commands:**
 !consoles: *Documentation about porting a Godot project to consoles.*
 !ask: *Response to be used when users are asking if they can ask a question, which is redundant.*
 !code: *Instructions for formatting GDScript code on Discord.*
+!xy: *Ask for the REAL problem, and explain what XY-problems are.*
 
 Bot source code: <https://github.com/Calinou/datcord_bot>"""
 
@@ -653,6 +654,12 @@ You can also format code inline with single backticks: \\`one_method()\\` => `on
 For sharing large scripts, please post your script to a pastebin like https://hastebin.com or even consider sharing a remote Git repository on GitHub or GitLab."""
         )
 
+    elif message.content.lower().startswith("!xy"):
+        await message.channel.send(
+            """It sounds like you're asking an *XY Problem*.  Please explain what your **actual goal** is, as there may be more elegant ways to achieve it.
+> The XY problem is a communication problem encountered in help desk and similar situations in which the person asking for help obscures the real issue, X, because instead of asking directly about issue X, they ask how to solve a secondary issue, Y, which they believe will allow them to resolve issue X. However, resolving issue Y often does not resolve issue X, or is a poor way to resolve it, and the obscuring of the real issue and the introduction of the potentially strange secondary issue can lead to the person trying to help having unnecessary difficulties in communication and/or offering poor solutions.
+https://en.m.wikipedia.org/wiki/XY_problem"""
+        )
 
 # Prepare for takeoff.
 populate_memes()
