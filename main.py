@@ -352,15 +352,15 @@ async def on_ready() -> None:
     print("------")
 
 
-@client.command()
+@client.command(aliases=["ross","br"])
 async def bobross(ctx):
     # Posts quotes of Bob Ross
-    if str(message.channel) == BOT_COMMANDS_CHANNEL:
+    if str(ctx.message.channel) == BOT_COMMANDS_CHANNEL:
         rand_c = random.randint(0, len(ROSS_QUOTES) - 1)
         quote = ROSS_QUOTES[rand_c]
         e = discord.Embed(color=EMBED_ROSS_COLOR, description=quote)
         e.set_author(name="Bob Ross", icon_url=EMBED_ROSS_ICON)
-        await message.channel.send(embed=e)
+        await ctx.send(embed=e)
     else:
         await ctx.send(f"Command must be used in #{BOT_COMMANDS_CHANNEL}")
 
