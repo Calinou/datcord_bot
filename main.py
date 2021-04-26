@@ -12,6 +12,7 @@ import discord
 
 from discord.ext import commands
 
+client = commands.Bot(command_prefix = "!")
 # Configuration
 #
 # Set the token as an environment variable before running the script.
