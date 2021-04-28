@@ -116,6 +116,27 @@ ROSS_QUOTES: Final = [
     "If we’re going to have animals around we all have to be concerned about them and take care of them.",
     "You can do anything here — the only prerequisite is that it makes you happy.",
     "Go out on a limb — that’s where the fruit is.",
+0
+0
+
+    15
+
+Code
+Pull requests
+Actions
+Projects
+Security
+Insights
+
+    Settings
+
+datcord_bot/
+in
+patch-1
+
+29
+
+    "they/them",
     "Isn’t it fantastic that you can change your mind and create all these happy things?",
     "Anytime you learn, you gain.",
     "It’s life. It’s interesting. It’s fun.",
@@ -558,7 +579,7 @@ async def code(ctx):
     ```swift
     print("Hello world!")
     ```
-    You can also format code inline with single backticks: \\`doSomething()\\` ➡️ `doSomething()`
+    You can also format code inline with single backticks: \\`do_something()\\` ➡️ `do_something()`
     For sharing large scripts, please post your script to a pastebin like https://hastebin.com or even consider sharing a remote Git repository on GitHub or GitLab."""
     )
 
