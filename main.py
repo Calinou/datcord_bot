@@ -552,13 +552,13 @@ async def code(ctx):
     await ctx.send(
     """You can embed formatted code snippets directly into Discord by surrounding the code block with triple backticks. Adding `swift` at the top also gives it some basic syntax highlighting.
     **\\`\\`\\`swift**
-    *your code goes here*
+    print("Hello world!")
     **\\`\\`\\`**
     This produces a code block that looks like this:
     ```swift
-    your code goes here
+    print("Hello world!")
     ```
-    You can also format code inline with single backticks: \\`one_method()\\` ➡️ `one_method()`
+    You can also format code inline with single backticks: \\`doSomething()\\` ➡️ `doSomething()`
     For sharing large scripts, please post your script to a pastebin like https://hastebin.com or even consider sharing a remote Git repository on GitHub or GitLab."""
     )
 
