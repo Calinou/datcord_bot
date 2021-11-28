@@ -563,7 +563,7 @@ async def on_message(message: Any) -> None:
 
     elif message.content.lower().startswith("!csharp"):
         # GodotSharp community website.
-        await message.channel.send("https://godotsharp.net/")
+        await message.channel.send("https://paulloz.github.io/godot-csharp-api/")
 
     elif message.content.lower().startswith("!game"):
         # "Work on your game!" image.
