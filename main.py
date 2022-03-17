@@ -59,6 +59,7 @@ HELP_STRING: Final = """:book: **Commands:**
 !consoles: *Documentation about porting a Godot project to consoles.*
 !ask: *Response to be used when users are asking if they can ask a question, which is redundant.*
 !code: *Instructions for formatting GDScript code on Discord.*
+!speed: *Explanation of how GDScript's speed compares to C++ and C#*
 
 Bot source code: <https://github.com/Calinou/datcord_bot>"""
 
@@ -653,6 +654,11 @@ You can also format code inline with single backticks: \\`one_method()\\` => `on
 For sharing large scripts, please post your script to a pastebin like https://hastebin.com or even consider sharing a remote Git repository on GitHub or GitLab."""
         )
 
+    elif message.content.lower().startswith("!speed"):
+        # Explanation of how GDScript's speed compares to C++ and C#
+        await message.channel.send(
+            "It doesn't really matter that GDScript is much slower than C# and C++, because *most* GDScript code is just calling directly into Godot's native engine code, which is built in C++.  Speed only becomes a factor if you are building large, complex loops and algorithms in GDScript that run frequently during gameplay."
+        )
 
 # Prepare for takeoff.
 populate_memes()
