@@ -10,8 +10,9 @@ from typing_extensions import Final
 
 import discord
 
-client: Final = discord.Client()
+from discord.ext import commands
 
+client = commands.Bot(command_prefix = "!")
 # Configuration
 #
 # Set the token as an environment variable before running the script.
@@ -352,72 +353,60 @@ async def on_ready() -> None:
     print("------")
 
 
-@client.event
-async def on_message(message: Any) -> None:
+@client.command(aliases=["ross","br"])
+async def bobross(ctx):
     # Posts quotes of Bob Ross
-    if (
-        message.channel.name == BOT_COMMANDS_CHANNEL
-        and message.content.lower().startswith("!bobross")
-        or message.content.lower().startswith("!ross")
-        or message.content.lower().startswith("!br")
-    ):
+    if str(ctx.message.channel) == BOT_COMMANDS_CHANNEL:
         rand_c = random.randint(0, len(ROSS_QUOTES) - 1)
         quote = ROSS_QUOTES[rand_c]
         e = discord.Embed(color=EMBED_ROSS_COLOR, description=quote)
         e.set_author(name="Bob Ross", icon_url=EMBED_ROSS_ICON)
-        await message.channel.send(embed=e)
+        await ctx.send(embed=e)
+    else:
+        await ctx.send(f"Command must be used in #{BOT_COMMANDS_CHANNEL}")
 
-    elif message.channel.name == BOT_COMMANDS_CHANNEL and message.content.lower().startswith(
-        "!meme"
-    ):
-        choice_error = False
-        fpath = None
-        credit = "N/A"
-        c = message.content[6:]
-        global last_meme
-        if not len(c.strip()) or not message.content[5] == " ":
-            choice_error = True
+@client.command()
+async def memes(ctx):
+    choice_error = False
+    fpath = None
+    credit = "N/A"
+    c = ctx.message.content[6:]
+    global last_meme
+    if not len(c.strip()) or not ctx.message.content[5] == " ":
+        choice_error = True
 
-        submeme = []
-        if not choice_error:
-            for i in GD_MEMES:
-                if i[1].lower().find(c.lower()) != -1:
-                    submeme.append(i)
+    submeme = []
+    if not choice_error:
+        for i in GD_MEMES:
+            if i[1].lower().find(c.lower()) != -1:
+                submeme.append(i)
 
-        if choice_error or len(submeme) == 0:
-            submeme = GD_MEMES
+    if choice_error or len(submeme) == 0:
+        submeme = GD_MEMES
 
-        rand_c = 0
-        fpath = ""
+    rand_c = 0
+    fpath = ""
 
-        tries = 0
-        while tries < 4:
-            rand_c = random.randint(0, len(submeme) - 1)
-            fpath = submeme[rand_c][0]
-            if fpath != last_meme:
-                break
-            tries += 1
+    tries = 0
+    while tries < 4:
+        rand_c = random.randint(0, len(submeme) - 1)
+        fpath = submeme[rand_c][0]
+        if fpath != last_meme:
+            break
+        tries += 1
 
-        last_meme = fpath
+    last_meme = fpath
+    
+    credit = submeme[rand_c][1]
+    
+    if fpath:
+        with open(fpath, "rb") as f:
+            await ctx.send(f"**By {credit}**", file=discord.File(f))
 
-        credit = submeme[rand_c][1]
-
-        if fpath:
-            with open(fpath, "rb") as f:
-                await message.channel.send(f"**By {credit}**", file=discord.File(f))
-
-    # Send help message.
-    elif (
-        message.channel.name == BOT_COMMANDS_CHANNEL
-        and message.content.startswith("!help")
-        or message.content.startswith("!commands")
-    ):
-        await message.channel.send(HELP_STRING)
-
+@client.command(aliases=["listroles"])
+async def roles(ctx):
     # Show a list of assignable roles.
-    elif message.channel.name == BOT_COMMANDS_CHANNEL and message.content.startswith(
-        "!roles"
-    ):
+    if str(ctx.channel) == BOT_COMMANDS_CHANNEL:
         s = ":scroll: **Available roles:**\n"
         s += "```\n"
 
@@ -427,232 +416,152 @@ async def on_message(message: Any) -> None:
                 s += ", "
         s += "```"
 
-        await message.channel.send(s)
+        await ctx.send(s)
+    else:
+        await ctx.send(f"Command must be used in #{BOT_COMMANDS_CHANNEL}")
 
-    # Attempt to assign the user to a role.
-    elif (
-        message.channel.name == BOT_COMMANDS_CHANNEL
-        and message.content.startswith("!assign")
-        or message.content.startswith("!set")
-        or message.content.startswith("!role")
-    ):
-        # TODO Unassign all roles.
-        error = False
+@client.command(aliases=["role", "set"])
+async def assign(ctx, role):
+    if role not in AVAILABLE_ROLES:
+        await ctx.send("Role not available")
+        return
 
-        # Have to slice the message depending on the command alias given.
-        if message.content.startswith("!assign"):
-            s = message.content[8:]  # remove !assign
-            if not len(s) or not message.content[7] == " ":
-                error = True
-        elif message.content.startswith("!set"):
-            s = message.content[5:]
-            if not len(s) or not message.content[4] == " ":
-                error = True
-        elif message.content.startswith("!role"):
-            s = message.content[6:]
-            if not len(s) or not message.content[5] == " ":
-                error = True
+    if str(ctx.channel) == BOT_COMMANDS_CHANNEL:
+        try:
+            role_instance = discord.utils.get(ctx.guild.roles, name=role)
+            await ctx.message.author.add_roles(role_instance)
+            await ctx.send(f"{role} has been added")
+        except:
+            await ctx.send("Bot does not have permissions for thi")
+    else:
+        await ctx.send(f"Command must be used in #{BOT_COMMANDS_CHANNEL}")
 
-        if error:
-            # If a valid role hasn't been supplied.
-            tmp = await message.channel.send("Usage: !assign [role]")
-            await delete_edit_timer(
-                tmp, FEEDBACK_DEL_TIMER, error=True, call_msg=message
-            )
-        else:
-            # This looks messy, but it works. There must be a more effective
-            # method of getting the role object rather than iterating over
-            # all available roles and checking their name.
-            new_role = s
-            roles = message.guild.roles
+@client.command(aliases=["unassign"])
+async def remove(ctx, role):
+    if role not in AVAILABLE_ROLES:
+        await ctx.send("Role not available")
+        return
 
-            for role in roles:
-                if role.name.lower() == new_role.lower():
-                    if role.name.lower() in AVAILABLE_ROLES:
-                        if role not in message.author.roles:
-                            await message.author.add_roles(role)
-                            tmp = await message.channel.send(
-                                f":white_check_mark: User {message.author.name} added to {role.name}."
-                            )
-                            await delete_edit_timer(
-                                tmp, FEEDBACK_DEL_TIMER, call_msg=message
-                            )
-                        else:
-                            tmp = await message.channel.send(
-                                "You already have that role."
-                            )
-                            await delete_edit_timer(
-                                tmp, FEEDBACK_DEL_TIMER, error=True, call_msg=message
-                            )
-                    else:
-                        tmp = await message.channel.send(
-                            ":no_entry: *You're not allowed to assign yourself to that role.*"
-                        )
-                        await delete_edit_timer(
-                            tmp, FEEDBACK_DEL_TIMER, error=True, call_msg=message
-                        )
-                    break
-            else:
-                tmp = await message.channel.send(
-                    f":no_entry: **{new_role.upper()}** <- *Role not found.*"
-                )
-                await delete_edit_timer(
-                    tmp, FEEDBACK_DEL_TIMER, error=True, call_msg=message
-                )
+    if str(ctx.channel) == BOT_COMMANDS_CHANNEL:
+        try:
+            role_instance = discord.utils.get(ctx.guild.roles, name=role)
+            await ctx.message.author.remove_roles(role_instance)
+            await ctx.send(f"{role} has been removed")
+        except:
+            await ctx.send("Bot does not have permissions for this")
+    else:
+        await ctx.send(f"Command must be used in #{BOT_COMMANDS_CHANNEL}")
 
-    elif (
-        message.channel.name == BOT_COMMANDS_CHANNEL
-        and message.content.startswith("!unassign")
-        or message.content.startswith("!remove")
-    ):
-        error = False
 
-        # It's the same here that it was with !assign
-        if message.content.startswith("!unassign"):
-            s = message.content[10:]  # remove !unassign
-            if not len(s) or not message.content[9] == " ":
-                error = True
-        elif message.content.startswith("!remove"):
-            s = message.content[8:]  # remove !remove
-            if not len(s) or not message.content[7] == " ":
-                error = True
+@client.command(aliases = ["class"])
+async def _class(ctx, class_name): #needs testing i suppose?
+    if CLASS_REGEX.match(class_name):
+        # Percent-encode the `@` symbol to prevent highlighting users on Discord.
+        class_name_escaped: Final = class_name.replace("@", "%40")
+        await ctx.send(f"https://docs.godotengine.org/en/stable/classes/class_{class_name_escaped}.html")
+    elif class_name != "":
+        await ctx.send("Invalid class name (must not contain spaces or special characters other than `@` and `_`).")
+    else:
+        await ctx.send("Usage: !class [class]")
 
-        if error:
-            tmp = await message.channel.send("Usage: !unassign [role]")
-            await delete_edit_timer(tmp, FEEDBACK_DEL_TIMER, call_msg=message)
-        else:
-            old_role = s
-            roles = message.guild.roles
-            for role in message.author.roles:
-                if role.name.lower() == old_role.lower():
-                    await message.author.remove_roles(role)
-                    tmp = await message.channel.send(
-                        ":white_check_mark: Role was removed."
-                    )
-                    await delete_edit_timer(tmp, FEEDBACK_DEL_TIMER, call_msg=message)
-                    break
-            else:
-                tmp = await message.channel.send(
-                    f":no_entry: **{old_role.upper()}** <- You don't have that role."
-                )
-                await delete_edit_timer(
-                    tmp, FEEDBACK_DEL_TIMER, error=True, call_msg=message
-                )
 
-    elif message.content.lower().startswith("!class"):
-        class_name: Final = message.content[7:].lower()  # Remove `!class`.
-        if class_name != "" and CLASS_REGEX.match(class_name):
-            # Percent-encode the `@` symbol to prevent highlighting users on Discord.
-            class_name_escaped: Final = class_name.replace("@", "%40")
-            await message.channel.send(
-                f"https://docs.godotengine.org/en/stable/classes/class_{class_name_escaped}.html"
-            )
-        elif class_name != "":
-            await message.channel.send(
-                "Invalid class name (must not contain spaces or special characters other than `@` and `_`)."
-            )
-        else:
-            await message.channel.send("Usage: !class [class]")
+# Factoid commands (returns a constant string). _____
 
-    # Factoid commands (returns a constant string).
+@client.command()
+async def api(ctx):
+    # Online Godot API class reference.
+    await ctx.send("https://docs.godotengine.org/en/stable/classes/index.html")
 
-    elif message.content.lower().startswith("!api"):
-        # Online Godot API class reference.
-        await message.channel.send(
-            "https://docs.godotengine.org/en/stable/classes/index.html"
-        )
+@client.command(aliases = ["CSharp", "Csharp"])
+async def csharp(ctx):
+    # GodotSharp community website.
+    await ctx.send("https://godotsharp.net/")
 
-    elif message.content.lower().startswith("!csharp"):
-        # GodotSharp community website.
-        await message.channel.send("https://godotsharp.net/")
+@client.command()
+async def game(ctx):
+    # "Work on your game!" image. B)
+    await ctx.send("https://imgur.com/a/egsXCBs")
 
-    elif message.content.lower().startswith("!game"):
-        # "Work on your game!" image.
-        await message.channel.send("https://imgur.com/a/egsXCBs")
+@client.command()
+async def gdquest(ctx):
+    # GDQuest YouTube channel.
+    await ctx.send("https://www.youtube.com/channel/UCxboW7x0jZqFdvMdCFKTMsQ")
 
-    elif message.content.lower().startswith("!gdquest"):
-        # GDQuest YouTube channel.
-        await message.channel.send(
-            "https://www.youtube.com/channel/UCxboW7x0jZqFdvMdCFKTMsQ"
-        )
+@client.command()
+async def kcc(ctx):
+    # Kids Can Code YouTube channel.
+    await ctx.send("https://www.youtube.com/channel/UCNaPQ5uLX5iIEHUCLmfAgKg/playlists")
 
-    elif message.content.lower().startswith("!kcc"):
-        # Kids Can Code YouTube channel.
-        await message.channel.send(
-            "https://www.youtube.com/channel/UCNaPQ5uLX5iIEHUCLmfAgKg/playlists"
-        )
+@client.command()
+async def heart(ctx):
+    # HeartBeast YouTube channel.
+    await ctx.send("https://www.youtube.com/c/uheartbeast/playlists")
 
-    elif message.content.lower().startswith("!heart"):
-        # HeartBeast YouTube channel.
-        await message.channel.send("https://www.youtube.com/c/uheartbeast/playlists")
+@client.command()
+async def bcg(ctx):
+    # Born CG YouTube channel.
+    await ctx.send("https://www.youtube.com/playlist?list=PLda3VoSoc_TSBBOBYwcmlamF1UrjVtccZ")
 
-    elif message.content.lower().startswith("!bcg"):
-        # Born CG YouTube channel.
-        await message.channel.send(
-            "https://www.youtube.com/playlist?list=PLda3VoSoc_TSBBOBYwcmlamF1UrjVtccZ"
-        )
+@client.command()
+async def mirror(ctx):
+    # Unofficial Godot download mirror (for people experiencing slowness with the official mirror).
+    await ctx.send("https://archive.hugo.pro/godot-tuxfamily/")
 
-    elif message.content.lower().startswith("!mirror"):
-        # Unofficial Godot download mirror (for people experiencing slowness with the official mirror).
-        await message.channel.send("https://archive.hugo.pro/godot-tuxfamily/")
+@client.command()
+async def nightly(ctx):
+    # Calinou's nightly Godot builds.
+    await ctx.send("https://hugo.pro/projects/godot-builds/")
 
-    elif message.content.lower().startswith("!nightly"):
-        # Calinou's nightly Godot builds.
-        await message.channel.send("https://hugo.pro/projects/godot-builds/")
+@client.command()
+async def patterns(ctx):
+    # Game Programming Patterns book (online version).
+    await ctx.send("https://gameprogrammingpatterns.com/contents.html")
 
-    elif message.content.lower().startswith("!patterns"):
-        # Game Programming Patterns book (online version).
-        await message.channel.send("https://gameprogrammingpatterns.com/contents.html")
+@client.command()
+async def pronounce(ctx):
+    # How to pronounce the word "Godot".
+    await ctx.send('Godot is usually pronounced "go-dough" (the "t" is silent).')
 
-    elif message.content.lower().startswith("!pronounce"):
-        # How to pronounce the word "Godot".
-        await message.channel.send(
-            'Godot is usually pronounced "go-dough" (the "t" is silent).'
-        )
+@client.command()
+async def step(ctx):
+    # Official step-by-step tutorial.
+    await ctx.send("https://docs.godotengine.org/en/stable/getting_started/step_by_step/index.html")
 
-    elif message.content.lower().startswith("!step"):
-        # Official step-by-step tutorial.
-        await message.channel.send(
-            "https://docs.godotengine.org/en/stable/getting_started/step_by_step/index.html"
-        )
+@client.command()
+async def tut(ctx):
+    # List of community tutorials in the Godot documentation.
+    await ctx.send("https://docs.godotengine.org/en/stable/community/tutorials.html")
 
-    elif message.content.lower().startswith("!tut"):
-        # List of community tutorials in the Godot documentation.
-        await message.channel.send(
-            "https://docs.godotengine.org/en/stable/community/tutorials.html"
-        )
+@client.command()
+async def lang(ctx):
+    # Programming language support in Godot.
+    await ctx.send("https://github.com/Vivraan/godot-lang-support")
 
-    elif message.content.lower().startswith("!lang"):
-        # Programming language support in Godot.
-        await message.channel.send("https://github.com/Vivraan/godot-lang-support")
+@client.command()
+async def consoles(ctx):
+    # Documentation page "Console support in Godot".
+    await ctx.send("https://docs.godotengine.org/en/stable/tutorials/platform/consoles.html")
 
-    elif message.content.lower().startswith("!consoles"):
-        # Documentation page "Console support in Godot".
-        await message.channel.send(
-            "https://docs.godotengine.org/en/stable/tutorials/platform/consoles.html"
-        )
+@client.command()
+async def ask(ctx):
+    # Don't ask to ask, just ask :)
+    await ctx.send("You do not need to ask for permission to ask a question. Just ask your question and anyone that can help will answer you as soon as possible.")
 
-    elif message.content.lower().startswith("!ask"):
-        # Don't ask to ask, just ask :)
-        await message.channel.send(
-            "You do not need to ask for permission to ask a question. Just ask your question and anyone that can help will answer you as soon as possible."
-        )
-
-    elif message.content.lower().startswith("!code"):
-        # Instructions for syntax highlighting and code formatting.
-        await message.channel.send(
-            """You can embed formatted code snippets directly into Discord by surrounding the code block with triple backticks. Adding `swift` at the top also gives it some basic syntax highlighting.
-**\\`\\`\\`swift**
-*your code goes here*
-**\\`\\`\\`**
-This produces a code block that looks like this:
-```swift
-your code goes here
-```
-You can also format code inline with single backticks: \\`one_method()\\` => `one_method()`
-
-For sharing large scripts, please post your script to a pastebin like https://hastebin.com or even consider sharing a remote Git repository on GitHub or GitLab."""
-        )
+@client.command()
+async def code(ctx):
+    # Instructions for syntax highlighting and code formatting.
+    await ctx.send(
+    """You can embed formatted code snippets directly into Discord by surrounding the code block with triple backticks. Adding `swift` at the top also gives it some basic syntax highlighting.
+    **\\`\\`\\`swift**
+    print("Hello world!")
+    **\\`\\`\\`**
+    This produces a code block that looks like this:
+    ```swift
+    print("Hello world!")
+    ```
+    You can also format code inline with single backticks: \\`do_something()\\` ➡️ `do_something()`
+    For sharing large scripts, please post your script to a pastebin like https://hastebin.com or even consider sharing a remote Git repository on GitHub or GitLab."""
+    )
 
     elif message.content.lower().startswith("!speed"):
         # Explanation of how GDScript's speed compares to C++ and C#
