@@ -57,6 +57,7 @@ HELP_STRING: Final = """:book: **Commands:**
 !tut: *List of tutorials in the Godot documentation.*
 !lang: *Community-maintained list of programming languages supported in Godot.*
 !consoles: *Documentation about porting a Godot project to consoles.*
+!coc: *Shows the Code of Conduct.*
 !ask: *Response to be used when users are asking if they can ask a question, which is redundant.*
 !code: *Instructions for formatting GDScript code on Discord.*
 !speed: *Explanation of how GDScript's speed compares to C++ and C#*
@@ -630,6 +631,12 @@ async def on_message(message: Any) -> None:
         # Documentation page "Console support in Godot".
         await message.channel.send(
             "https://docs.godotengine.org/en/stable/tutorials/platform/consoles.html"
+        )
+    
+    elif message.content.lower().startswith("!coc"):
+        # Code of Conduct"
+        await message.channel.send(
+            "https://godotengine.org/code-of-conduct"
         )
 
     elif message.content.lower().startswith("!ask"):
