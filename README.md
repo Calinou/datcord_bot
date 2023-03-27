@@ -12,7 +12,6 @@ This repository contains the source code for the
 |           `!roles` | Lists available roles.                                    |
 |            `!ross` | Returns a Bob Ross quote.                                 |
 | `!unassign [role]` | Unassigns yourself from a role.                           |
-| `!unassign [role]` | Unassigns yourself from a role.                           |
 
 There are also some commands which print a URL or fixed message
 for convenience's sake:
